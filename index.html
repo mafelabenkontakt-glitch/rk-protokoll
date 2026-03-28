@@ -155,66 +155,77 @@
     let currentUser = null;
     const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
 
+    // LOGIN LOGIK
     function attemptLogin() {
         const u = document.getElementById('username').value, p = document.getElementById('password').value;
         const found = users.find(x => x.u === u && x.p === p);
-        if(found) { currentUser = found; showSection('mainMenu'); } else { document.getElementById('loginError').classList.remove('hidden'); }
+        if(found) { 
+            currentUser = found; 
+            showSection('mainMenu');
+            document.getElementById('adminBtn').classList.remove('hidden'); 
+        } else { 
+            document.getElementById('loginError').classList.remove('hidden'); 
+        }
     }
 
-    function showSection(id) { document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-    
-    function newProtocol() { document.getElementById('einsatzForm').reset(); setAVPU(''); showSection('protocolForm'); }
+    // DISCORD WEBHOOK FUNKTION
+    async function sendToDiscord(reportData) {
+        const webhookURL = "https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT";
+        
+        const embed = {
+            title: "🚨 Neues Einsatzprotokoll",
+            color: 14811162, 
+            fields: [
+                { name: "ZID", value: reportData.zid || "N/A", inline: true },
+                { name: "Fahrzeug", value: reportData.fz || "N/A", inline: true },
+                { name: "Sanitäter", value: currentUser ? currentUser.u : "Unbekannt", inline: true },
+                { name: "Patient", value: (reportData.patient || "Anonym") + " (" + (reportData.sex || "-") + ")", inline: false },
+                { name: "Vitalwerte", value: `AF: ${reportData.af || '-'} | SpO2: ${reportData.spo2 || '-'}% | RR: ${reportData.rr || '-'} | HF: ${reportData.hf || '-'} | AVPU: ${reportData.avpu || '-'}`, inline: false },
+                { name: "Bericht", value: reportData.text || "Kein Bericht verfasst.", inline: false }
+            ],
+            footer: { text: "Eingegangen am: " + new Date().toLocaleString() }
+        };
 
+        try {
+            await fetch(webhookURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ embeds: [embed] })
+            });
+        } catch (e) { console.error("Discord Fehler", e); }
+    }
+
+    // NAVIGATION & ARCHIV
+    function showSection(id) { document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+    function newProtocol() { document.getElementById('einsatzForm').reset(); setAVPU(''); signaturePad.clear(); showSection('protocolForm'); }
     function openArchive() { showSection('archiveSection'); renderArchive(); }
+    function logout() { location.reload(); }
 
     function renderArchive() {
         const table = document.getElementById('archiveTable');
         table.innerHTML = reports.map((r, i) => `
             <tr>
                 <td>${r.zid}</td>
-                <td>${r.p_name}</td>
+                <td>${r.patient}</td>
                 <td>
                     <button class="btn btn-xs btn-primary py-0" onclick="loadReport(${i})">Öffnen</button>
                     <button class="btn btn-xs btn-danger py-0" onclick="delRep(${i})">X</button>
                 </td>
-            </tr>
-        `).join('');
+            </tr>`).join('');
     }
 
-    // DIE NEUE FUNKTION ZUM ÖFFNEN
     function loadReport(index) {
         const r = reports[index];
-        // Basis & Patient
         document.getElementById('e_nr').value = r.zid;
         document.getElementById('fz').value = r.fz || '';
-        document.getElementById('p_name').value = r.p_name;
-        document.getElementById('p_sex').value = r.p_sex || 'M';
-        document.getElementById('p_geb').value = r.p_geb || '';
-        document.getElementById('p_sv').value = r.p_sv || '';
-        document.getElementById('p_kasse').value = r.p_kasse || '';
-
-        // ABCDE
-        document.getElementById('abc_a_text').value = r.abc_a || '';
-        document.getElementById('v_af').value = r.v_af || '';
-        document.getElementById('v_spo2').value = r.v_spo2 || '';
-        document.getElementById('abc_b_text').value = r.abc_b || '';
-        document.getElementById('v_rr').value = r.v_rr || '';
-        document.getElementById('v_hf').value = r.v_hf || '';
-        document.getElementById('abc_c_text').value = r.abc_c || '';
-        document.getElementById('abc_d_text').value = r.abc_d || '';
-        document.getElementById('abc_e_text').value = r.abc_e || '';
+        document.getElementById('p_name').value = r.patient;
+        document.getElementById('p_sex').value = r.sex || 'M';
+        document.getElementById('v_af').value = r.af || '';
+        document.getElementById('v_spo2').value = r.spo2 || '';
+        document.getElementById('v_rr').value = r.rr || '';
+        document.getElementById('v_hf').value = r.hf || '';
+        document.getElementById('v_text').value = r.text || '';
         if(r.avpu) setAVPU(r.avpu);
-
-        // SAMPLER & OPQRST (Beispielhaft)
-        document.getElementById('s_s').value = r.s_s || '';
-        document.getElementById('s_a').value = r.s_a || '';
-        document.getElementById('s_m').value = r.s_m || '';
-        document.getElementById('o_o').value = r.o_o || '';
-        document.getElementById('o_s').value = r.o_s || '';
-
-        // Bericht
-        document.getElementById('v_text').value = r.v_text || '';
-
         showSection('protocolForm');
     }
 
@@ -228,41 +239,33 @@
 
     function delRep(i) { reports.splice(i,1); localStorage.setItem('rk_reports', JSON.stringify(reports)); renderArchive(); }
 
+    // FORMULAR ABSCHICKEN
     document.getElementById('einsatzForm').onsubmit = function(e) {
         e.preventDefault();
-        const data = {
+        const reportData = {
             zid: document.getElementById('e_nr').value,
             fz: document.getElementById('fz').value,
-            p_name: document.getElementById('p_name').value,
-            p_sex: document.getElementById('p_sex').value,
-            p_geb: document.getElementById('p_geb').value,
-            p_sv: document.getElementById('p_sv').value,
-            p_kasse: document.getElementById('p_kasse').value,
-            abc_a: document.getElementById('abc_a_text').value,
-            v_af: document.getElementById('v_af').value,
-            v_spo2: document.getElementById('v_spo2').value,
-            abc_b: document.getElementById('abc_b_text').value,
-            v_rr: document.getElementById('v_rr').value,
-            v_hf: document.getElementById('v_hf').value,
-            abc_c: document.getElementById('abc_c_text').value,
+            patient: document.getElementById('p_name').value,
+            sex: document.getElementById('p_sex').value,
+            af: document.getElementById('v_af').value,
+            spo2: document.getElementById('v_spo2').value,
+            rr: document.getElementById('v_rr').value,
+            hf: document.getElementById('v_hf').value,
             avpu: document.getElementById('v_avpu_val').value,
-            abc_d: document.getElementById('abc_d_text').value,
-            abc_e: document.getElementById('abc_e_text').value,
-            s_s: document.getElementById('s_s').value,
-            s_a: document.getElementById('s_a').value,
-            s_m: document.getElementById('s_m').value,
-            o_o: document.getElementById('o_o').value,
-            o_s: document.getElementById('o_s').value,
-            v_text: document.getElementById('v_text').value,
+            text: document.getElementById('v_text').value,
             date: new Date().toLocaleDateString()
         };
-        reports.push(data);
-        localStorage.setItem('rk_reports', JSON.stringify(reports));
-        alert("Gespeichert!");
-        showSection('mainMenu');
-    };
 
-    function logout() { location.reload(); }
+        reports.push(reportData);
+        localStorage.setItem('rk_reports', JSON.stringify(reports));
+        
+        sendToDiscord(reportData);
+
+        alert("Einsatz archiviert & an Discord gesendet!"); 
+        showSection('mainMenu'); 
+        this.reset(); 
+        signaturePad.clear();
+        document.querySelectorAll('.opt-btn, .avpu-btn').forEach(b => b.classList.remove('active'));
+    };
 </script>
-</body>
-</html>
+   
