@@ -3,114 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK Cloud OS | Professional</title>
+    <title>RK Cloud OS | Professional Max</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --rk-red: #e2001a; --rk-dark: #b30014; --rk-blue: #0056b3; }
-        
-        body { 
-            background: #f8f9fa;
-            font-family: 'Segoe UI', sans-serif; min-height: 100vh; padding-bottom: 50px;
-        }
-
-        /* Login Screen */
-        #loginView { 
-            height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(135deg, var(--rk-red) 0%, #8b0000 100%);
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;
-        }
-        .login-card { 
-            background: white; padding: 40px; border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); width: 100%; max-width: 400px; 
-        }
-
-        /* Header & Design */
-        .header-rk { 
-            background: var(--rk-red); color: white; padding: 15px; 
-            text-align: center; border-bottom: 5px solid var(--rk-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px;
-        }
-        
-        .section-title { 
-            background: #2c3e50; color: white; padding: 8px 12px; 
-            font-weight: bold; border-left: 6px solid var(--rk-red); 
-            margin: 20px 0 10px 0; border-radius: 4px; font-size: 0.85rem; text-transform: uppercase;
-        }
-        
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px; }
-        .form-label { font-weight: bold; color: #444; margin-bottom: 2px; font-size: 0.75rem; }
-        
-        /* Bodygramm */
-        .bodygramm-container { position: relative; width: 300px; margin: 10px auto; background: white; border: 1px solid #ddd; border-radius: 10px; padding: 5px; }
-        .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
-        .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; }
+        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .header-rk { background: var(--rk-red); color: white; padding: 20px; text-align: center; border-bottom: 6px solid var(--rk-dark); box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 25px; }
+        .section-title { background: #2c3e50; color: white; padding: 12px; font-weight: bold; border-left: 8px solid var(--rk-red); margin: 25px 0 15px 0; border-radius: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #eee; }
+        .form-label { font-weight: 700; color: #333; margin-bottom: 5px; font-size: 0.9rem; }
+        .input-group-text { font-weight: bold; background: #f8f9fa; min-width: 45px; justify-content: center; }
+        .bodygramm-container { position: relative; width: 320px; margin: 15px auto; background: white; border: 2px solid #ddd; border-radius: 12px; padding: 10px; }
+        .body-img { width: 100%; height: auto; cursor: crosshair; }
+        .marker { position: absolute; width: 26px; height: 26px; border-radius: 50%; color: white; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); pointer-events: none; }
         .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
-
-        .sig-canvas { border: 2px dashed #ccc; background: #fafafa; width: 100%; height: 140px; border-radius: 8px; touch-action: none; }
-        
-        /* Navigation & Views */
-        #mainAppRTW, #mainAppKTW, #listView, #adminSection { display: none; }
+        .sig-canvas { border: 2px dashed #bbb; background: #fff; width: 100%; height: 180px; border-radius: 10px; touch-action: none; }
+        #mainAppRTW, #mainAppKTW, #listView { display: none; }
         .active-view { display: block !important; }
-        .btn-rk { background: var(--rk-red); color: white; border: none; font-weight: bold; transition: 0.2s; }
-        .btn-rk:hover { background: var(--rk-dark); color: white; }
+        .btn-rk { background: var(--rk-red); color: white; border: none; font-weight: bold; padding: 12px; transition: 0.3s; text-transform: uppercase; }
+        .btn-rk:hover { background: var(--rk-dark); transform: translateY(-2px); }
+        .vital-row { background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #ccc; }
     </style>
 </head>
 <body>
 
 <svg style="display:none;">
-  <symbol id="rk-logo-svg" viewBox="0 0 100 100">
+  <symbol id="rk-logo" viewBox="0 0 100 100">
     <rect width="100" height="100" fill="white" rx="15"/>
     <path d="M 40 10 h 20 v 30 h 30 v 20 h -30 v 30 h -20 v -30 h -30 v -20 h 30 z" fill="#e2001a"/>
   </symbol>
 </svg>
 
-<div id="loginView">
-    <div class="login-card text-center">
-        <svg width="80" height="80" class="mb-3 shadow-sm rounded-4"><use href="#rk-logo-svg"></use></svg>
-        <h3 class="fw-bold" style="color: var(--rk-red)">RK CLOUD</h3>
-        <p class="text-muted mb-4">Einsatzdokumentation v4.0</p>
-        <input type="text" id="login_dn" class="form-control mb-2 p-3" placeholder="Dienstnummer (z.B. RK-02)">
-        <input type="password" id="login_pw" class="form-control mb-3 p-3" placeholder="Passwort">
-        <button onclick="login()" class="btn btn-rk w-100 p-3 rounded-pill shadow">ANMELDEN</button>
-        <p id="loginStatus" class="mt-3 text-danger small fw-bold"></p>
-    </div>
-</div>
-
-<div id="listView" class="container mt-4">
+<div id="listView" class="container mt-4 active-view text-center">
     <div class="header-rk rounded-4">
-        <svg width="40" height="40" class="mb-2"><use href="#rk-logo-svg"></use></svg>
-        <h4 class="fw-bold mb-3">DIENSTÜBERSICHT</h4>
-        <div class="d-flex justify-content-center gap-2">
-            <button class="btn btn-light btn-sm fw-bold shadow-sm" onclick="showChoice()">➕ NEUER EINSATZ</button>
-            <button id="adminBtn" class="btn btn-warning btn-sm fw-bold shadow-sm" style="display:none;" onclick="toggleAdmin()">⚙️ ADMIN</button>
-            <button class="btn btn-outline-light btn-sm" onclick="logout()">LOGOUT</button>
-        </div>
+        <svg width="60" height="60" class="mb-2"><use href="#rk-logo"></use></svg>
+        <h2>EINSATZ-DASHBOARD</h2>
+        <button class="btn btn-light fw-bold mt-2 shadow-sm" onclick="document.getElementById('typeChoice').style.display='flex'">➕ NEUER BERICHT</button>
+    </div>
+    
+    <div id="typeChoice" class="row g-3 mb-4" style="display:none;">
+        <div class="col-md-6"><button class="btn btn-rk w-100 py-5 fs-4 shadow" onclick="startFlow('RTW')">🚑 RTW NOTFALL</button></div>
+        <div class="col-md-6"><button class="btn btn-primary w-100 py-5 fs-4 shadow" style="background:var(--rk-blue)" onclick="alert('KTW-Modus in Arbeit')">🚐 KTW TRANSPORT</button></div>
     </div>
 
-    <div id="adminSection" class="card p-4 bg-warning bg-opacity-10 border-warning mb-4">
-        <h5 class="fw-bold border-bottom pb-2">Benutzerverwaltung</h5>
-        <div class="row g-2 align-items-end">
-            <div class="col-md-4"><label class="small fw-bold">Dienstnummer</label><input type="text" id="reg_dn" class="form-control" placeholder="z.B. RK-12"></div>
-            <div class="col-md-4"><label class="small fw-bold">Passwort</label><input type="text" id="reg_pw" class="form-control" placeholder="Passwort"></div>
-            <div class="col-md-2 text-center"><div class="form-check pt-1"><input type="checkbox" id="reg_admin" class="form-check-input"><label class="small">Leitung?</label></div></div>
-            <div class="col-md-2"><button onclick="registerUser()" class="btn btn-dark w-100">Anlegen</button></div>
-        </div>
-    </div>
-
-    <div id="typeChoice" class="card p-4 text-center mb-4 bg-white shadow" style="display:none;">
-        <h5 class="fw-bold mb-3">Wähle den Einsatztyp</h5>
-        <div class="row g-3">
-            <div class="col-6"><button class="btn btn-rk w-100 py-4 shadow" onclick="startFlow('RTW')">🚑 NOTFALL<br>(RTW)</button></div>
-            <div class="col-6"><button class="btn btn-primary w-100 py-4 shadow" style="background: var(--rk-blue)" onclick="startFlow('KTW')">🚐 TRANSPORT<br>(KTW)</button></div>
-        </div>
-    </div>
-
-    <div class="card p-3 shadow-sm">
-        <h6 class="fw-bold mb-2 border-bottom pb-2">Letzte Cloud-Berichte</h6>
+    <div class="card p-4 text-start">
+        <h5 class="fw-bold border-bottom pb-2">Letzte Protokolle</h5>
         <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle">
-                <thead class="table-light"><tr><th>Typ</th><th>E-Nr</th><th>Patient</th><th>Datum</th></tr></thead>
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Typ</th><th>E-Nr</th><th>Patient</th><th>Datum</th></tr></thead>
                 <tbody id="protocolTableBody"></tbody>
             </table>
         </div>
@@ -119,127 +60,132 @@
 
 <div id="mainAppRTW" class="container mt-3">
     <div class="header-rk rounded-4">
-        <button class="btn btn-sm btn-light float-start" onclick="showList()">⬅</button>
-        <h5 class="mb-0 fw-bold">🚑 RTW NOTFALLBERICHT</h5>
+        <button class="btn btn-sm btn-light float-start" onclick="location.reload()">⬅</button>
+        <h3 class="mb-0">🚑 NOTFALLPROTOKOLL (MAXIMAL)</h3>
     </div>
+
     <form id="rtwForm">
-        
-        <div class="section-title">1. Einsatz & Team</div>
+        <div class="section-title">1. Stammdaten</div>
         <div class="card p-3">
-            <div class="row g-2">
-                <div class="col-6"><label class="form-label">Einsatz-Nr</label><input type="text" id="r_e_nr" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">Fahrzeug</label><input type="text" id="r_fz" class="form-control form-control-sm"></div>
-                <div class="col-12"><label class="form-label">Team (Besatzung)</label><input type="text" id="r_team" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">Alarmzeit</label><input type="time" id="r_t_alarm" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">Ankunft Ort</label><input type="time" id="r_t_ankunft" class="form-control form-control-sm"></div>
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label">Einsatz-Nr.</label><input type="text" id="r_e_nr" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">Funkrufname</label><input type="text" id="r_fz" class="form-control"></div>
+                <div class="col-md-4"><label class="form-label">Team</label><input type="text" id="r_team" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Alarmzeit</label><input type="time" id="r_t_alarm" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Ankunft Ort</label><input type="time" id="r_t_ankunft" class="form-control"></div>
             </div>
         </div>
 
-        <div class="section-title">2. Patientendaten</div>
+        <div class="section-title">2. Patient</div>
         <div class="card p-3">
-            <div class="row g-2">
-                <div class="col-12"><label class="form-label">Name</label><input type="text" id="r_p_name" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">Geburtsdatum</label><input type="date" id="r_p_geb" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">SV-Nummer</label><input type="text" id="r_p_sv" class="form-control form-control-sm"></div>
-                <div class="col-12"><label class="form-label">Adresse</label><input type="text" id="r_p_adr" class="form-control form-control-sm"></div>
+            <div class="row g-3">
+                <div class="col-md-8"><label class="form-label">Name</label><input type="text" id="r_p_name" class="form-control"></div>
+                <div class="col-md-4"><label class="form-label">Geburtsdatum</label><input type="date" id="r_p_geb" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">SV-Nummer</label><input type="text" id="r_p_sv" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Adresse</label><input type="text" id="r_p_adr" class="form-control"></div>
             </div>
         </div>
 
         <div class="section-title text-center">3. Bodygramm</div>
-        <div class="card p-2 text-center">
+        <div class="card p-3 text-center">
             <div class="bodygramm-container" id="bodyWrapper">
-                <img src="grafik.png" id="bodyImg" class="body-img" alt="Bitte 'grafik.png' hochladen!">
+                <img src="grafik.png" id="bodyImg" class="body-img" alt="grafik.png fehlt!">
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2" onclick="clearMarkers()">Marker löschen</button>
+            <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="clearMarkers()">Marker löschen</button>
         </div>
 
-        <div class="section-title">4. Befund (ABCDE)</div>
+        <div class="section-title">4. ABCDE Erhebung</div>
         <div class="card p-3">
-            <div class="row g-2">
-                <div class="col-12"><label class="form-label text-danger">A (Airway)</label>
-                    <select id="r_abc_a" class="form-select form-select-sm"><option value="Frei">Frei</option><option value="Verlegt">Verlegt</option></select>
+            <div class="vital-row">
+                <label class="text-danger fw-bold">A - AIRWAY</label>
+                <div class="row g-2 mt-1">
+                    <div class="col-md-6"><select id="r_abc_a" class="form-select"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select></div>
+                    <div class="col-md-6 d-flex align-items-center"><input type="checkbox" id="r_abc_hws" class="form-check-input me-2"> <label>HWS fixiert</label></div>
                 </div>
-                <div class="col-8"><label class="form-label text-danger">B (Breathing)</label><input type="text" id="r_abc_b" class="form-control form-control-sm"></div>
-                <div class="col-2"><label class="form-label">AF</label><input type="text" id="r_v_af" class="form-control form-control-sm"></div>
-                <div class="col-2"><label class="form-label">SpO2</label><input type="text" id="r_v_spo2" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label text-danger">C (Circulation)</label><input type="text" id="r_abc_c" class="form-control form-control-sm"></div>
-                <div class="col-3"><label class="form-label">Puls</label><input type="text" id="r_v_hf" class="form-control form-control-sm"></div>
-                <div class="col-3"><label class="form-label">RR</label><input type="text" id="r_v_rr" class="form-control form-control-sm"></div>
-                <div class="col-4"><label class="form-label">AVPU</label>
-                    <select id="r_v_avpu" class="form-select form-select-sm"><option value="A (Alert)">A</option><option value="V">V</option><option value="P">P</option><option value="U">U</option></select>
+            </div>
+
+            <div class="vital-row">
+                <label class="text-danger fw-bold">B - BREATHING</label>
+                <div class="row g-3 mt-1">
+                    <div class="col-md-4"><div class="input-group"><span class="input-group-text">AF</span><input type="text" id="r_v_af" class="form-control" placeholder="1/min"></div></div>
+                    <div class="col-md-4"><div class="input-group"><span class="input-group-text">SpO2</span><input type="text" id="r_v_spo2" class="form-control" placeholder="%"></div></div>
+                    <div class="col-md-4"><select id="r_abc_b_ausk" class="form-select"><option>Ausk: o.B.</option><option>Giemen</option><option>Rasseln</option><option>Stridor</option></select></div>
                 </div>
-                <div class="col-4"><label class="form-label">BZ</label><input type="text" id="r_v_bz" class="form-control form-control-sm"></div>
-                <div class="col-4"><label class="form-label">Pupillen</label>
-                    <select id="r_v_pup" class="form-select form-select-sm"><option value="isokor">Isokor</option><option value="anisokor">Anisokor</option></select>
+            </div>
+
+            <div class="vital-row">
+                <label class="text-danger fw-bold">C - CIRCULATION</label>
+                <div class="row g-3 mt-1">
+                    <div class="col-md-3"><div class="input-group"><span class="input-group-text">HF</span><input type="text" id="r_v_hf" class="form-control"></div></div>
+                    <div class="col-md-3"><div class="input-group"><span class="input-group-text">RR</span><input type="text" id="r_v_rr" class="form-control"></div></div>
+                    <div class="col-md-3"><select id="r_abc_c_rekap" class="form-select"><option>Rekap < 2s</option><option>Rekap > 2s</option></select></div>
+                    <div class="col-md-3"><select id="r_abc_c_haut" class="form-select"><option>Haut: rosig</option><option>Haut: blass</option><option>Haut: zyanotisch</option><option>Haut: schweißig</option></select></div>
+                </div>
+            </div>
+
+            <div class="vital-row">
+                <label class="text-danger fw-bold">D - DISABILITY</label>
+                <div class="row g-3 mt-1">
+                    <div class="col-md-4"><select id="r_v_avpu" class="form-select"><option>A (Wach)</option><option>V (Ansprache)</option><option>P (Schmerz)</option><option>U (Bewusstlos)</option></select></div>
+                    <div class="col-md-4"><div class="input-group"><span class="input-group-text">BZ</span><input type="text" id="r_v_bz" class="form-control" placeholder="mg/dl"></div></div>
+                    <div class="col-md-4"><select id="r_v_pup" class="form-select"><option>Pupillen: isokor</option><option>Pupillen: anisokor</option><option>Pupillen: lichtstarr</option></select></div>
+                    <div class="col-12"><input type="checkbox" id="r_d_fast" class="form-check-input me-2"> <label class="fw-bold">FAST (Schlaganfall-Zeichen vorhanden)</label></div>
+                </div>
+            </div>
+
+            <div class="vital-row">
+                <label class="text-danger fw-bold">E - EXPOSURE</label>
+                <div class="row g-2 mt-1">
+                    <div class="col-md-3"><div class="input-group"><span class="input-group-text">Temp</span><input type="text" id="r_v_temp" class="form-control" placeholder="°C"></div></div>
+                    <div class="col-md-9"><input type="text" id="r_abc_e_text" class="form-control" placeholder="Sonstiges (Verletzungen, Umgebung, etc.)"></div>
                 </div>
             </div>
         </div>
 
-        <div class="section-title">5. Anamnese (SAMPLER)</div>
+        <div class="section-title">5. Schmerz & Verlauf (OPQRST)</div>
         <div class="card p-3">
-            <div class="row g-2">
-                <div class="col-6"><label class="form-label">Symptome</label><input type="text" id="r_s_s" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">Allergien</label><input type="text" id="r_s_a" class="form-control form-control-sm"></div>
-                <div class="col-12"><label class="form-label">Medikamente</label><input type="text" id="r_s_m" class="form-control form-control-sm"></div>
+            <div class="row g-3">
+                <div class="col-12"><div class="input-group"><span class="input-group-text">O</span><input type="text" id="r_op_o" class="form-control" placeholder="Onset (Beginn)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">P</span><input type="text" id="r_op_p" class="form-control" placeholder="Provocation (Auslöser/Linderung)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">Q</span><input type="text" id="r_op_q" class="form-control" placeholder="Quality (Art des Schmerzes)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">R</span><input type="text" id="r_op_r" class="form-control" placeholder="Radiation (Ausstrahlung)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">S</span><input type="number" id="r_op_s" class="form-control" placeholder="Severity (Stärke 1-10)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">T</span><input type="text" id="r_op_t" class="form-control" placeholder="Time (Verlauf/Dauer)"></div></div>
             </div>
         </div>
 
-        <div class="section-title">6. Bericht & Unterschrift</div>
+        <div class="section-title">6. Anamnese (SAMPLER)</div>
         <div class="card p-3">
-            <label class="form-label">Maßnahmen / Verlauf</label>
-            <textarea id="r_text" class="form-control mb-3" rows="4"></textarea>
+            <div class="row g-3">
+                <div class="col-12"><div class="input-group"><span class="input-group-text">S</span><input type="text" id="r_sa_s" class="form-control" placeholder="Symptome"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">A</span><input type="text" id="r_sa_a" class="form-control" placeholder="Allergien"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">M</span><input type="text" id="r_sa_m" class="form-control" placeholder="Medikamente"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">P</span><input type="text" id="r_sa_p" class="form-control" placeholder="Patientengeschichte"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">L</span><input type="text" id="r_sa_l" class="form-control" placeholder="Last Intake (Letzte Mahlzeit)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">E</span><input type="text" id="r_sa_e" class="form-control" placeholder="Events (Ereignisse davor)"></div></div>
+                <div class="col-12"><div class="input-group"><span class="input-group-text">R</span><input type="text" id="r_sa_r" class="form-control" placeholder="Risikofaktoren"></div></div>
+            </div>
+        </div>
+
+        <div class="section-title">7. Maßnahmen & Signatur</div>
+        <div class="card p-3">
+            <label class="form-label">Maßnahmen & Einsatzbericht</label>
+            <textarea id="r_text" class="form-control mb-4" rows="8" placeholder="Eingeleitete Maßnahmen, Medikamente, Transportziel..."></textarea>
             
             <label class="form-label">Unterschrift</label>
             <canvas id="sig-rtw" class="sig-canvas"></canvas>
-            <button type="button" class="btn btn-sm btn-link text-danger mt-1 p-0" onclick="sigRtw.clear()">Löschen</button>
+            <button type="button" class="btn btn-sm btn-link text-danger" onclick="sigRtw.clear()">Löschen</button>
         </div>
 
-        <button type="submit" class="btn btn-rk w-100 py-3 mb-5 shadow fs-5">🚨 RTW BERICHT SENDEN</button>
+        <button type="submit" class="btn btn-rk w-100 py-4 mb-5 shadow-lg fs-4">🚨 PROTOKOLL ABSCHLIESSEN</button>
     </form>
 </div>
 
-<div id="mainAppKTW" class="container mt-3">
-    <div class="header-rk rounded-4" style="background: var(--rk-blue); border-bottom-color: #003366;">
-        <button class="btn btn-sm btn-light float-start" onclick="showList()">⬅</button>
-        <h5 class="mb-0 fw-bold">🚐 KTW TRANSPORT</h5>
-    </div>
-    <form id="ktwForm">
-        <div class="section-title" style="border-left-color: var(--rk-blue)">1. Transportweg</div>
-        <div class="card p-3">
-            <div class="row g-2">
-                <div class="col-6"><label class="form-label">E-Nr</label><input type="text" id="k_e_nr" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">FZ</label><input type="text" id="k_fz" class="form-control form-control-sm"></div>
-                <div class="col-6"><label class="form-label">Von</label><input type="text" id="k_start" class="form-control form-control-sm" placeholder="z.B. KH"></div>
-                <div class="col-6"><label class="form-label">Nach</label><input type="text" id="k_ziel" class="form-control form-control-sm" placeholder="z.B. Privat"></div>
-                <div class="col-12"><label class="form-label">Art</label>
-                    <select id="k_art" class="form-select form-select-sm"><option>Tragsessel</option><option>Liegend</option><option>Gehend</option></select>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-title" style="border-left-color: var(--rk-blue)">2. Patient</div>
-        <div class="card p-3">
-            <label class="form-label">Name</label>
-            <input type="text" id="k_p_name" class="form-control form-control-sm mb-2">
-            <label class="form-label">Bericht / Besonderheiten</label>
-            <textarea id="k_bericht" class="form-control" rows="4"></textarea>
-        </div>
-        
-        <div class="section-title" style="border-left-color: var(--rk-blue)">3. Signatur</div>
-        <div class="card p-3 text-center">
-            <canvas id="sig-ktw" class="sig-canvas"></canvas>
-            <button type="button" class="btn btn-sm btn-link text-danger mt-1 p-0 text-start" onclick="sigKtw.clear()">Löschen</button>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 mb-5 py-3 shadow fs-5" style="background: var(--rk-blue)">🚐 TRANSPORT ABSCHLIESSEN</button>
-    </form>
-</div>
-
-<div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content text-center p-3 border-0 shadow-lg">
-    <h6 class="fw-bold mb-3">Was liegt hier vor?</h6>
-    <button type="button" onclick="place('Schmerz','S','m-pain')" class="btn btn-warning w-100 mb-2 py-2">🔥 Schmerz (S)</button>
-    <button type="button" onclick="place('Fraktur','F','m-bone')" class="btn btn-primary w-100 mb-2 py-2">🦴 Fraktur (F)</button>
-    <button type="button" onclick="place('Wunde','W','m-wound')" class="btn btn-danger w-100 py-2">🩸 Wunde (W)</button>
+<div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content p-3 text-center">
+    <h6 class="fw-bold mb-3">Befund wählen:</h6>
+    <button onclick="place('Schmerz','S','m-pain')" class="btn btn-warning w-100 mb-2">🔥 Schmerz</button>
+    <button onclick="place('Fraktur','F','m-bone')" class="btn btn-primary w-100 mb-2">🦴 Fraktur</button>
+    <button onclick="place('Wunde','W','m-wound')" class="btn btn-danger w-100">🩸 Wunde</button>
 </div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -249,77 +195,17 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    let currentUser = null, markers = [], curX, curY;
+    let markers = [], curX, curY;
     const modal = new bootstrap.Modal(document.getElementById('markerModal'));
     const sigRtw = new SignaturePad(document.getElementById('sig-rtw'));
-    const sigKtw = new SignaturePad(document.getElementById('sig-ktw'));
-
-    // --- AUTO-LOGIN ---
-    window.onload = () => {
-        const saved = localStorage.getItem('rk_user');
-        if(saved) {
-            currentUser = JSON.parse(saved);
-            document.getElementById('loginView').style.display = 'none';
-            if(currentUser.is_admin) document.getElementById('adminBtn').style.display = 'inline-block';
-            showList();
-        }
-    };
-
-    async function login() {
-        const dn = document.getElementById('login_dn').value, pw = document.getElementById('login_pw').value;
-        const { data } = await _supabase.from('profiles').select('*').eq('dienstnummer', dn).eq('passwort', pw).single();
-        if (data) { 
-            currentUser = data; 
-            localStorage.setItem('rk_user', JSON.stringify(data));
-            location.reload();
-        } else { document.getElementById('loginStatus').innerText = "Dienstnummer/Passwort falsch!"; }
-    }
-
-    function logout() { localStorage.removeItem('rk_user'); location.reload(); }
-
-    function showList() { 
-        document.getElementById('mainAppRTW').classList.remove('active-view'); 
-        document.getElementById('mainAppKTW').classList.remove('active-view'); 
-        document.getElementById('listView').classList.add('active-view'); 
-        loadProtocols(); 
-    }
-
-    function showChoice() { document.getElementById('typeChoice').style.display = 'block'; }
-    
-    function toggleAdmin() {
-        const adminSec = document.getElementById('adminSection');
-        adminSec.classList.toggle('active-view');
-    }
 
     function startFlow(type) {
-        document.getElementById('typeChoice').style.display = 'none';
         document.getElementById('listView').classList.remove('active-view');
-        if(type === 'RTW') { document.getElementById('mainAppRTW').classList.add('active-view'); sigRtw.clear(); }
-        else { document.getElementById('mainAppKTW').classList.add('active-view'); sigKtw.clear(); }
+        document.getElementById('mainAppRTW').classList.add('active-view');
+        sigRtw.clear();
     }
 
-    async function registerUser() {
-        const dn = document.getElementById('reg_dn').value, pw = document.getElementById('reg_pw').value, adm = document.getElementById('reg_admin').checked;
-        const { error } = await _supabase.from('profiles').insert([{ dienstnummer: dn, passwort: pw, is_admin: adm }]);
-        if(!error) { alert("Benutzer erfolgreich angelegt!"); document.getElementById('reg_dn').value=""; document.getElementById('reg_pw').value=""; }
-        else { alert("Fehler: " + error.message); }
-    }
-
-    async function loadProtocols() {
-        const { data } = await _supabase.from('rd_berichte').select('*').order('created_at', { ascending: false }).limit(15);
-        if(data) {
-            document.getElementById('protocolTableBody').innerHTML = data.map(p => `
-                <tr>
-                    <td><span class="badge ${p.daten?.type==='KTW'?'bg-primary':'bg-danger'}">${p.daten?.type||'RTW'}</span></td>
-                    <td>${p.e_nr}</td>
-                    <td>${p.p_name}</td>
-                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
-        }
-    }
-
-    // --- Bodygramm Logik ---
+    // Bodygramm Marker
     document.getElementById('bodyImg').onclick = function(e) {
         const rect = this.getBoundingClientRect();
         curX = (e.clientX - rect.left) / rect.width * 100;
@@ -334,56 +220,45 @@
         document.getElementById('bodyWrapper').appendChild(d);
         modal.hide();
     }
+
     function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
 
-    // --- Submit Logik ---
+    // Finales Senden
     document.getElementById('rtwForm').onsubmit = async (e) => { 
         e.preventDefault(); 
-        
-        // Alle RTW Daten sammeln
         const rtwDaten = {
-            type: 'RTW',
-            team: document.getElementById('r_team').value,
-            zeiten: { alarm: document.getElementById('r_t_alarm').value, ankunft: document.getElementById('r_t_ankunft').value },
-            patient: { geb: document.getElementById('r_p_geb').value, sv: document.getElementById('r_p_sv').value, adr: document.getElementById('r_p_adr').value },
-            abcde: { a: document.getElementById('r_abc_a').value, b: document.getElementById('r_abc_b').value, c: document.getElementById('r_abc_c').value },
-            vitale: { af: document.getElementById('r_v_af').value, spo2: document.getElementById('r_v_spo2').value, hf: document.getElementById('r_v_hf').value, rr: document.getElementById('r_v_rr').value, avpu: document.getElementById('r_v_avpu').value, bz: document.getElementById('r_v_bz').value, pup: document.getElementById('r_v_pup').value },
-            sampler: { s: document.getElementById('r_s_s').value, a: document.getElementById('r_s_a').value, m: document.getElementById('r_s_m').value },
+            type: 'RTW_MAX_NO_GCS',
+            abcde: {
+                a: document.getElementById('r_abc_a').value, hws: document.getElementById('r_abc_hws').checked,
+                b: { af: document.getElementById('r_v_af').value, spo2: document.getElementById('r_v_spo2').value, ausk: document.getElementById('r_abc_b_ausk').value },
+                c: { hf: document.getElementById('r_v_hf').value, rr: document.getElementById('r_v_rr').value, rekap: document.getElementById('r_abc_c_rekap').value, haut: document.getElementById('r_abc_c_haut').value },
+                d: { avpu: document.getElementById('r_v_avpu').value, bz: document.getElementById('r_v_bz').value, pup: document.getElementById('r_v_pup').value, fast: document.getElementById('r_d_fast').checked },
+                e: { temp: document.getElementById('r_v_temp').value, info: document.getElementById('r_abc_e_text').value }
+            },
+            opqrst: {
+                o: document.getElementById('r_op_o').value, p: document.getElementById('r_op_p').value, q: document.getElementById('r_op_q').value,
+                r: document.getElementById('r_op_r').value, s: document.getElementById('r_op_s').value, t: document.getElementById('r_op_t').value
+            },
+            sampler: {
+                s: document.getElementById('r_sa_s').value, a: document.getElementById('r_sa_a').value, m: document.getElementById('r_sa_m').value,
+                p: document.getElementById('r_sa_p').value, l: document.getElementById('r_sa_l').value, e: document.getElementById('r_sa_e').value, r: document.getElementById('r_sa_r').value
+            },
             bericht: document.getElementById('r_text').value,
             markers: markers
         };
 
-        await _supabase.from('rd_berichte').insert([{ 
+        const { error } = await _supabase.from('rd_berichte').insert([{ 
             e_nr: document.getElementById('r_e_nr').value, 
             p_name: document.getElementById('r_p_name').value, 
-            daten: rtwDaten, 
-            erstellt_von: currentUser.dienstnummer 
+            daten: rtwDaten 
         }]);
-        
-        alert("RTW-Protokoll gespeichert!");
-        document.getElementById('rtwForm').reset(); clearMarkers(); sigRtw.clear();
-        showList();
-    };
 
-    document.getElementById('ktwForm').onsubmit = async (e) => { 
-        e.preventDefault(); 
-        
-        const ktwDaten = {
-            type: 'KTW',
-            transport: { start: document.getElementById('k_start').value, ziel: document.getElementById('k_ziel').value, art: document.getElementById('k_art').value },
-            bericht: document.getElementById('k_bericht').value
-        };
-
-        await _supabase.from('rd_berichte').insert([{ 
-            e_nr: document.getElementById('k_e_nr').value, 
-            p_name: document.getElementById('k_p_name').value, 
-            daten: ktwDaten, 
-            erstellt_von: currentUser.dienstnummer 
-        }]);
-        
-        alert("KTW-Transport gespeichert!");
-        document.getElementById('ktwForm').reset(); sigKtw.clear();
-        showList();
+        if(!error) {
+            alert("PROTOKOLL ERFOLGREICH ÜBERMITTELT!");
+            location.reload();
+        } else {
+            alert("Fehler: " + error.message);
+        }
     };
 </script>
 </body>
