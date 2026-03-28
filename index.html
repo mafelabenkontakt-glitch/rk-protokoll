@@ -1,200 +1,155 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RK CLOUD OS – RTW & KTW</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RK CLOUD OS - Pro Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --rk-red: #E2001A; --rk-dark: #B30014; --grey: #2C3E50; --bg: #f4f7f6; --card: #ffffff; }
+        body { background: var(--bg); font-family: "Segoe UI", sans-serif; padding-bottom: 80px; }
+        
+        #loginView, #listView, #flowSelect, #mainAppRTW, #mainAppKTW, #adminView { display: none; }
+        .active-view { display: block !important; }
+        #loginView.active-view { display: flex !important; }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        /* Login */
+        #loginView { position: fixed; inset: 0; background: linear-gradient(135deg, var(--rk-red), var(--rk-dark)); justify-content: center; align-items: center; z-index: 10000; }
+        .login-card { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); width: 90%; max-width: 400px; text-align: center; }
 
-<style>
-/* ---------- DESIGN & DARKMODE ---------- */
-:root {
-    --rk-red: #E2001A;
-    --rk-dark: #B30014;
-    --grey: #2C3E50;
-    --bg: #ffffff;
-    --fg: #000000;
-    --card: #ffffff;
-}
-[data-theme="dark"] {
-    --bg: #121212;
-    --fg: #efefef;
-    --card: #1c1c1c;
-    --grey: #111822;
-}
-body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: "Segoe UI", sans-serif;
-    padding-bottom: 80px;
-}
+        /* UI Helpers */
+        .rk-header { background: var(--card); border-bottom: 4px solid var(--rk-red); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .section-header { background: var(--grey); color: white; padding: 10px 15px; font-weight: bold; border-left: 6px solid var(--rk-red); border-radius: 5px; margin: 25px 0 10px; text-transform: uppercase; font-size: 0.9rem; }
+        .card-custom { background: var(--card); border: 1px solid #ddd; border-radius: 15px; padding: 15px; margin-bottom: 10px; }
+        
+        /* Form Grids */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .v-field { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 8px; text-align: center; }
+        .v-field label { display: block; font-size: 10px; color: #666; font-weight: bold; }
+        .v-field input { width: 100%; border: none; background: transparent; text-align: center; font-weight: bold; color: var(--rk-red); }
 
-/* VIEW SYSTEM */
-#loginView, #listView, #flowSelect, #mainAppRTW, #mainAppKTW { display: none; }
-.active-view { display: block !important; }
-#loginView.active-view { display: flex !important; }
-
-/* ---------- LOGIN ---------- */
-#loginView {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(135deg, var(--rk-red), var(--rk-dark));
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-.login-card {
-    background: white;
-    padding: 35px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    width: 90%;
-    max-width: 380px;
-    text-align: center;
-}
-
-/* ---------- UI ELEMENTS ---------- */
-.rk-header {
-    background: var(--card);
-    border-bottom: 4px solid var(--rk-red);
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.card-custom {
-    background: var(--card);
-    border: 1px solid #ccc;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 15px;
-}
-.section-header {
-    background: var(--grey);
-    color: white;
-    padding: 12px;
-    font-weight: bold;
-    border-left: 8px solid var(--rk-red);
-    border-radius: 8px;
-    margin: 30px 0 15px;
-}
-.vital-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-.vital-field {
-    background: #f3f3f3;
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-}
-.vital-field input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    font-weight: bold;
-    color: var(--rk-red);
-    text-align: center;
-}
-.body-container { position: relative; width: 100%; max-width: 350px; margin: 10px auto; }
-.body-img { width: 100%; cursor: crosshair; }
-.marker {
-    position: absolute;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    font-weight: bold; color: white;
-    border: 2px solid #fff;
-    display: flex; align-items: center; justify-content: center;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-}
-.m-S { background: #f39c12; }
-.m-F { background: #2980b9; }
-.m-W { background: #c0392b; }
-</style>
+        /* Bodygramm */
+        .body-container { position: relative; width: 100%; max-width: 300px; margin: auto; }
+        .marker { position: absolute; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; color: white; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; }
+        .m-S { background: #f39c12; } .m-F { background: #2980b9; } .m-W { background: #c0392b; }
+    </style>
 </head>
 <body>
 
 <div id="loginView" class="active-view">
     <div class="login-card">
-        <h2 class="fw-bold text-danger">RK CLOUD LOGIN</h2>
-        <input id="login_dn" class="form-control mt-4 mb-3 p-3 text-center rounded-pill" placeholder="Dienstnummer (z.B. RK-02)">
+        <h2 class="fw-bold text-danger">RK CLOUD</h2>
+        <p class="text-muted">Digitaler Einsatzbericht</p>
+        <input id="login_dn" class="form-control mt-4 mb-3 p-3 text-center rounded-pill" placeholder="Dienstnummer">
         <input id="login_pw" type="password" class="form-control mb-4 p-3 text-center rounded-pill" placeholder="Passwort">
-        <button onclick="handleLogin()" id="loginBtn" class="btn btn-danger w-100 py-3 fw-bold rounded-pill">LOGIN</button>
-        <div id="loginError" class="mt-3 text-danger small fw-bold"></div>
+        <button onclick="handleLogin()" id="loginBtn" class="btn btn-danger w-100 py-3 fw-bold rounded-pill shadow">LOGIN</button>
+        <div id="loginError" class="mt-3 text-danger small"></div>
     </div>
 </div>
 
 <div id="listView" class="container py-3">
-    <div class="rk-header">
-        <h4 class="fw-bold m-0">EINSATZ‑JOURNAL</h4>
+    <div class="rk-header shadow-sm">
+        <h5 class="fw-bold m-0">JOURNAL</h5>
         <div>
-            <span id="userBadge" class="badge bg-dark me-2"></span>
-            <button onclick="showView('flowSelect')" class="btn btn-danger fw-bold rounded-pill">+ NEU</button>
+            <button id="adminToggle" onclick="showView('adminView')" class="btn btn-outline-dark btn-sm d-none">ADMIN</button>
+            <button onclick="showView('flowSelect')" class="btn btn-danger btn-sm fw-bold rounded-pill">+ NEU</button>
         </div>
     </div>
-    <div id="protocolList" class="mt-4">
-        <p class="text-center text-muted">Lade Berichte...</p>
-    </div>
+    <div id="protocolList"></div>
 </div>
 
-<div id="flowSelect" class="container text-center py-5">
-    <h2 class="fw-bold mb-4">PROTOKOLL‑TYP</h2>
-    <div class="row g-4">
-        <div class="col-6"><button onclick="startFlow('RTW')" class="btn btn-danger w-100 py-4 rounded-4 fw-bold fs-3">🚑 RTW</button></div>
-        <div class="col-6"><button onclick="startFlow('KTW')" class="btn btn-primary w-100 py-4 rounded-4 fw-bold fs-3">🚐 KTW</button></div>
-    </div>
-</div>
-
-<div id="mainAppKTW" class="container pb-5">
+<div id="adminView" class="container py-3">
     <div class="rk-header">
-        <button onclick="showView('listView')" class="btn btn-outline-secondary btn-sm">⬅ Zurück</button>
-        <h5 class="fw-bold m-0">KTW‑PROTO</h5>
+        <button onclick="showView('listView')" class="btn btn-sm btn-outline-secondary">⬅ Zurück</button>
+        <h5 class="fw-bold m-0">BENUTZERVERWALTUNG</h5>
     </div>
-    <div class="section-header">1. BASISDATEN</div>
     <div class="card-custom">
-        <input id="k_einsatz" class="form-control mb-3 p-3" placeholder="Einsatznummer">
-        <input id="k_p_name" class="form-control mb-3 p-3" placeholder="Patientenname">
-        <textarea id="k_bericht" class="form-control" rows="4" placeholder="Transportbericht..."></textarea>
+        <h6>Neuen Benutzer anlegen</h6>
+        <input id="adm_dn" class="form-control mb-2" placeholder="Dienstnummer">
+        <input id="adm_pw" class="form-control mb-2" placeholder="Passwort">
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="adm_is_admin">
+            <label class="form-check-label">Administrator / Leitung</label>
+        </div>
+        <button onclick="createUser()" class="btn btn-success w-100">User Speichern</button>
     </div>
-    <button onclick="submitBericht('KTW')" class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">ABSENDEN</button>
+</div>
+
+<div id="flowSelect" class="container py-5 text-center">
+    <h3 class="fw-bold mb-5">EINSATZART WÄHLEN</h3>
+    <div class="row g-3">
+        <div class="col-12"><button onclick="startFlow('RTW')" class="btn btn-danger w-100 py-4 fs-2 rounded-4 shadow">🚑 NOTFALL (RTW)</button></div>
+        <div class="col-12"><button onclick="startFlow('KTW')" class="btn btn-primary w-100 py-4 fs-2 rounded-4 shadow">🚐 TRANSPORT (KTW)</button></div>
+    </div>
+    <button onclick="showView('listView')" class="btn btn-link mt-4 text-muted">Zurück</button>
 </div>
 
 <div id="mainAppRTW" class="container pb-5">
     <div class="rk-header">
-        <button onclick="showView('listView')" class="btn btn-outline-secondary btn-sm">⬅ Zurück</button>
-        <h5 class="fw-bold m-0">RTW‑PROTO</h5>
+        <button onclick="showView('listView')" class="btn btn-sm">⬅</button>
+        <h5 class="m-0 fw-bold">NOTFALLPROTOKOLL</h5>
+        <button onclick="submitRTW()" class="btn btn-success btn-sm">SENDEN</button>
     </div>
-    <div class="section-header">1. BASISDATEN</div>
+
+    <div class="section-header">Basis & Zeiten</div>
+    <div class="card-custom grid-2">
+        <input id="r_e_nr" class="form-control" placeholder="E-Nummer">
+        <input id="r_p_name" class="form-control" placeholder="Patientenname">
+    </div>
+
+    <div class="section-header">ABCDE & Vitalwerte</div>
+    <div class="card-custom grid-3">
+        <div class="v-field"><label>AF</label><input id="r_af"></div>
+        <div class="v-field"><label>SpO2</label><input id="r_spo2"></div>
+        <div class="v-field"><label>HF</label><input id="r_hf"></div>
+        <div class="v-field"><label>RR SYS</label><input id="r_sys"></div>
+        <div class="v-field"><label>RR DIA</label><input id="r_dia"></div>
+        <div class="v-field"><label>BZ</label><input id="r_bz"></div>
+        <div class="v-field"><label>GCS</label><input id="r_gcs"></div>
+        <div class="v-field"><label>TEMP</label><input id="r_temp"></div>
+        <div class="v-field"><label>AVPU</label><input id="r_avpu" placeholder="A/V/P/U"></div>
+    </div>
+
+    <div class="section-header">SAMPLER (Anamnese)</div>
     <div class="card-custom">
-        <input id="r_e_nr" class="form-control mb-3 p-3 fw-bold" placeholder="Einsatznummer *">
-        <input id="r_p_name" class="form-control mb-3 p-3" placeholder="Patientenname">
+        <input id="r_s_s" class="form-control mb-1" placeholder="Symptome">
+        <input id="r_s_a" class="form-control mb-1" placeholder="Allergien">
+        <input id="r_s_m" class="form-control mb-1" placeholder="Medikamente">
+        <input id="r_s_p" class="form-control mb-1" placeholder="Patientengeschichte">
+        <input id="r_s_l" class="form-control mb-1" placeholder="Letzte Mahlzeit">
+        <input id="r_s_e" class="form-control" placeholder="Ereignis">
     </div>
-    <div class="section-header">2. VITALWERTE</div>
+
+    <div class="section-header">OPQRST (Schmerz)</div>
+    <div class="card-custom grid-2">
+        <input id="r_o_o" class="form-control" placeholder="Onset">
+        <input id="r_o_p" class="form-control" placeholder="Provokation">
+        <input id="r_o_q" class="form-control" placeholder="Qualität">
+        <input id="r_o_r" class="form-control" placeholder="Region">
+        <input id="r_o_s" class="form-control" placeholder="Stärke (1-10)">
+        <input id="r_o_t" class="form-control" placeholder="Time">
+    </div>
+
+    <div class="section-header">BE-FAST (Neuro)</div>
     <div class="card-custom">
-        <div class="vital-grid">
-            <div class="vital-field"><label>AF</label><input id="r_v_af"></div>
-            <div class="vital-field"><label>SpO2</label><input id="r_v_sp"></div>
-            <div class="vital-field"><label>HF</label><input id="r_v_hf"></div>
-            <div class="vital-field"><label>RR SYS</label><input id="r_v_rrs"></div>
-            <div class="vital-field"><label>RR DIA</label><input id="r_v_rrd"></div>
-            <div class="vital-field"><label>GCS</label><input id="r_v_gcs"></div>
-        </div>
+        <input id="r_befast" class="form-control" placeholder="B-Balance, E-Eyes, F-Face, A-Arms, S-Speech, T-Time">
     </div>
-    <div class="section-header">3. BODYGRAMM</div>
+
+    <div class="section-header">Bodygramm</div>
     <div class="body-container" id="bodyWrapper">
-        <img src="grafik.png" id="bodyImg" class="body-img">
+        <img src="grafik.png" id="bodyImg" class="w-100" style="cursor:crosshair;">
     </div>
-    <div class="btn-group w-100 mt-3 mb-4">
-        <button class="btn btn-warning fw-bold" onclick="mType='S'">S</button>
-        <button class="btn btn-primary fw-bold" onclick="mType='F'">F</button>
-        <button class="btn btn-danger fw-bold" onclick="mType='W'">W</button>
+    <div class="btn-group w-100 mt-2">
+        <button class="btn btn-warning btn-sm" onclick="mType='S'">S</button>
+        <button class="btn btn-primary btn-sm" onclick="mType='F'">F</button>
+        <button class="btn btn-danger btn-sm" onclick="mType='W'">W</button>
     </div>
-    <button onclick="submitBericht('RTW')" class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">ABSENDEN</button>
+
+    <div class="section-header">Bericht & Maßnahmen</div>
+    <div class="card-custom">
+        <textarea id="r_bericht" class="form-control" rows="5"></textarea>
+    </div>
 </div>
 
 <script>
@@ -205,118 +160,94 @@ let currentUser = null;
 let markers = [];
 let mType = "S";
 
-/* VIEW SYSTEM */
 function showView(id) {
     document.querySelectorAll('body > div').forEach(div => div.classList.remove('active-view'));
     document.getElementById(id).classList.add('active-view');
     if(id === 'listView') loadReports();
 }
 
-/* LOGIN */
 async function handleLogin() {
-    const dn = document.getElementById("login_dn").value.trim();
-    const pw = document.getElementById("login_pw").value.trim();
-    const btn = document.getElementById("loginBtn");
-
-    if(!dn || !pw) return alert("Bitte alles ausfüllen!");
-
-    btn.disabled = true;
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?dienstnummer=eq.${dn}&passwort=eq.${pw}`, {
-            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-        });
-        const data = await res.json();
-
-        if(data.length > 0) {
-            currentUser = data[0];
-            document.getElementById("userBadge").innerText = currentUser.dienstnummer;
-            showView('listView');
-        } else {
-            alert("Login falsch!");
-        }
-    } catch(e) { alert("Fehler beim Login."); }
-    btn.disabled = false;
+    const dn = document.getElementById("login_dn").value;
+    const pw = document.getElementById("login_pw").value;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?dienstnummer=eq.${dn}&passwort=eq.${pw}`, {
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    const data = await res.json();
+    if(data.length > 0) {
+        currentUser = data[0];
+        if(currentUser.is_admin) document.getElementById("adminToggle").classList.remove("d-none");
+        showView('listView');
+    } else alert("Zugriff verweigert!");
 }
 
-/* START FLOW */
+async function createUser() {
+    const dn = document.getElementById("adm_dn").value;
+    const pw = document.getElementById("adm_pw").value;
+    const admin = document.getElementById("adm_is_admin").checked;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ dienstnummer: dn, passwort: pw, is_admin: admin })
+    });
+    if(res.ok) { alert("Benutzer angelegt!"); showView('listView'); }
+}
+
 function startFlow(type) {
     markers = [];
     document.querySelectorAll('.marker').forEach(m => m.remove());
     showView(type === 'RTW' ? 'mainAppRTW' : 'mainAppKTW');
 }
 
-/* BODYGRAMM */
 document.getElementById("bodyImg").onclick = function(e) {
     let r = this.getBoundingClientRect();
     let x = ((e.clientX - r.left) / r.width) * 100;
     let y = ((e.clientY - r.top) / r.height) * 100;
-
     let m = document.createElement("div");
-    m.classList.add("marker", "m-" + mType);
-    m.style.left = x + "%";
-    m.style.top = y + "%";
-    m.innerText = mType;
-
-    markers.push({ type: mType, x, y });
+    m.className = `marker m-${mType}`;
+    m.style.left = x + "%"; m.style.top = y + "%"; m.innerText = mType;
+    markers.push({type: mType, x, y});
     document.getElementById("bodyWrapper").appendChild(m);
 };
 
-/* SUBMIT */
-async function submitBericht(typ) {
+async function submitRTW() {
     let payload = {
-        e_nr: typ === 'RTW' ? document.getElementById("r_e_nr").value : document.getElementById("k_einsatz").value,
-        p_name: typ === 'RTW' ? document.getElementById("r_p_name").value : document.getElementById("k_p_name").value,
+        e_nr: document.getElementById("r_e_nr").value,
+        p_name: document.getElementById("r_p_name").value,
         erstellt_von: currentUser.dienstnummer,
-        daten: typ === 'RTW' ? {
+        daten: {
             typ: "RTW",
-            vital: {
-                af: document.getElementById("r_v_af").value,
-                hf: document.getElementById("r_v_hf").value,
-                rrs: document.getElementById("r_v_rrs").value
-            },
+            abcde: { af: r_af.value, hf: r_hf.value, sys: r_sys.value, dia: r_dia.value, bz: r_bz.value, gcs: r_gcs.value, avpu: r_avpu.value },
+            sampler: { s: r_s_s.value, a: r_s_a.value, m: r_s_m.value, p: r_s_p.value, l: r_s_l.value, e: r_s_e.value },
+            opqrst: { o: r_o_o.value, p: r_o_p.value, q: r_o_q.value, r: r_o_r.value, s: r_o_s.value, t: r_o_t.value },
+            befast: document.getElementById("r_befast").value,
+            bericht: document.getElementById("r_bericht").value,
             markers: markers
-        } : {
-            typ: "KTW",
-            bericht: document.getElementById("k_bericht").value
         }
     };
-
-    if(!payload.e_nr) return alert("Einsatznummer fehlt!");
-
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rd_berichte`, {
         method: "POST",
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json"
-        },
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     });
-
-    if(res.ok) {
-        alert("Gespeichert!");
-        showView('listView');
-    }
+    if(res.ok) { alert("Einsatz erfolgreich gespeichert!"); showView('listView'); }
 }
 
-/* LOAD JOURNAL */
 async function loadReports() {
     const list = document.getElementById("protocolList");
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rd_berichte?order=created_at.desc`, {
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
     });
     const data = await res.json();
-    
     list.innerHTML = data.map(b => `
-        <div class="card-custom">
+        <div class="card-custom shadow-sm border-start border-4 ${b.daten.typ === 'RTW' ? 'border-danger':'border-primary'}">
             <div class="d-flex justify-content-between">
                 <strong># ${b.e_nr}</strong>
                 <span class="badge ${b.daten.typ === 'RTW' ? 'bg-danger':'bg-primary'}">${b.daten.typ}</span>
             </div>
-            <div>Pat: ${b.p_name || 'Unbekannt'}</div>
-            <small class="text-muted">Von: ${b.erstellt_von}</small>
+            <div class="small">Pat: ${b.p_name || 'N/A'}</div>
+            <div class="text-muted" style="font-size:10px">Erstellt von ${b.erstellt_von} am ${new Date(b.created_at).toLocaleString('de-DE')}</div>
         </div>
-    `).join('') || '<p class="text-center">Keine Berichte vorhanden.</p>';
+    `).join('');
 }
 </script>
 </body>
