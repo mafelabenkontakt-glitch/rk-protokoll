@@ -7,104 +7,106 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root { --rk-red: #e2001a; --rk-dark: #b30014; }
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; font-size: 0.85rem; }
-        .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 15px; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; font-size: 0.82rem; }
+        .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 10px; }
         .hidden { display: none !important; }
-        .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 8px 0; text-transform: uppercase; border-radius: 2px; }
-        .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 10px; }
-        .form-label { font-weight: bold; color: #444; margin-bottom: 1px; font-size: 0.72rem; }
+        .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 5px 0; text-transform: uppercase; border-radius: 2px; }
+        .card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 6px; margin-bottom: 8px; }
+        .form-label { font-weight: bold; color: #444; margin-bottom: 1px; font-size: 0.7rem; }
         
-        /* Bodygramm Style */
-        .bodygramm-container { position: relative; width: 300px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
+        /* Bodygramm */
+        .bodygramm-container { position: relative; width: 280px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
         .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
-        .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .marker { position: absolute; width: 20px; height: 20px; border-radius: 50%; color: white; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 1px solid white; pointer-events: none; }
         .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
         
-        .sig-canvas { border: 2px solid #ccc; background: #fff; width: 100%; height: 140px; border-radius: 4px; touch-action: none; }
+        .sig-canvas { border: 1px solid #ccc; background: #fff; width: 100%; height: 120px; border-radius: 4px; touch-action: none; }
         .btn-rk { background: var(--rk-red); color: white; font-weight: bold; border: none; }
-        .btn-rk:hover { background: var(--rk-dark); color: white; }
     </style>
 </head>
 <body>
 
-<div class="header-rk shadow">
-    <h4 class="m-0">ÖSTERREICHISCHES ROTES KREUZ</h4>
-    <small>Einsatzdokumentationssystem (Archiv öffentlich)</small>
+<div class="header-rk shadow-sm">
+    <h5 class="m-0">ÖSTERREICHISCHES ROTES KREUZ</h5>
+    <small>Digitales Protokoll v5.0 | Einsatzdaten & Archiv</small>
 </div>
 
 <div class="container">
-    <div id="loginSection" class="row justify-content-center mt-5">
+    <div id="loginSection" class="row justify-content-center mt-4">
         <div class="col-md-4">
             <div class="card p-4 shadow">
-                <h5 class="text-center mb-3">System-Login</h5>
+                <h6 class="text-center mb-3">System-Anmeldung</h6>
                 <input type="text" id="username" class="form-control mb-2" placeholder="RK-Kennung">
                 <input type="password" id="password" class="form-control mb-3" placeholder="Passwort">
-                <button class="btn btn-rk w-100" onclick="attemptLogin()">Anmelden</button>
+                <button class="btn btn-rk w-100" onclick="attemptLogin()">LOGIN</button>
                 <div id="loginError" class="text-danger mt-2 text-center small hidden">Zugriff verweigert!</div>
             </div>
         </div>
     </div>
 
     <div id="mainMenu" class="hidden text-center mt-4">
-        <h5 id="welcomeMsg" class="mb-4"></h5>
-        <div class="row g-3 justify-content-center">
-            <div class="col-md-4"><button class="btn btn-rk w-100 p-4 shadow" onclick="showSection('protocolForm')">➕ NEUES PROTOKOLL</button></div>
+        <div class="row g-2 justify-content-center">
+            <div class="col-md-4"><button class="btn btn-rk w-100 p-4 shadow" onclick="showSection('protocolForm')">➕ NEUER EINSATZ</button></div>
             <div class="col-md-4"><button class="btn btn-info w-100 p-4 shadow text-white" onclick="openPublicArchive()">📜 EINSATZ-ARCHIV</button></div>
-            <div id="adminBtn" class="col-md-4 hidden"><button class="btn btn-dark w-100 p-4 shadow" onclick="showSection('adminSection')">🛠 USER-VERWALTUNG</button></div>
-            <div class="col-12 mt-3"><button class="btn btn-outline-secondary btn-sm" onclick="logout()">Abmelden</button></div>
+            <div id="adminBtn" class="col-md-4 hidden"><button class="btn btn-dark w-100 p-4 shadow" onclick="showSection('adminSection')">🛠 ADMIN</button></div>
+            <div class="col-12 mt-3"><button class="btn btn-link btn-sm text-muted" onclick="logout()">Abmelden</button></div>
         </div>
     </div>
 
     <div id="protocolForm" class="hidden">
-        <button class="btn btn-sm btn-secondary mb-3" onclick="showSection('mainMenu')">← Menü</button>
+        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Zurück</button>
         <form id="einsatzForm">
-            <div class="section-title">1. Basisdaten</div>
+            
+            <div class="section-title">1. Einsatzdaten (Zeiten & Ort)</div>
             <div class="card p-3">
                 <div class="row g-2">
-                    <div class="col-6"><label class="form-label">ZID (Einsatz-Nr)</label><input type="text" id="e_nr" class="form-control form-control-sm" required></div>
-                    <div class="col-6"><label class="form-label">Fahrzeug</label><input type="text" id="fz" class="form-control form-control-sm"></div>
-                    <div class="col-12"><label class="form-label">Patientenname</label><input type="text" id="p_name" class="form-control form-control-sm" required></div>
+                    <div class="col-6"><label class="form-label">ZID / Einsatz-Nr</label><input type="text" id="e_nr" class="form-control form-control-sm" required></div>
+                    <div class="col-6"><label class="form-label">Fahrzeug (Funk)</label><input type="text" id="fz" class="form-control form-control-sm" placeholder="73/XXX"></div>
+                    <div class="col-12"><label class="form-label">Einsatzort / Adresse</label><input type="text" id="e_ort" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Alarm</label><input type="time" id="t_alarm" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Ausfahrt</label><input type="time" id="t_aus" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Am BO</label><input type="time" id="t_bo" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Abfahrt BO</label><input type="time" id="t_ab_bo" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Am Ziel (Krankenhaus)</label><input type="time" id="t_ziel" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Einsatzbereit</label><input type="time" id="t_bereit" class="form-control form-control-sm"></div>
                 </div>
             </div>
 
-            <div class="section-title">2. Befund (ABCDE)</div>
+            <div class="section-title">2. Patientendaten</div>
             <div class="card p-3">
                 <div class="row g-2">
-                    <div class="col-12"><label class="form-label text-danger">A (Airway)</label>
-                        <select id="abc_a" class="form-select form-select-sm"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select>
+                    <div class="col-8"><label class="form-label">Name, Vorname</label><input type="text" id="p_name" class="form-control form-control-sm" required></div>
+                    <div class="col-4"><label class="form-label">Geschlecht</label>
+                        <select id="p_sex" class="form-select form-select-sm"><option>M</option><option>W</option><option>D</option></select>
                     </div>
-                    <div class="col-6"><label class="form-label text-danger">B (Breathing)</label><input type="text" id="v_af" class="form-control form-control-sm" placeholder="AF"></div>
-                    <div class="col-6"><label class="form-label text-danger">SpO2</label><input type="text" id="v_spo2" class="form-control form-control-sm" placeholder="%"></div>
-                    <div class="col-4"><label class="form-label text-danger">RR</label><input type="text" id="v_rr" class="form-control form-control-sm" placeholder="mmHg"></div>
-                    <div class="col-4"><label class="form-label text-danger">Puls</label><input type="text" id="v_hf" class="form-control form-control-sm" placeholder="bpm"></div>
-                    <div class="col-4"><label class="form-label text-danger">Rekap</label><input type="text" id="v_rekap" class="form-control form-control-sm" placeholder="< 2s"></div>
-                    <div class="col-4"><label class="form-label text-danger">GCS / AVPU</label><input type="text" id="v_gcs" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label text-danger">BZ</label><input type="text" id="v_bz" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label text-danger">Pupillen</label><input type="text" id="v_pup" class="form-control form-control-sm"></div>
-                    <div class="col-12"><label class="form-label text-danger">E (Expos./Temp)</label><input type="text" id="abc_e" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">Geburtsdatum</label><input type="date" id="p_geb" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">SV-Nummer (10-stellig)</label><input type="text" id="p_sv" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">Nationalität</label><input type="text" id="p_nat" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">Versicherung (Kasse)</label><input type="text" id="p_kasse" class="form-control form-control-sm"></div>
                 </div>
             </div>
 
-            <div class="section-title">3. SAMPLER</div>
+            <div class="section-title">3. Befund (ABCDE)</div>
             <div class="card p-3">
                 <div class="row g-2">
-                    <div class="col-6"><label class="form-label">S (Symptome)</label><input type="text" id="s_s" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">A (Allergien)</label><input type="text" id="s_a" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">M (Medikamente)</label><input type="text" id="s_m" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">P (Patientengesch.)</label><input type="text" id="s_p" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">L (Letzte Mahlzeit)</label><input type="text" id="s_l" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">E (Ereignis)</label><input type="text" id="s_e" class="form-control form-control-sm"></div>
-                    <div class="col-12"><label class="form-label">R (Risikofaktoren)</label><input type="text" id="s_r" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label text-danger">A (Airway)</label><select id="abc_a" class="form-select form-select-sm"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select></div>
+                    <div class="col-3"><label class="form-label">AF</label><input type="text" id="v_af" class="form-control form-control-sm"></div>
+                    <div class="col-3"><label class="form-label">SpO2</label><input type="text" id="v_spo2" class="form-control form-control-sm"></div>
+                    <div class="col-3"><label class="form-label">RR</label><input type="text" id="v_rr" class="form-control form-control-sm"></div>
+                    <div class="col-3"><label class="form-label">HF</label><input type="text" id="v_hf" class="form-control form-control-sm"></div>
+                    <div class="col-3"><label class="form-label">BZ</label><input type="text" id="v_bz" class="form-control form-control-sm"></div>
+                    <div class="col-3"><label class="form-label">GCS</label><input type="text" id="v_gcs" class="form-control form-control-sm"></div>
+                    <div class="col-12"><label class="form-label text-danger">E (Bodycheck/Exposure)</label><input type="text" id="abc_e" class="form-control form-control-sm"></div>
                 </div>
             </div>
 
-            <div class="section-title">4. OPQRST</div>
+            <div class="section-title">4. SAMPLER & OPQRST</div>
             <div class="card p-3">
-                <div class="row g-2">
+                <div class="row g-1">
+                    <div class="col-4"><label class="form-label">Symptome</label><input type="text" id="s_s" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Allergien</label><input type="text" id="s_a" class="form-control form-control-sm"></div>
+                    <div class="col-4"><label class="form-label">Medikamente</label><input type="text" id="s_m" class="form-control form-control-sm"></div>
                     <div class="col-4"><label class="form-label">Onset</label><input type="text" id="o_o" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label">Provokation</label><input type="text" id="o_p" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label">Qualität</label><input type="text" id="o_q" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label">Region</label><input type="text" id="o_r" class="form-control form-control-sm"></div>
                     <div class="col-4"><label class="form-label">Stärke (0-10)</label><input type="number" id="o_s" class="form-control form-control-sm"></div>
                     <div class="col-4"><label class="form-label">Time</label><input type="text" id="o_t" class="form-control form-control-sm"></div>
                 </div>
@@ -115,25 +117,25 @@
                 <div class="bodygramm-container" id="bodyWrapper">
                     <img src="grafik.png" id="bodyImg" class="body-img" alt="Grafik laden...">
                 </div>
-                <button type="button" class="btn btn-xs btn-outline-danger mt-2" onclick="clearMarkers()">Marker löschen</button>
+                <button type="button" class="btn btn-xs btn-outline-danger mt-1" onclick="clearMarkers()">Marker löschen</button>
             </div>
 
-            <div class="section-title">6. Maßnahmen & Unterschrift</div>
+            <div class="section-title">6. Bericht & Unterschrift</div>
             <div class="card p-3">
-                <textarea id="v_text" class="form-control mb-2" rows="3" placeholder="Maßnahmen / Verlauf..."></textarea>
+                <textarea id="v_text" class="form-control mb-2" rows="3" placeholder="Maßnahmen..."></textarea>
                 <canvas id="signature-pad" class="sig-canvas"></canvas>
             </div>
-            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3 mb-5">🚨 PROTOKOLL ABSCHLIESSEN</button>
+            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3 mb-5">🚨 ABSCHLIESSEN & ARCHIVIEREN</button>
         </form>
     </div>
 
     <div id="archiveSection" class="hidden">
-        <button class="btn btn-sm btn-secondary mb-3" onclick="showSection('mainMenu')">← Menü</button>
+        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Menü</button>
         <div class="card p-3 shadow">
-            <h6>📜 EINSATZ-ARCHIV (Alle gespeicherten Berichte)</h6>
+            <h6>📜 EINSATZ-ARCHIV</h6>
             <div class="table-responsive">
-                <table class="table table-sm table-striped mt-2" style="font-size: 0.75rem;">
-                    <thead><tr><th>Datum</th><th>ZID</th><th>Patient</th><th>Sanitäter</th><th>Aktion</th></tr></thead>
+                <table class="table table-sm table-striped mt-1" style="font-size: 0.7rem;">
+                    <thead><tr><th>ZID</th><th>Patient</th><th>Datum</th><th>Sanitäter</th><th>Aktion</th></tr></thead>
                     <tbody id="archiveTable"></tbody>
                 </table>
             </div>
@@ -141,14 +143,14 @@
     </div>
 
     <div id="adminSection" class="hidden">
-        <button class="btn btn-sm btn-secondary mb-3" onclick="showSection('mainMenu')">← Menü</button>
+        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Menü</button>
         <div class="card p-3 shadow">
             <h6>Benutzerverwaltung</h6>
-            <div id="userList" class="mb-3"></div>
+            <div id="userList" class="small mb-2"></div>
             <div class="row g-1">
                 <div class="col-5"><input type="text" id="newU" class="form-control form-control-sm" placeholder="Name"></div>
-                <div class="col-4"><input type="text" id="newP" class="form-control form-control-sm" placeholder="PW"></div>
-                <div class="col-3"><button class="btn btn-success btn-sm w-100" onclick="addUser()">Hinzufügen</button></div>
+                <div class="col-5"><input type="text" id="newP" class="form-control form-control-sm" placeholder="PW"></div>
+                <div class="col-2"><button class="btn btn-success btn-sm w-100" onclick="addUser()">+</button></div>
             </div>
         </div>
     </div>
@@ -165,11 +167,9 @@
 
 <script>
     const WEBHOOK = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
-    
     let reports = JSON.parse(localStorage.getItem('rk_reports')) || [];
     let users = JSON.parse(localStorage.getItem('rk_users')) || [{u: "RK-02", p: "AppearIron22", r: "admin"}];
-    let currentUser = null;
-    let curX, curY;
+    let currentUser = null, curX, curY;
 
     const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
     const modal = new bootstrap.Modal(document.getElementById('markerModal'));
@@ -178,9 +178,8 @@
         const u = document.getElementById('username').value, p = document.getElementById('password').value;
         const found = users.find(x => x.u === u && x.p === p);
         if(found) {
-            currentUser = found;
-            showSection('mainMenu');
-            document.getElementById('welcomeMsg').innerText = "Angemeldet als: " + found.u;
+            currentUser = found; showSection('mainMenu');
+            document.getElementById('welcomeMsg').innerText = "Angemeldet: " + found.u;
             if(found.r === 'admin') document.getElementById('adminBtn').classList.remove('hidden');
         } else { document.getElementById('loginError').classList.remove('hidden'); }
     }
@@ -190,91 +189,53 @@
         document.getElementById(id).classList.remove('hidden');
     }
 
-    function openPublicArchive() {
-        showSection('archiveSection');
-        renderArchive();
-    }
+    function openPublicArchive() { showSection('archiveSection'); renderArchive(); }
 
     function renderArchive() {
         document.getElementById('archiveTable').innerHTML = reports.map((r, i) => 
-            `<tr>
-                <td>${r.date}</td>
-                <td><b>${r.zid}</b></td>
-                <td>${r.patient}</td>
-                <td>${r.san}</td>
-                <td><button class="btn btn-danger btn-xs" onclick="delRep(${i})">Löschen</button></td>
-            </tr>`
+            `<tr><td>${r.zid}</td><td>${r.patient}</td><td>${r.date}</td><td>${r.san}</td><td><button class="btn btn-danger btn-xs" style="font-size:8px" onclick="delRep(${i})">X</button></td></tr>`
         ).join('');
     }
 
     function delRep(i) {
-        if(confirm("Diesen Bericht wirklich löschen?")) {
-            reports.splice(i, 1);
-            localStorage.setItem('rk_reports', JSON.stringify(reports));
-            renderArchive();
-        }
+        if(confirm("Löschen?")) { reports.splice(i,1); localStorage.setItem('rk_reports', JSON.stringify(reports)); renderArchive(); }
     }
 
     function addUser() {
         const u = document.getElementById('newU').value, p = document.getElementById('newP').value;
-        if(u && p) {
-            users.push({u, p, r: "user"});
-            localStorage.setItem('rk_users', JSON.stringify(users));
-            alert("Nutzer angelegt.");
-        }
+        if(u && p) { users.push({u, p, r: "user"}); localStorage.setItem('rk_users', JSON.stringify(users)); alert("User OK"); }
     }
 
-    // Bodygramm Logik
+    // Bodygramm Logic
     document.getElementById('bodyImg').onclick = function(e) {
         const rect = this.getBoundingClientRect();
         curX = (e.clientX - rect.left) / rect.width * 100;
         curY = (e.clientY - rect.top) / rect.height * 100;
         modal.show();
     };
-
     function place(s, c) {
         const d = document.createElement('div');
         d.className = 'marker ' + c; d.style.left = curX + '%'; d.style.top = curY + '%'; d.innerText = s;
         document.getElementById('bodyWrapper').appendChild(d);
         modal.hide();
     }
-
     function clearMarkers() { document.querySelectorAll('.marker').forEach(m => m.remove()); }
 
     document.getElementById('einsatzForm').onsubmit = async function(e) {
         e.preventDefault();
         const r = {
-            date: new Date().toLocaleString('de-AT'),
+            date: new Date().toLocaleDateString(),
             zid: document.getElementById('e_nr').value,
             patient: document.getElementById('p_name').value,
-            san: currentUser ? currentUser.u : "Unbekannt"
+            san: currentUser.u
         };
-        
-        // Archiv speichern
         reports.push(r);
         localStorage.setItem('rk_reports', JSON.stringify(reports));
 
-        // Discord Senden
-        const payload = { 
-            embeds: [{ 
-                title: "🚑 Einsatzprotokoll: " + r.zid, 
-                color: 14811162,
-                fields: [
-                    {name: "Patient", value: r.patient, inline: true},
-                    {name: "Sanitäter", value: r.san, inline: true},
-                    {name: "Befund A", value: document.getElementById('abc_a').value, inline: true}
-                ]
-            }] 
-        };
-        
-        try {
-            await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-            alert("Gesendet & Archiviert!");
-            showSection('mainMenu');
-            this.reset();
-            clearMarkers();
-            signaturePad.clear();
-        } catch(e) { alert("Senden fehlgeschlagen, aber im lokalen Archiv gespeichert."); }
+        const payload = { embeds: [{ title: "🚑 NEUES PROTOKOLL: " + r.zid, fields: [{name: "Patient", value: r.patient}, {name: "Sanitäter", value: r.san}] }] };
+        await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+
+        alert("Abgeschlossen!"); showSection('mainMenu'); this.reset(); clearMarkers(); signaturePad.clear();
     };
 
     function logout() { location.reload(); }
