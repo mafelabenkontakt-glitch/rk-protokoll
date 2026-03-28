@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RK CLOUD OS | MAXIMUM EDITION V8.0</title>
+    <title>RK CLOUD OS | ULTIMATE V9.0</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -12,183 +12,93 @@
 
     <style>
         :root { 
-            --rk-red: #e2001a; 
-            --rk-dark: #b30014; 
-            --rk-grey: #2c3e50; 
-            --rk-light: #f8f9fa;
-            --rk-blue: #0056b3;
+            --rk-red: #e2001a; --rk-dark: #b30014; --rk-grey: #2c3e50; 
+            --rk-blue: #0056b3; --rk-light: #f8f9fa; --rk-success: #27ae60;
         }
-
-        body { 
-            background: #e9ecef; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            color: #212529;
-            overflow-x: hidden;
-        }
-
-        /* --- UI COMPONENTS --- */
-        .rk-header {
-            background: linear-gradient(180deg, var(--rk-red) 0%, var(--rk-dark) 100%);
-            color: white;
-            padding: 25px 15px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            border-bottom: 5px solid rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        
+        body { background: #e9ecef; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 80px; color: #333; }
+        
+        /* HEADER & NAVIGATION */
+        .rk-header { 
+            background: linear-gradient(180deg, var(--rk-red) 0%, var(--rk-dark) 100%); 
+            color: white; padding: 30px 20px; text-align: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-bottom: 6px solid rgba(0,0,0,0.2);
+            position: sticky; top: 0; z-index: 1000; border-radius: 0 0 25px 25px;
         }
 
         .section-header {
-            background: var(--rk-grey);
-            color: white;
-            padding: 15px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            border-left: 10px solid var(--rk-red);
-            margin: 40px 0 20px 0;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background: var(--rk-grey); color: white; padding: 18px; font-weight: 900;
+            text-transform: uppercase; border-left: 12px solid var(--rk-red);
+            margin: 40px 0 20px 0; border-radius: 8px; display: flex; justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); letter-spacing: 1px;
         }
 
-        .card-custom {
-            background: white;
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 25px;
-            margin-bottom: 30px;
+        .card-custom { 
+            background: white; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            padding: 30px; margin-bottom: 30px; border: none; transition: transform 0.2s;
         }
 
-        /* --- ABCDE STYLING --- */
-        .abcde-card {
-            border-radius: 15px;
-            border: 2px solid #dee2e6;
-            background: white;
-            margin-bottom: 25px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .abcde-card:hover { border-color: var(--rk-red); }
-        
-        .abcde-head {
-            background: #f1f3f5;
-            padding: 12px 20px;
-            font-weight: 900;
-            font-size: 1.2rem;
-            border-bottom: 2px solid #dee2e6;
-            display: flex;
-            align-items: center;
-        }
-        .abcde-head.a-red { color: #d63031; border-left: 8px solid #d63031; }
-        .abcde-head.b-blue { color: #0984e3; border-left: 8px solid #0984e3; }
-        .abcde-head.c-green { color: #27ae60; border-left: 8px solid #27ae60; }
-        .abcde-head.d-orange { color: #e67e22; border-left: 8px solid #e67e22; }
-        .abcde-head.e-grey { color: #636e72; border-left: 8px solid #636e72; }
+        /* ABCDE SYSTEM */
+        .abcde-card { border-radius: 20px; border: 2px solid #eee; background: white; margin-bottom: 25px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .abcde-head { padding: 15px 25px; font-weight: 900; font-size: 1.3rem; border-bottom: 2px solid #eee; display: flex; align-items: center; gap: 10px; }
+        .a-style { color: #d63031; border-left: 10px solid #d63031; background: #fff5f5; }
+        .b-style { color: #0984e3; border-left: 10px solid #0984e3; background: #f0f7ff; }
+        .c-style { color: #27ae60; border-left: 10px solid #27ae60; background: #f2fff7; }
+        .d-style { color: #e67e22; border-left: 10px solid #e67e22; background: #fffaf0; }
+        .e-style { color: #636e72; border-left: 10px solid #636e72; background: #f8f9fa; }
 
-        /* --- BODYGRAMM --- */
-        .bodygramm-wrap {
-            position: relative;
-            max-width: 350px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border: 3px solid #eee;
-            border-radius: 20px;
-        }
-        .body-img { width: 100%; height: auto; cursor: crosshair; user-select: none; }
-        .marker {
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: translate(-50%, -50%);
-            border: 2px solid white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
+        /* BODYGRAMM & MARKER */
+        .body-container { position: relative; width: 100%; max-width: 380px; margin: 25px auto; background: #fff; padding: 25px; border: 3px solid #dee2e6; border-radius: 30px; }
+        .body-img { width: 100%; height: auto; cursor: crosshair; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
+        .marker { position: absolute; width: 36px; height: 36px; border-radius: 50%; color: white; font-weight: 900; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 3px solid white; box-shadow: 0 5px 12px rgba(0,0,0,0.4); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% {transform: translate(-50%, -50%) scale(1);} 50% {transform: translate(-50%, -50%) scale(1.1);} 100% {transform: translate(-50%, -50%) scale(1);} }
+        .m-S { background: #fd7e14; } .m-F { background: #0d6efd; } .m-W { background: #dc3545; }
 
-        /* --- FORMS & INPUTS --- */
-        .form-control, .form-select {
-            padding: 12px 18px;
-            border-radius: 12px;
-            border: 2px solid #eaedf0;
-            background: #fbfcfd;
-        }
-        .form-control:focus {
-            border-color: var(--rk-red);
-            box-shadow: none;
-            background: white;
-        }
+        /* LOGIN SCREEN */
+        #loginView { position: fixed; inset: 0; background: linear-gradient(45deg, var(--rk-red), #800000); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 50px; border-radius: 40px; width: 95%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
 
-        /* --- SLIDER STYLING --- */
-        .slider-box {
-            background: #fff5f5;
-            border: 2px solid #feb2b2;
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-        }
+        /* VITALWERTE GRID */
+        .vital-input { font-size: 1.2rem; font-weight: bold; text-align: center; color: var(--rk-red); }
 
-        /* --- VIEWS --- */
-        #mainAppRTW, #mainAppKTW, #listView, #detailView, #flowSelect, #loginView { display: none; }
-        .active-view { display: block !important; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
-
-        /* --- BUTTONS --- */
-        .btn-rk-main {
-            background: var(--rk-red);
-            color: white;
-            font-weight: 800;
-            border: none;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 1.3rem;
-            box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
-        }
+        #mainAppRTW, #mainAppKTW, #listView, #flowSelect { display: none; }
+        .active-view { display: block !important; }
+        .sig-canvas { border: 3px dashed #cbd5e0; background: #fafafa; width: 100%; height: 220px; border-radius: 20px; }
     </style>
 </head>
 <body>
 
-<div id="loginView" class="container-fluid vh-100 d-flex align-items-center justify-content-center" style="background: #e2001a;">
-    <div class="card-custom text-center" style="width: 100%; max-width: 420px;">
+<div id="loginView">
+    <div class="login-box">
         <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Red_Cross_icon.svg" width="100" class="mb-4">
-        <h2 class="fw-bold mb-1">RK CLOUD LOGIN</h2>
-        <p class="text-muted mb-4">Einsatzprotokollierung System</p>
-        <div class="mb-3 text-start">
-            <label class="small fw-bold px-2">Dienstnummer</label>
-            <input type="text" id="login_dn" class="form-control" placeholder="RK-1234">
+        <h1 class="fw-bold mb-2">RK CLOUD OS</h1>
+        <p class="text-muted mb-4">Rescue Documentation System v9.0</p>
+        <div class="form-floating mb-3">
+            <input type="text" id="login_dn" class="form-control rounded-pill px-4" placeholder="DN">
+            <label class="px-4">Dienstnummer (z.B. RK-1234)</label>
         </div>
-        <div class="mb-4 text-start">
-            <label class="small fw-bold px-2">Passwort</label>
-            <input type="password" id="login_pw" class="form-control" placeholder="••••••••">
+        <div class="form-floating mb-4">
+            <input type="password" id="login_pw" class="form-control rounded-pill px-4" placeholder="PW">
+            <label class="px-4">Passwort</label>
         </div>
-        <button onclick="login()" id="loginBtn" class="btn btn-rk-main w-100">SYSTEM STARTEN</button>
-        <p id="loginStatus" class="mt-3 text-danger fw-bold"></p>
+        <button onclick="handleLogin()" id="loginBtn" class="btn btn-danger btn-lg w-100 rounded-pill py-3 fw-bold shadow">LOGIN</button>
+        <div id="loginFeedback" class="mt-4 small text-danger fw-bold"></div>
     </div>
 </div>
 
 <div id="listView" class="container mt-4">
-    <div class="rk-header rounded-4 shadow-lg mb-4">
-        <h2 class="fw-bold mb-0">EINSATZÜBERSICHT</h2>
-        <div class="d-flex justify-content-center gap-2 mt-3">
-            <button class="btn btn-light fw-bold" onclick="showFlowSelect()">➕ NEUER EINSATZ</button>
-            <button class="btn btn-outline-light" onclick="logout()">ABMELDEN</button>
+    <div class="rk-header mb-5">
+        <h1 class="fw-bold mb-0">EINSATZÜBERSICHT</h1>
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <button class="btn btn-light btn-lg fw-bold px-5 rounded-pill shadow" onclick="showFlowSelect()">➕ NEU</button>
+            <button class="btn btn-outline-light rounded-pill" onclick="logout()">LOGOUT</button>
         </div>
     </div>
     <div class="card-custom">
+        <h3 class="fw-bold mb-4"><i class="bi bi-journal-text me-2"></i>Letzte Protokolle</h3>
         <div class="table-responsive">
             <table class="table table-hover align-middle">
-                <thead><tr><th>E-Nr</th><th>Typ</th><th>Patient</th><th>Status</th><th class="text-end">Aktion</th></tr></thead>
+                <thead class="table-light"><tr><th>E-NR</th><th>DATUM</th><th>TYP</th><th>PATIENT</th><th class="text-end">STATUS</th></tr></thead>
                 <tbody id="protocolTableBody"></tbody>
             </table>
         </div>
@@ -196,289 +106,268 @@
 </div>
 
 <div id="flowSelect" class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1 class="fw-bold mb-5">Art des Einsatzes?</h1>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="card-custom py-5 border-bottom border-danger border-5" onclick="startFlow('RTW')" style="cursor:pointer">
-                        <i class="bi bi-ambulance fs-1 text-danger"></i>
-                        <h3 class="mt-3 fw-bold">RTW / NAW</h3>
-                        <p class="text-muted">Notfallprotokoll, ABCDE, Bodygramm</p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card-custom py-5 border-bottom border-primary border-5" onclick="startFlow('KTW')" style="cursor:pointer">
-                        <i class="bi bi-truck fs-1 text-primary"></i>
-                        <h3 class="mt-3 fw-bold">KTW / BKTW</h3>
-                        <p class="text-muted">Transportbericht, Verlegungen</p>
-                    </div>
-                </div>
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">EINSATZ-TYP</h1>
+        <p class="text-muted">Bitte wählen Sie die Protokollart aus</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5" onclick="startFlow('RTW')">
+            <div class="card-custom text-center py-5 border-bottom border-danger border-5 shadow-lg" style="cursor:pointer">
+                <i class="bi bi-ambulance fs-1 text-danger"></i>
+                <h2 class="mt-3 fw-bold">RTW / NOTFALL</h2>
+                <p>Volles ABCDE-Schema & Vitalsensoren</p>
             </div>
-            <button class="btn btn-link mt-4 text-dark" onclick="showList()">Zurück zum Dashboard</button>
+        </div>
+        <div class="col-md-5" onclick="startFlow('KTW')">
+            <div class="card-custom text-center py-5 border-bottom border-primary border-5 shadow-lg" style="cursor:pointer">
+                <i class="bi bi-truck fs-1 text-primary"></i>
+                <h2 class="mt-3 fw-bold">KTW / TRANSPORT</h2>
+                <p>Qualifizierter Krankentransport</p>
+            </div>
         </div>
     </div>
 </div>
 
 <div id="mainAppRTW" class="container mt-3">
-    <div class="rk-header rounded-4 mb-4">
-        <button class="btn btn-light btn-sm float-start" onclick="showList()">ABBRECHEN</button>
-        <h3 class="fw-bold">🚑 RTW NOTFALLPROTOKOLL</h3>
+    <div class="rk-header mb-4">
+        <button class="btn btn-light btn-sm float-start fw-bold" onclick="showList()">⬅ ZURÜCK</button>
+        <h2 class="fw-bold">🚑 RTW NOTFALLPROTOKOLL</h2>
     </div>
 
     <form id="rtwForm">
-        <div class="section-header"><span>1. ZEITEN (S1-S7)</span><i class="bi bi-clock"></i></div>
+        <div class="section-header"><span>1. ZEITSTEMPEL (S1-S7)</span><i class="bi bi-clock-history"></i></div>
         <div class="card-custom">
-            <div class="row g-3 text-center">
-                <div class="col-4 col-md-2"><label class="small fw-bold">Alarm</label><input type="time" id="r_t_alarm" class="form-control"></div>
-                <div class="col-4 col-md-2"><label class="small fw-bold">S2 (Ausr.)</label><input type="time" id="r_t_s2" class="form-control"></div>
-                <div class="col-4 col-md-2"><label class="small fw-bold">S3 (Ank.)</label><input type="time" id="r_t_s3" class="form-control"></div>
-                <div class="col-4 col-md-2"><label class="small fw-bold">S4 (Abf.)</label><input type="time" id="r_t_s4" class="form-control"></div>
-                <div class="col-4 col-md-2"><label class="small fw-bold">S7 (Ziel)</label><input type="time" id="r_t_s7" class="form-control"></div>
-                <div class="col-4 col-md-2"><label class="small fw-bold">S1 (Ber.)</label><input type="time" id="r_t_s1" class="form-control"></div>
+            <div class="row g-3 text-center mb-4">
+                <div class="col-4 col-md-2"><label class="small fw-bold">ALARM</label><input type="time" id="r_t_alarm" class="form-control"></div>
+                <div class="col-4 col-md-2"><label class="small fw-bold">AUSR (S2)</label><input type="time" id="r_t_s2" class="form-control"></div>
+                <div class="col-4 col-md-2"><label class="small fw-bold">ANK (S3)</label><input type="time" id="r_t_s3" class="form-control"></div>
+                <div class="col-4 col-md-2"><label class="small fw-bold">ABF (S4)</label><input type="time" id="r_t_s4" class="form-control"></div>
+                <div class="col-4 col-md-2"><label class="small fw-bold">ZIEL (S7)</label><input type="time" id="r_t_s7" class="form-control"></div>
+                <div class="col-4 col-md-2"><label class="small fw-bold">BER (S1)</label><input type="time" id="r_t_s1" class="form-control"></div>
             </div>
-            <hr class="my-4">
             <div class="row g-3">
-                <div class="col-md-4"><label class="fw-bold">Einsatz-Nr</label><input type="text" id="r_e_nr" class="form-control" required></div>
-                <div class="col-md-4"><label class="fw-bold">Patientenname</label><input type="text" id="r_p_name" class="form-control"></div>
-                <div class="col-md-4"><label class="fw-bold">Geb.-Datum</label><input type="date" id="r_p_geb" class="form-control"></div>
+                <div class="col-md-4"><label class="fw-bold">Einsatznummer</label><input type="text" id="r_e_nr" class="form-control p-3" required></div>
+                <div class="col-md-4"><label class="fw-bold">Patientenname</label><input type="text" id="r_p_name" class="form-control p-3"></div>
+                <div class="col-md-4"><label class="fw-bold">Geburtsdatum</label><input type="date" id="r_p_geb" class="form-control p-3"></div>
             </div>
         </div>
 
         <div class="section-header"><span>2. KLINISCHER BEFUND (ABCDE)</span><i class="bi bi-activity"></i></div>
         
         <div class="abcde-card">
-            <div class="abcde-head a-red">A - AIRWAY</div>
-            <div class="p-3">
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <select id="r_a_stat" class="form-select"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select>
-                    </div>
-                    <div class="col-md-6 d-flex align-items-center">
-                        <div class="form-check form-switch fs-5">
-                            <input class="form-check-input" type="checkbox" id="r_a_immobil">
-                            <label class="form-check-label fw-bold">IMMOBILISATION?</label>
-                        </div>
-                    </div>
+            <div class="abcde-head a-style"><i class="bi bi-wind"></i> A - AIRWAY</div>
+            <div class="p-4">
+                <div class="row g-3">
+                    <div class="col-md-6"><select id="r_a_stat" class="form-select p-3"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select></div>
+                    <div class="col-md-6"><div class="form-check form-switch fs-5 mt-2"><input class="form-check-input" type="checkbox" id="r_a_immobil"><label class="form-check-label fw-bold">HWS-Immobilisation?</label></div></div>
                 </div>
-                <textarea id="r_a_text" class="form-control" rows="2" placeholder="Notizen Atemwege..."></textarea>
             </div>
         </div>
 
         <div class="abcde-card">
-            <div class="abcde-head b-blue">B - BREATHING</div>
-            <div class="p-3">
+            <div class="abcde-head b-style"><i class="bi bi-lungs"></i> B - BREATHING</div>
+            <div class="p-4">
                 <div class="row g-3 mb-3">
-                    <div class="col-4"><label class="small">AF</label><input type="number" id="r_v_af" class="form-control"></div>
-                    <div class="col-4"><label class="small">SpO2 %</label><input type="number" id="r_v_sp" class="form-control"></div>
-                    <div class="col-4"><label class="small">EtCO2</label><input type="number" id="r_v_et" class="form-control"></div>
+                    <div class="col-4 text-center"><label class="small fw-bold">AF (1/min)</label><input type="number" id="r_v_af" class="form-control vital-input"></div>
+                    <div class="col-4 text-center"><label class="small fw-bold">SpO2 (%)</label><input type="number" id="r_v_spo2" class="form-control vital-input"></div>
+                    <div class="col-4 text-center"><label class="small fw-bold">EtCO2</label><input type="number" id="r_v_et" class="form-control vital-input"></div>
                 </div>
-                <select id="r_b_ausk" class="form-select mb-3"><option>o.B.</option><option>Rasselgeräusche</option><option>Giemen / Stridor</option></select>
-                <textarea id="r_b_text" class="form-control" rows="2" placeholder="Notizen Belüftung..."></textarea>
+                <select id="r_b_ausk" class="form-select mb-3"><option>Auskultation: o.B.</option><option>Giemen / Brummen</option><option>Rasselgeräusche</option><option>Abgeschwächt</option></select>
+                <textarea id="r_b_notiz" class="form-control" rows="2" placeholder="Zusätzliche Notizen zu B..."></textarea>
             </div>
         </div>
 
         <div class="abcde-card">
-            <div class="abcde-head c-green">C - CIRCULATION</div>
-            <div class="p-3">
+            <div class="abcde-head c-style"><i class="bi bi-heart-pulse"></i> C - CIRCULATION</div>
+            <div class="p-4">
                 <div class="row g-3 mb-3">
-                    <div class="col-4"><label class="small">HF</label><input type="number" id="r_v_hf" class="form-control"></div>
-                    <div class="col-4"><label class="small">RR</label><input type="text" id="r_v_rr" class="form-control" placeholder="120/80"></div>
-                    <div class="col-4"><label class="small">Rekap</label><select id="r_c_rekap" class="form-select"><option>< 2s</option><option>> 2s</option></select></div>
+                    <div class="col-4 text-center"><label class="small fw-bold">HF (bpm)</label><input type="number" id="r_v_hf" class="form-control vital-input"></div>
+                    <div class="col-4 text-center"><label class="small fw-bold">RR (syst)</label><input type="number" id="r_v_rrs" class="form-control vital-input"></div>
+                    <div class="col-4 text-center"><label class="small fw-bold">RR (diast)</label><input type="number" id="r_v_rrd" class="form-control vital-input"></div>
                 </div>
                 <div class="row g-3">
-                    <div class="col-6"><label class="small">Haut</label><select id="r_c_haut" class="form-select"><option>rosig/warm</option><option>blass/kalt</option><option>zyanotisch</option></select></div>
-                    <div class="col-6"><label class="small">EKG-Rhythmus</label><input type="text" id="r_v_ekg" class="form-control" placeholder="Sinus..."></div>
+                    <div class="col-6"><label class="small fw-bold">Rekap-Zeit</label><select id="r_c_rekap" class="form-select"><option>< 2 Sek.</option><option>> 2 Sek.</option></select></div>
+                    <div class="col-6"><label class="small fw-bold">Hautzustand</label><select id="r_c_haut" class="form-select"><option>Warm / Rosig</option><option>Kalt / Blass</option><option>Zyanotisch</option><option>Schweißig</option></select></div>
                 </div>
             </div>
         </div>
 
         <div class="abcde-card">
-            <div class="abcde-head d-orange">D - DISABILITY (NEUROLOGIE)</div>
-            <div class="p-3">
-                <div class="slider-box mb-4">
-                    <h5 class="fw-bold text-danger">BE-FAST SCHEMA</h5>
+            <div class="abcde-head d-style"><i class="bi bi-brain"></i> D - DISABILITY</div>
+            <div class="p-4">
+                <div class="bg-light p-4 rounded-4 border text-center mb-4">
+                    <h5 class="fw-bold text-danger"><i class="bi bi-exclamation-triangle"></i> BE-FAST SCREENING</h5>
                     <div class="d-flex justify-content-center align-items-center gap-4 mt-3">
-                        <span class="fw-bold text-success">NEIN</span>
-                        <input type="range" class="form-range w-50" id="r_d_fast_slider" min="0" max="1" step="1" value="0">
+                        <span class="fw-bold text-success">NEGATIV</span>
+                        <input type="range" class="form-range w-50" id="r_d_fast" min="0" max="1" step="1" value="0">
                         <span class="fw-bold text-danger">POSITIV</span>
                     </div>
                 </div>
                 <div class="row g-3">
-                    <div class="col-6"><label class="small">AVPU</label><select id="r_v_avpu" class="form-select"><option>A (Alert)</option><option>V (Voice)</option><option>P (Pain)</option><option>U (Unresponsive)</option></select></div>
-                    <div class="col-3"><label class="small">BZ</label><input type="number" id="r_v_bz" class="form-control"></div>
-                    <div class="col-3"><label class="small">GCS</label><input type="number" id="r_v_gcs" class="form-control" max="15"></div>
+                    <div class="col-4"><label class="small fw-bold">GCS</label><input type="number" id="r_v_gcs" class="form-control" placeholder="15"></div>
+                    <div class="col-4"><label class="small fw-bold">BZ (mg/dl)</label><input type="number" id="r_v_bz" class="form-control"></div>
+                    <div class="col-4"><label class="small fw-bold">Pupillen</label><select id="r_v_pup" class="form-select"><option>Isokor</option><option>Anisokor</option></select></div>
                 </div>
             </div>
         </div>
 
-        <div class="section-header"><span>3. VERLETZUNGEN / BODYGRAMM</span><i class="bi bi-person-bounding-box"></i></div>
+        <div class="section-header"><span>3. VERLETZUNGEN / LOKALISATION</span><i class="bi bi-person-bounding-box"></i></div>
         <div class="card-custom text-center">
-            <div class="bodygramm-wrap" id="bodyWrapper">
+            <div class="body-container" id="bodyWrapper">
                 <img src="https://i.imgur.com/uX8Zf0M.png" id="bodyImg" class="body-img">
             </div>
-            <div class="d-flex justify-content-center gap-2 mb-3">
-                <button type="button" class="btn btn-warning btn-sm" onclick="setMarkerType('S')">S = Schmerz</button>
-                <button type="button" class="btn btn-primary btn-sm" onclick="setMarkerType('F')">F = Fraktur</button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="setMarkerType('W')">W = Wunde</button>
+            <div class="btn-group w-100 shadow-sm rounded-pill overflow-hidden">
+                <button type="button" class="btn btn-warning fw-bold py-3" onclick="mType='S'">SCHMERZ (S)</button>
+                <button type="button" class="btn btn-primary fw-bold py-3" onclick="mType='F'">FRAKTUR (F)</button>
+                <button type="button" class="btn btn-danger fw-bold py-3" onclick="mType='W'">WUNDE (W)</button>
             </div>
-            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearMarkers()">Löschen</button>
+            <button type="button" class="btn btn-link text-muted mt-3" onclick="clearMarkers()">Alle Markierungen löschen</button>
         </div>
 
-        <div class="section-header"><span>4. MASSNAHMEN & VERLAUF</span><i class="bi bi-pills"></i></div>
+        <div class="section-header"><span>4. MASSNAHMEN & BERICHT</span><i class="bi bi-pencil-square"></i></div>
         <div class="card-custom">
-            <label class="fw-bold">Einsatzbericht / Übergabe</label>
-            <textarea id="r_bericht" class="form-control mb-4" rows="12" placeholder="Beschreibe hier den ausführlichen Einsatzverlauf..."></textarea>
-            
-            <label class="fw-bold mb-2">Unterschrift Sanitäter</label>
-            <canvas id="sig-rtw" class="sig-canvas"></canvas>
-            
-            <button type="submit" class="btn btn-rk-main w-100 py-4 mt-5">🚨 PROTOKOLL FINAL SPEICHERN</button>
+            <textarea id="r_bericht" class="form-control mb-4" rows="12" placeholder="Beschreiben Sie hier den Einsatzverlauf, SAMPLER-Anamnese und durchgeführte Maßnahmen..."></textarea>
+            <label class="fw-bold mb-3">Unterschrift des verantwortlichen Sanitäters</label>
+            <canvas id="sig-rtw" class="sig-canvas mb-2"></canvas>
+            <button type="submit" class="btn btn-danger w-100 py-4 mt-5 fs-2 fw-bold shadow-lg">🚨 PROTOKOLL ABSCHLIESSEN</button>
         </div>
     </form>
 </div>
 
 <div id="mainAppKTW" class="container mt-3">
-    <div class="rk-header rounded-4 mb-4" style="background: linear-gradient(180deg, var(--rk-blue) 0%, #002d5c 100%);">
-        <button class="btn btn-light btn-sm float-start" onclick="showList()">ABBRECHEN</button>
-        <h3 class="fw-bold">🚐 KTW TRANSPORTBERICHT</h3>
+    <div class="rk-header mb-4" style="background: var(--rk-blue)">
+        <button class="btn btn-light btn-sm float-start" onclick="showList()">⬅ ZURÜCK</button>
+        <h2 class="fw-bold">🚐 KTW TRANSPORTBERICHT</h2>
     </div>
     <form id="ktwForm">
-        <div class="section-header" style="background:#003d7a"><span>Transportdaten</span></div>
         <div class="card-custom">
-            <div class="row g-3 mb-3">
-                <div class="col-md-6"><input type="text" id="k_e_nr" class="form-control" placeholder="Einsatz-Nr" required></div>
-                <div class="col-md-6"><input type="text" id="k_p_name" class="form-control" placeholder="Patientenname"></div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6"><label class="fw-bold">Einsatz-Nr</label><input type="text" id="k_e_nr" class="form-control p-3" required></div>
+                <div class="col-md-6"><label class="fw-bold">Patientenname</label><input type="text" id="k_p_name" class="form-control p-3"></div>
             </div>
-            <div class="row g-3">
-                <div class="col-md-6"><input type="text" id="k_von" class="form-control" placeholder="Abholort (Von)"></div>
-                <div class="col-md-6"><input type="text" id="k_nach" class="form-control" placeholder="Zielort (Nach)"></div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6"><label class="fw-bold">Abholort</label><input type="text" id="k_von" class="form-control p-3" placeholder="Krankenhaus / Wohnung"></div>
+                <div class="col-md-6"><label class="fw-bold">Zielort</label><input type="text" id="k_nach" class="form-control p-3" placeholder="Dialyse / Station"></div>
             </div>
-        </div>
-
-        <div class="section-header" style="background:#003d7a"><span>Durchführung</span></div>
-        <div class="card-custom">
-            <select id="k_art" class="form-select mb-4">
-                <option>Trage (liegend)</option><option>Tragsessel (sitzend)</option><option>Gehend</option>
-            </select>
-            <label class="fw-bold">Transportbericht / Vorkommnisse</label>
-            <textarea id="k_bericht" class="form-control mb-4" rows="10" placeholder="Besonderheiten während des Transports..."></textarea>
-            <button type="submit" class="btn btn-primary w-100 py-4 fw-bold fs-3">💾 TRANSPORT ABSCHLIESSEN</button>
+            <div class="mb-4">
+                <label class="fw-bold">Transportart</label>
+                <select id="k_art" class="form-select p-3"><option>Trage (liegend)</option><option>Tragsessel (sitzend)</option><option>Gehend</option><option>Rollstuhl</option></select>
+            </div>
+            <textarea id="k_bericht" class="form-control mb-4" rows="10" placeholder="Transportverlauf, Besonderheiten..."></textarea>
+            <button type="submit" class="btn btn-primary w-100 py-4 fs-3 fw-bold shadow-lg">💾 TRANSPORT SPEICHERN</button>
         </div>
     </form>
 </div>
 
 <script>
-    // --- KONFIGURATION ---
     const SUPABASE_URL = 'https://rnfbggoetkmgxqdvznrm.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg';
-    const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
+    const WEBHOOK = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let currentUser = null, activeMarker = 'S', markers = [];
-    let sigRtw;
+    let _db, user = null, markers = [], mType = 'S', sigPad;
 
-    // --- SYSTEM START ---
     window.onload = () => {
-        const saved = localStorage.getItem('rk_user');
-        if(saved) {
-            currentUser = JSON.parse(saved);
-            document.getElementById('listView').classList.add('active-view');
-            loadProtocols();
-        } else {
-            document.getElementById('loginView').classList.add('active-view');
-        }
-        sigRtw = new SignaturePad(document.getElementById('sig-rtw'));
+        try {
+            _db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            const saved = localStorage.getItem('rk_user');
+            if(saved) {
+                user = JSON.parse(saved);
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('listView').classList.add('active-view');
+                loadProtocols();
+            }
+            sigPad = new SignaturePad(document.getElementById('sig-rtw'));
+        } catch(e) { console.error("Init Error", e); }
     };
 
-    // --- LOGIN LOGIK (FIXED) ---
-    async function login() {
-        const dn = document.getElementById('login_dn').value, pw = document.getElementById('login_pw').value;
+    // LOGIN LOGIC
+    async function handleLogin() {
+        const dn = document.getElementById('login_dn').value.trim();
+        const pw = document.getElementById('login_pw').value.trim();
+        const feedback = document.getElementById('loginFeedback');
         const btn = document.getElementById('loginBtn');
-        btn.disabled = true; btn.innerText = "PRÜFE...";
 
-        const { data, error } = await _supabase.from('profiles').select('*').eq('dienstnummer', dn).eq('passwort', pw).single();
-        if(data) {
-            localStorage.setItem('rk_user', JSON.stringify(data));
-            location.reload();
-        } else {
-            document.getElementById('loginStatus').innerText = "❌ ZUGRIFF VERWEIGERT!";
-            btn.disabled = false; btn.innerText = "ANMELDEN";
+        if(!dn || !pw) { feedback.innerText = "Bitte Felder ausfüllen!"; return; }
+        btn.disabled = true; btn.innerText = "VERBINDE...";
+
+        try {
+            const { data, error } = await _db.from('profiles').select('*').eq('dienstnummer', dn).single();
+            if(data && data.passwort === pw) {
+                localStorage.setItem('rk_user', JSON.stringify(data));
+                location.reload();
+            } else {
+                feedback.innerText = "Dienstnummer oder Passwort falsch!";
+                btn.disabled = false; btn.innerText = "LOGIN";
+            }
+        } catch(e) {
+            feedback.innerText = "Datenbankfehler!";
+            btn.disabled = false;
         }
     }
 
-    function logout() { localStorage.removeItem('rk_user'); location.reload(); }
+    // VIEW CONTROL
     function showFlowSelect() { hideAll(); document.getElementById('flowSelect').classList.add('active-view'); }
     function startFlow(t) { hideAll(); document.getElementById(t==='RTW'?'mainAppRTW':'mainAppKTW').classList.add('active-view'); }
     function showList() { location.reload(); }
-    function hideAll() { document.querySelectorAll('.active-view').forEach(e => e.classList.remove('active-view')); }
+    function hideAll() { document.querySelectorAll('.active-view').forEach(v => v.classList.remove('active-view')); }
+    function logout() { localStorage.removeItem('rk_user'); location.reload(); }
 
-    // --- BODYGRAMM LOGIK ---
-    function setMarkerType(t) { activeMarker = t; }
+    // BODYGRAMM
     document.getElementById('bodyImg').onclick = function(e) {
         const rect = this.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width * 100;
         const y = (e.clientY - rect.top) / rect.height * 100;
-        placeMarker(x, y, activeMarker);
-    };
-
-    function placeMarker(x, y, label) {
-        markers.push({x, y, label});
+        markers.push({x, y, label: mType});
         const d = document.createElement('div');
-        d.className = `marker ${label==='S'?'m-pain':(label==='F'?'m-bone':'m-wound')}`;
-        d.style.left = x + '%'; d.style.top = y + '%'; d.innerText = label;
+        d.className = `marker m-${mType}`; d.style.left = x + '%'; d.style.top = y + '%'; d.innerText = mType;
         document.getElementById('bodyWrapper').appendChild(d);
-    }
+    };
     function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
 
-    // --- PROTOKOLLE LADEN ---
+    // DATA HANDLING
     async function loadProtocols() {
-        const { data } = await _supabase.from('rd_berichte').select('*').order('created_at', {ascending: false});
+        const { data } = await _db.from('rd_berichte').select('*').order('created_at', {ascending: false});
         if(data) {
             document.getElementById('protocolTableBody').innerHTML = data.map(p => `
                 <tr>
                     <td><b>${p.e_nr}</b></td>
+                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
                     <td><span class="badge ${p.typ==='RTW'?'bg-danger':'bg-primary'}">${p.typ}</span></td>
-                    <td>${p.p_name || 'N/A'}</td>
-                    <td><span class="text-success fw-bold">GESPEICHERT</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-dark" onclick="alert('Druckansicht folgt...')">📂</button></td>
+                    <td>${p.p_name || 'Unbekannt'}</td>
+                    <td class="text-end"><span class="text-success fw-bold">✓</span></td>
                 </tr>`).join('');
         }
     }
 
-    // --- SPEICHERN LOGIK ---
     document.getElementById('rtwForm').onsubmit = async (e) => {
         e.preventDefault();
         const p = {
             typ: 'RTW', e_nr: document.getElementById('r_e_nr').value, p_name: document.getElementById('r_p_name').value,
-            daten: {
-                bericht: document.getElementById('r_bericht').value,
-                immobil: document.getElementById('r_a_immobil').checked,
-                fast: document.getElementById('r_d_fast_slider').value == 1 ? "POSITIV" : "NEGATIV",
-                markers: markers,
-                s_zeiten: { s3: document.getElementById('r_t_s3').value, s7: document.getElementById('r_t_s7').value }
-            },
-            erstellt_von: currentUser.dienstnummer
+            daten: { bericht: document.getElementById('r_bericht').value, immobil: document.getElementById('r_a_immobil').checked, fast: document.getElementById('r_d_fast').value, markers: markers },
+            erstellt_von: user.dienstnummer
         };
-        await saveToDB(p);
+        await finalize(p);
     };
 
     document.getElementById('ktwForm').onsubmit = async (e) => {
         e.preventDefault();
         const p = {
             typ: 'KTW', e_nr: document.getElementById('k_e_nr').value, p_name: document.getElementById('k_p_name').value,
-            daten: { k_bericht: document.getElementById('k_bericht').value, von: document.getElementById('k_von').value, nach: document.getElementById('k_nach').value },
-            erstellt_von: currentUser.dienstnummer
+            daten: { k_bericht: document.getElementById('k_bericht').value, von: document.getElementById('k_von').value, nach: document.getElementById('k_nach').value, art: document.getElementById('k_art').value },
+            erstellt_von: user.dienstnummer
         };
-        await saveToDB(p);
+        await finalize(p);
     };
 
-    async function saveToDB(payload) {
-        await _supabase.from('rd_berichte').insert([payload]);
-        await fetch(DISCORD_WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-            embeds: [{ title: `🚨 NEUER ${payload.typ}-BERICHT`, color: payload.typ==='RTW'?16711680:3447003, fields: [{ name: "E-Nummer", value: payload.e_nr }, { name: "Sanitäter", value: currentUser.dienstnummer }]}]
+    async function finalize(payload) {
+        const { error } = await _db.from('rd_berichte').insert([payload]);
+        if(error) { alert("Speicherfehler!"); return; }
+        
+        await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+            embeds: [{ title: `🚨 NEUER EINSATZ: ${payload.e_nr}`, description: `Sanitäter: ${user.dienstnummer}\nTyp: ${payload.typ}\nPatient: ${payload.p_name}`, color: payload.typ==='RTW'?16711680:3447003 }]
         })});
-        alert("EINSATZ ERFOLGREICH GESPEICHERT!"); location.reload();
+        alert("EINSATZ ERFOLGREICH ÜBERMITTELT!"); 
+        location.reload();
     }
 </script>
 </body>
