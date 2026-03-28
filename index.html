@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK Einsatzprotokoll | Ultimate Medical</title>
+    <title>RK Einsatzprotokoll | AVPU Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root { --rk-red: #e2001a; --rk-dark: #b30014; }
@@ -16,8 +16,13 @@
         .schema-row { border-bottom: 1px solid #eee; padding: 8px 0; }
         .schema-header { display: flex; align-items: center; margin-bottom: 5px; }
         .schema-letter { width: 35px; height: 35px; background: var(--rk-red); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 4px; margin-right: 12px; flex-shrink: 0; font-size: 1.1rem; }
-        .opt-btn { font-size: 0.65rem; padding: 2px 6px; margin: 1px; border: 1px solid #ccc; background: #fff; border-radius: 10px; cursor: pointer; display: inline-block; }
+        
+        /* Interaktive Badges */
+        .opt-btn { font-size: 0.65rem; padding: 2px 6px; margin: 1px; border: 1px solid #ccc; background: #fff; border-radius: 10px; cursor: pointer; display: inline-block; transition: 0.2s; }
         .opt-btn.active { background: var(--rk-red); color: white; border-color: var(--rk-dark); }
+        .avpu-btn { font-weight: bold; padding: 5px 10px; border: 2px solid #ddd; }
+        .avpu-btn.active { border-color: var(--rk-dark); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+
         .bodygramm-container { position: relative; width: 280px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
         .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
         .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; }
@@ -30,17 +35,17 @@
 
 <div class="header-rk shadow-sm">
     <h5 class="m-0">ÖSTERREICHISCHES ROTES KREUZ</h5>
-    <small>Protokoll v9.0 | Full Data & Assessment</small>
+    <small>Einsatzprotokoll | AVPU-Schema Fokus</small>
 </div>
 
 <div class="container">
     <div id="loginSection" class="row justify-content-center mt-4">
         <div class="col-md-4"><div class="card p-4 shadow text-center">
-            <h6 class="mb-3">Login</h6>
+            <h6 class="mb-3">Anmeldung</h6>
             <input type="text" id="username" class="form-control mb-2" placeholder="RK-Kennung">
             <input type="password" id="password" class="form-control mb-3" placeholder="Passwort">
             <button class="btn btn-rk w-100" onclick="attemptLogin()">ANMELDEN</button>
-            <div id="loginError" class="text-danger mt-2 small hidden">Login fehlgeschlagen!</div>
+            <div id="loginError" class="text-danger mt-2 small hidden">Zugriff verweigert!</div>
         </div></div>
     </div>
 
@@ -54,39 +59,26 @@
     </div>
 
     <div id="protocolForm" class="hidden">
-        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Abbrechen</button>
+        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Menü</button>
         <form id="einsatzForm">
             
-            <div class="section-title">1. Einsatzdaten (Zeiten & Ort)</div>
+            <div class="section-title">1. Einsatz & Patient</div>
             <div class="card p-3">
                 <div class="row g-2">
-                    <div class="col-6"><label class="form-label">ZID (Einsatz-Nr)</label><input type="text" id="e_nr" class="form-control form-control-sm" required></div>
-                    <div class="col-6"><label class="form-label">FZ (Funk)</label><input type="text" id="fz" class="form-control form-control-sm" placeholder="73/XXX"></div>
-                    <div class="col-12"><label class="form-label">Einsatzort / Zielort</label><input type="text" id="e_ort" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">ZID</label><input type="text" id="e_nr" class="form-control form-control-sm" required></div>
+                    <div class="col-6"><label class="form-label">FZ</label><input type="text" id="fz" class="form-control form-control-sm" placeholder="73/XXX"></div>
+                    <div class="col-12"><label class="form-label">Name Patient</label><input type="text" id="p_name" class="form-control form-control-sm" required></div>
+                    <div class="col-4"><label class="form-label">Sex</label><select id="p_sex" class="form-select form-select-sm"><option>M</option><option>W</option><option>D</option></select></div>
+                    <div class="col-8"><label class="form-label">Geburtsdatum</label><input type="date" id="p_geb" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">SV-Nr</label><input type="text" id="p_sv" class="form-control form-control-sm"></div>
+                    <div class="col-6"><label class="form-label">Kasse</label><input type="text" id="p_kasse" class="form-control form-control-sm"></div>
                     <div class="col-4"><label class="form-label">Alarm</label><input type="time" id="t_alarm" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label">Ausfahrt</label><input type="time" id="t_aus" class="form-control form-control-sm"></div>
                     <div class="col-4"><label class="form-label">Am BO</label><input type="time" id="t_bo" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label">Abfahrt BO</label><input type="time" id="t_abfahrt" class="form-control form-control-sm"></div>
-                    <div class="col-4"><label class="form-label">Am Ziel</label><input type="time" id="t_ziel" class="form-control form-control-sm"></div>
                     <div class="col-4"><label class="form-label">Bereit</label><input type="time" id="t_bereit" class="form-control form-control-sm"></div>
                 </div>
             </div>
 
-            <div class="section-title">2. Patientendaten</div>
-            <div class="card p-3">
-                <div class="row g-2">
-                    <div class="col-8"><label class="form-label">Name, Vorname</label><input type="text" id="p_name" class="form-control form-control-sm" required></div>
-                    <div class="col-4"><label class="form-label">Geschlecht</label>
-                        <select id="p_sex" class="form-select form-select-sm"><option>M</option><option>W</option><option>D</option></select>
-                    </div>
-                    <div class="col-6"><label class="form-label">Geburtsdatum</label><input type="date" id="p_geb" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">SV-Nummer</label><input type="text" id="p_sv" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">Nationalität</label><input type="text" id="p_nat" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">Versicherung (Kasse)</label><input type="text" id="p_kasse" class="form-control form-control-sm"></div>
-                </div>
-            </div>
-
-            <div class="section-title">3. Assessment (ABCDE)</div>
+            <div class="section-title">2. Assessment (ABCDE)</div>
             <div class="card p-3">
                 <div class="schema-row">
                     <div class="schema-header"><div class="schema-letter">A</div><strong>Airway</strong></div>
@@ -95,7 +87,7 @@
                         <span class="opt-btn" onclick="toggleBtn(this, 'abc_a_text', 'Verlegt')">Verlegt</span>
                         <span class="opt-btn" onclick="toggleBtn(this, 'abc_a_text', 'HWS-Schutz')">HWS-Schutz</span>
                     </div>
-                    <input type="text" id="abc_a_text" class="form-control form-control-sm" placeholder="Details...">
+                    <input type="text" id="abc_a_text" class="form-control form-control-sm" placeholder="A-Befund Details...">
                 </div>
                 <div class="schema-row">
                     <div class="schema-header"><div class="schema-letter">B</div><strong>Breathing</strong></div>
@@ -104,7 +96,7 @@
                         <div class="col-4"><input type="text" id="v_spo2" class="form-control form-control-sm" placeholder="SpO2%"></div>
                         <div class="col-4"><input type="text" id="v_etco2" class="form-control form-control-sm" placeholder="etCO2"></div>
                     </div>
-                    <input type="text" id="abc_b_text" class="form-control form-control-sm" placeholder="Auskultation/Details...">
+                    <input type="text" id="abc_b_text" class="form-control form-control-sm" placeholder="Auskultation / Thorax...">
                 </div>
                 <div class="schema-row">
                     <div class="schema-header"><div class="schema-letter">C</div><strong>Circulation</strong></div>
@@ -113,56 +105,51 @@
                         <div class="col-4"><input type="text" id="v_hf" class="form-control form-control-sm" placeholder="HF"></div>
                         <div class="col-4"><input type="text" id="v_rekap" class="form-control form-control-sm" placeholder="Rekap"></div>
                     </div>
-                    <input type="text" id="abc_c_text" class="form-control form-control-sm" placeholder="Blutdruck/Puls Details...">
+                    <input type="text" id="abc_c_text" class="form-control form-control-sm" placeholder="Pulsqualität / Haut...">
                 </div>
+                
                 <div class="schema-row">
-                    <div class="schema-header"><div class="schema-letter">D</div><strong>Disability</strong></div>
-                    <div class="row g-1 mb-2">
-                        <div class="col-6"><select id="v_avpu" class="form-select form-select-sm"><option value="A">Alert</option><option value="V">Verbal</option><option value="P">Pain</option><option value="U">Unresp.</option></select></div>
-                        <div class="col-3"><input type="text" id="v_bz" class="form-control form-control-sm" placeholder="BZ"></div>
-                        <div class="col-3"><input type="text" id="v_gcs" class="form-control form-control-sm" placeholder="GCS"></div>
+                    <div class="schema-header"><div class="schema-letter">D</div><strong>Disability (AVPU)</strong></div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <div class="opt-btn avpu-btn" id="avpu_A" onclick="setAVPU('A')">A</div>
+                        <div class="opt-btn avpu-btn" id="avpu_V" onclick="setAVPU('V')">V</div>
+                        <div class="opt-btn avpu-btn" id="avpu_P" onclick="setAVPU('P')">P</div>
+                        <div class="opt-btn avpu-btn" id="avpu_U" onclick="setAVPU('U')">U</div>
                     </div>
-                    <input type="text" id="abc_d_text" class="form-control form-control-sm" placeholder="Pupillen/FAST/Neurologie...">
+                    <input type="hidden" id="v_avpu_val">
+                    <div class="row g-1 mb-2">
+                        <div class="col-6"><input type="text" id="v_bz" class="form-control form-control-sm" placeholder="BZ (mg/dl)"></div>
+                        <div class="col-6"><input type="text" id="v_pupillen" class="form-control form-control-sm" placeholder="Pupillen"></div>
+                    </div>
+                    <input type="text" id="abc_d_text" class="form-control form-control-sm" placeholder="Neurologische Details / FAST...">
                 </div>
+
                 <div class="schema-row">
                     <div class="schema-header"><div class="schema-letter">E</div><strong>Exposure</strong></div>
-                    <input type="text" id="abc_e_text" class="form-control form-control-sm" placeholder="Bodycheck / Temperatur...">
+                    <input type="text" id="abc_e_text" class="form-control form-control-sm" placeholder="Temp / Bodycheck / Verletzungen...">
                 </div>
             </div>
 
-            <div class="section-title">4. SAMPLER</div>
+            <div class="section-title">3. SAMPLER & OPQRST</div>
             <div class="card p-3">
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">S</div><input type="text" id="s_s" class="form-control form-control-sm" placeholder="Symptome"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">A</div><input type="text" id="s_a" class="form-control form-control-sm" placeholder="Allergien"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">M</div><input type="text" id="s_m" class="form-control form-control-sm" placeholder="Medikamente"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">P</div><input type="text" id="s_p" class="form-control form-control-sm" placeholder="Patientengeschichte"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">L</div><input type="text" id="s_l" class="form-control form-control-sm" placeholder="Letzte Mahlzeit"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">E</div><input type="text" id="s_e" class="form-control form-control-sm" placeholder="Ereignis"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#555">R</div><input type="text" id="s_r" class="form-control form-control-sm" placeholder="Risikofaktoren"></div>
+                <label class="form-label">SAMPLER</label>
+                <textarea id="s_sampler" class="form-control form-control-sm mb-2" rows="2" placeholder="S-A-M-P-L-E-R"></textarea>
+                <label class="form-label">OPQRST</label>
+                <textarea id="o_opqrst" class="form-control form-control-sm" rows="2" placeholder="O-P-Q-R-S-T"></textarea>
             </div>
 
-            <div class="section-title">5. OPQRST</div>
-            <div class="card p-3">
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#777">O</div><input type="text" id="o_o" class="form-control form-control-sm" placeholder="Onset"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#777">P</div><input type="text" id="o_p" class="form-control form-control-sm" placeholder="Provokation"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#777">Q</div><input type="text" id="o_q" class="form-control form-control-sm" placeholder="Qualität"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#777">R</div><input type="text" id="o_r" class="form-control form-control-sm" placeholder="Region"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#777">S</div><input type="number" id="o_s" class="form-control form-control-sm" placeholder="Stärke 1-10"></div>
-                <div class="d-flex schema-row align-items-center"><div class="schema-letter" style="background:#777">T</div><input type="text" id="o_t" class="form-control form-control-sm" placeholder="Time"></div>
-            </div>
-
-            <div class="section-title">6. Bodygramm</div>
+            <div class="section-title">4. Bodygramm</div>
             <div class="card p-2 text-center">
                 <div class="bodygramm-container" id="bodyWrapper"><img src="grafik.png" id="bodyImg" class="body-img" alt="Grafik"></div>
                 <button type="button" class="btn btn-xs btn-outline-danger mt-1" onclick="clearMarkers()">Löschen</button>
             </div>
 
-            <div class="section-title">7. Bericht & Signatur</div>
+            <div class="section-title">5. Bericht & Unterschrift</div>
             <div class="card p-3">
-                <textarea id="v_text" class="form-control mb-2" rows="4" placeholder="Maßnahmen / Verlauf / Übergabe..."></textarea>
+                <textarea id="v_text" class="form-control mb-2" rows="4" placeholder="Maßnahmen / Verlauf..."></textarea>
                 <canvas id="signature-pad" class="sig-canvas"></canvas>
             </div>
-            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3 mb-5">🚨 EINSATZ SPEICHERN</button>
+            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3 mb-5">🚨 EINSATZ ARCHIVIEREN</button>
         </form>
     </div>
 
@@ -192,6 +179,13 @@
     const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
     const modal = new bootstrap.Modal(document.getElementById('markerModal'));
 
+    // Spezielle Funktion für AVPU Selection
+    function setAVPU(val) {
+        document.querySelectorAll('.avpu-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('avpu_' + val).classList.add('active');
+        document.getElementById('v_avpu_val').value = val;
+    }
+
     function toggleBtn(el, inputId, val) {
         el.classList.toggle('active');
         const input = document.getElementById(inputId);
@@ -204,6 +198,7 @@
         if(found) { currentUser = found; showSection('mainMenu'); if(found.r === 'admin') document.getElementById('adminBtn').classList.remove('hidden'); }
         else { document.getElementById('loginError').classList.remove('hidden'); }
     }
+
     function showSection(id) { document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
     function logout() { location.reload(); }
     function openArchive() { showSection('archiveSection'); renderArchive(); }
@@ -223,7 +218,8 @@
         e.preventDefault();
         reports.push({zid: document.getElementById('e_nr').value, patient: document.getElementById('p_name').value, date: new Date().toLocaleDateString(), san: currentUser.u });
         localStorage.setItem('rk_reports', JSON.stringify(reports));
-        alert("Einsatz erfolgreich archiviert!"); showSection('mainMenu'); this.reset(); clearMarkers(); signaturePad.clear();
+        alert("Einsatz erfolgreich gespeichert!"); showSection('mainMenu'); this.reset(); clearMarkers(); signaturePad.clear();
+        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
     };
 </script>
 </body>
