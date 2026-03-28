@@ -2,47 +2,22 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RK CLOUD OS - Tactical V5 Optimized</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RK CLOUD OS - Tactical V5 Demo Login</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 :root {
     --rk-red: #E2001A;
-    --rk-dark: #212529;
-    --status-crit: #ffcccc;
-    --status-ok: #ccffcc;
 }
 body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-
-/* Header */
 .rk-header-main { background: var(--rk-red); color: white; padding: 12px; position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 .view-section { display: none; padding: 15px; }
 .active-view { display: block !important; }
-
-/* Module */
 .module-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-.module-title { font-size: 0.75rem; font-weight: 800; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-/* Grid & Buttons */
-.grid-compact { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.btn-choice { border: 1px solid #ddd; background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: 0.2s; text-align: center; cursor: pointer; }
-.btn-choice.active { background: var(--rk-red); color: white; border-color: var(--rk-red); }
-
-/* Vitalwerte */
-.vital-input { font-size: 1.5rem; font-weight: 900; color: var(--rk-red); text-align: center; border: none; background: #fdfdfd; width: 100%; }
-.vital-box { border: 2px solid #eee; border-radius: 10px; padding: 5px; background: white; }
-
-/* Body Canvas */
-.body-canvas { position: relative; width: 100%; max-width: 320px; margin: 0 auto; border: 1px solid #ddd; border-radius: 15px; overflow: hidden; }
-canvas#markerCanvas { width: 100%; height: auto; }
-
-/* Navigation */
+.module-title { font-size: 0.75rem; font-weight: 800; color: #6c757d; text-transform: uppercase; margin-bottom: 12px; }
 .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1500; }
 .nav-item { flex: 1; text-align: center; padding: 12px; font-size: 0.7rem; font-weight: bold; color: #666; text-decoration: none; }
 .nav-item.active { color: var(--rk-red); border-top: 3px solid var(--rk-red); }
-
-/* ABCDE */
-.abcde-letter { width: 35px; height: 35px; background: var(--rk-red); color: white; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin-right: 10px; }
 </style>
 </head>
 <body>
@@ -65,122 +40,32 @@ canvas#markerCanvas { width: 100%; height: auto; }
     <button id="submitReportBtn" class="btn btn-light btn-sm fw-bold text-danger">ABSCHLUSS</button>
   </div>
 
-  <!-- List View -->
   <div id="listView" class="view-section active-view">
-    <button onclick="startNew('RTW')" class="btn btn-danger w-100 py-4 mb-3 rounded-4 shadow fw-bold fs-4">🚑 NEUER EINSATZ</button>
-    <div id="protocolList" style="max-height:400px; overflow-y:auto;"></div>
-    <button id="loadMoreBtn" class="btn btn-outline-secondary w-100 mt-2">Weitere laden...</button>
+    <button class="btn btn-danger w-100 py-4 mb-3 rounded-4 shadow fw-bold fs-4">🚑 NEUER EINSATZ</button>
+    <div id="protocolList"></div>
   </div>
 
-  <!-- Edit View -->
-  <div id="editView" class="view-section">
-    <!-- Patient -->
-    <div class="module-card">
-      <div class="module-title">Einsatz & Patient</div>
-      <div class="row g-2">
-        <div class="col-7"><input id="r_p_name" class="form-control" placeholder="Name, Vorname"></div>
-        <div class="col-5"><input id="r_e_nr" class="form-control" placeholder="E-Nr"></div>
-        <div class="col-7"><input id="r_p_svnr" class="form-control" placeholder="SV-Nr"></div>
-        <div class="col-5"><input id="r_p_geb" type="date" class="form-control"></div>
-      </div>
-    </div>
-
-    <!-- ABCDE -->
-    <div class="module-card">
-      <div class="module-title">ABCDE (Triage)</div>
-      <div id="abcde_container">
-        <div class="d-flex align-items-center mb-3">
-          <div class="abcde-letter">A</div>
-          <div class="flex-grow-1">
-            <div class="tag-cloud mb-1" data-target="abcde_a">
-              <span class="btn-choice me-1">Frei</span>
-              <span class="btn-choice me-1">Verlegt</span>
-            </div>
-            <input id="abcde_a" class="form-control form-control-sm" placeholder="Atemweg Details...">
-          </div>
-        </div>
-        <div class="d-flex align-items-center mb-3">
-          <div class="abcde-letter">B</div>
-          <div class="flex-grow-1">
-            <div class="tag-cloud mb-1" data-target="abcde_b">
-              <span class="btn-choice me-1">Normal</span>
-              <span class="btn-choice me-1">Dyspnoe</span>
-            </div>
-            <input id="abcde_b" class="form-control form-control-sm" placeholder="Belüftung Details...">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vitalwerte -->
-    <div class="module-card">
-      <div class="module-title">Vitalparameter</div>
-      <div class="row g-2 text-center">
-        <div class="col-4 vital-box"><label class="small text-muted">HF</label><input id="v_hf" type="number" class="vital-input" placeholder="--"></div>
-        <div class="col-4 vital-box"><label class="small text-muted">RR</label><input id="v_rr" type="text" class="vital-input" placeholder="--/--"></div>
-        <div class="col-4 vital-box"><label class="small text-muted">SpO2</label><input id="v_spo2" type="number" class="vital-input" placeholder="--"></div>
-        <div class="col-4 vital-box mt-2"><label class="small text-muted">BZ</label><input id="v_bz" type="number" class="vital-input" placeholder="--"></div>
-        <div class="col-4 vital-box mt-2"><label class="small text-muted">GCS</label><input id="v_gcs" type="number" class="vital-input" placeholder="15"></div>
-        <div class="col-4 vital-box mt-2"><label class="small text-muted">TEMP</label><input id="v_temp" type="number" class="vital-input" placeholder="36"></div>
-      </div>
-    </div>
-
-    <!-- Body -->
-    <div class="module-card">
-      <div class="module-title">Befund (B-S-F)</div>
-      <div class="body-canvas">
-        <canvas id="markerCanvas"></canvas>
-      </div>
-      <div class="d-flex justify-content-between mt-3">
-        <button class="btn btn-warning w-100 me-1 fw-bold" data-mtype="S">SCHMERZ</button>
-        <button class="btn btn-primary w-100 me-1 fw-bold" data-mtype="F">FRAKTUR</button>
-        <button class="btn btn-danger w-100 fw-bold" data-mtype="W">WUNDE</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Navigation -->
   <div class="nav-bottom">
     <a href="#" class="nav-item active" data-tab="listView">JOURNAL</a>
-    <a href="#" class="nav-item" data-tab="editView">EINSATZ</a>
-    <a href="#" class="nav-item" id="sbarTab">SBAR-CHECK</a>
   </div>
 </div>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-const SUPABASE_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
-const SUPABASE_KEY = "public-anon-key"; // Für echte Nutzung Server-Only verwenden!
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let currentUser = null;
-let markers = [];
-let mType = "S";
-let reportOffset = 0;
-const REPORT_LIMIT = 20;
-
-// LOGIN
-document.getElementById("loginBtn").addEventListener("click", async () => {
+<script>
+// Demo-Fix Login: RK-02 / AppearIron22
+document.getElementById("loginBtn").addEventListener("click", () => {
   const dn = document.getElementById("login_dn").value;
   const pw = document.getElementById("login_pw").value;
-  
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("dienstnummer", dn)
-    .eq("passwort", pw) // In Produktion: Passwort gehashed prüfen!
-    .single();
 
-  if(data) {
-    currentUser = data;
+  if(dn === "RK-02" && pw === "AppearIron22") {
     document.getElementById("loginView").style.display = "none";
     document.getElementById("appInterface").style.display = "block";
-    loadReports();
-  } else alert("Zugriff verweigert.");
+    alert("Login erfolgreich! Willkommen RK-02.");
+  } else {
+    alert("Zugriff verweigert. Dienstnummer oder Passwort falsch.");
+  }
 });
 
-// TAB SWITCH
+// Tab Navigation (falls mehrere Views)
 document.querySelectorAll(".nav-item").forEach(tab => {
   tab.addEventListener("click", e => {
     e.preventDefault();
@@ -190,105 +75,7 @@ document.querySelectorAll(".nav-item").forEach(tab => {
     tab.classList.add("active");
   });
 });
-
-// QUICK TAGS
-document.addEventListener("click", e => {
-  if(e.target.matches(".tag-cloud .btn-choice")) {
-    const container = e.target.closest(".tag-cloud");
-    const targetId = container.dataset.target;
-    const el = document.getElementById(targetId);
-    el.value = el.value ? el.value + ", " + e.target.textContent : e.target.textContent;
-  }
-});
-
-// MARKER CANVAS
-const canvas = document.getElementById("markerCanvas");
-const ctx = canvas.getContext("2d");
-const img = new Image();
-img.src = "grafik.png";
-img.onload = () => {
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.drawImage(img,0,0);
-};
-canvas.addEventListener("click", e => {
-  const rect = canvas.getBoundingClientRect();
-  const x = ((e.clientX - rect.left)/rect.width)*100;
-  const y = ((e.clientY - rect.top)/rect.height)*100;
-  markers.push({type:mType,x,y});
-  drawMarkers();
-});
-document.querySelectorAll('[data-mtype]').forEach(btn => {
-  btn.addEventListener("click", e => mType = e.target.dataset.mtype);
-});
-function drawMarkers() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(img,0,0);
-  const colors = {S:'#f39c12',F:'#3498db',W:'#c0392b'};
-  markers.forEach(m=>{
-    ctx.fillStyle = colors[m.type];
-    ctx.beginPath();
-    ctx.arc((m.x/100)*canvas.width,(m.y/100)*canvas.height,15,0,2*Math.PI);
-    ctx.fill();
-  });
-}
-
-// LOAD REPORTS
-async function loadReports() {
-  const { data, error } = await supabase
-    .from("rd_berichte")
-    .select("*")
-    .order("created_at",{ascending:false})
-    .range(reportOffset, reportOffset+REPORT_LIMIT-1);
-  
-  const list = document.getElementById("protocolList");
-  data.forEach(b=>{
-    const div = document.createElement("div");
-    div.className = "module-card border-start border-danger border-5 py-2";
-    div.innerHTML = `<div class="d-flex justify-content-between small"><b>#${b.e_nr}</b><span>${new Date(b.created_at).toLocaleTimeString()}</span></div>
-                     <div class="fw-bold">${b.p_name||'Unbekannt'}</div>`;
-    list.appendChild(div);
-  });
-  reportOffset += REPORT_LIMIT;
-}
-
-// LOAD MORE
-document.getElementById("loadMoreBtn").addEventListener("click", loadReports);
-
-// SBAR GENERATOR
-document.getElementById("sbarTab").addEventListener("click", ()=>{
-  const msg = `S: ${document.getElementById("r_p_name").value||'N.N.'}, Einsatz #${document.getElementById("r_e_nr").value}
-B: ${document.getElementById("s_meds")?.value||''}
-A: ABCDE A:${document.getElementById("abcde_a").value}, B:${document.getElementById("abcde_b").value}
-R: Transport in Zielklinik`;
-  alert("SBAR Vorschlag:\n\n"+msg);
-});
-
-// SUBMIT REPORT
-document.getElementById("submitReportBtn").addEventListener("click", async ()=>{
-  const payload = {
-    e_nr: document.getElementById("r_e_nr").value,
-    p_name: document.getElementById("r_p_name").value,
-    erstellt_von: currentUser.dienstnummer,
-    daten: {
-      vital: {
-        hf: document.getElementById("v_hf").value,
-        rr: document.getElementById("v_rr").value,
-        spo2: document.getElementById("v_spo2").value,
-        bz: document.getElementById("v_bz").value,
-        gcs: document.getElementById("v_gcs").value,
-        temp: document.getElementById("v_temp").value
-      },
-      abcde: {
-        a: document.getElementById("abcde_a").value,
-        b: document.getElementById("abcde_b").value
-      },
-      markers
-    }
-  };
-  const { data, error } = await supabase.from("rd_berichte").insert([payload]);
-  if(data) { alert("Einsatz erfolgreich gespeichert."); document.getElementById("protocolList").innerHTML=""; reportOffset=0; loadReports(); }
-});
 </script>
+
 </body>
 </html>
