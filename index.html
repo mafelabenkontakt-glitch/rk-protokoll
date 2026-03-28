@@ -3,33 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK Cloud OS | ULTRA MAXIMAL V6.0 PRO</title>
+    <title>RK Cloud OS | ULTRA MAXIMAL V7.2 FINAL</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --rk-red: #e2001a; --rk-dark: #b30014; --rk-blue: #0056b3; --rk-grey: #2c3e50; }
         body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; }
-        
         #loginView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--rk-red) 0%, #8b0000 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-card { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); width: 90%; max-width: 420px; text-align: center; }
-
         .header-rk { background: var(--rk-red); color: white; padding: 20px; text-align: center; border-bottom: 6px solid var(--rk-dark); box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 25px; position: sticky; top: 0; z-index: 1000; }
         .section-title { background: var(--rk-grey); color: white; padding: 12px; font-weight: bold; border-left: 8px solid var(--rk-red); margin: 30px 0 15px 0; border-radius: 5px; text-transform: uppercase; }
         .card { border: none; border-radius: 15px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        
         .vital-row { background: #fff; padding: 18px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #dee2e6; border-left: 6px solid var(--rk-red); }
         .time-label { font-size: 0.7rem; font-weight: 800; color: #555; text-transform: uppercase; display: block; margin-bottom: 3px; }
-        
         .bodygramm-container { position: relative; width: 320px; margin: 15px auto; background: white; border: 2px solid #ddd; border-radius: 12px; padding: 10px; }
         .body-img { width: 100%; height: auto; cursor: crosshair; }
         .marker { position: absolute; width: 28px; height: 28px; border-radius: 50%; color: white; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; }
         .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
-
         .sig-canvas { border: 2px dashed #bbb; background: #fff; width: 100%; height: 200px; border-radius: 12px; touch-action: none; }
         .btn-rk { background: var(--rk-red); color: white; font-weight: bold; border: none; padding: 18px; transition: 0.3s; border-radius: 10px; }
-        
-        #mainAppRTW, #listView { display: none; }
+        #mainAppRTW, #listView, #detailView { display: none; }
         .active-view { display: block !important; }
         .med-item { background: #e9ecef; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--rk-blue); }
     </style>
@@ -38,40 +32,45 @@
 
 <div id="loginView">
     <div class="login-card">
-        <h2 class="fw-bold mb-1" style="color: var(--rk-red)">RK CLOUD 6.0</h2>
-        <p class="text-muted small mb-4">Admin-Modus & Discord Active</p>
+        <h2 class="fw-bold mb-1" style="color: var(--rk-red)">RK CLOUD 7.2</h2>
         <input type="text" id="login_dn" class="form-control mb-3 p-3" placeholder="RK-02 (Dienstnummer)">
         <input type="password" id="login_pw" class="form-control mb-4 p-3" placeholder="Passwort">
-        <button onclick="login()" class="btn btn-rk w-100 shadow">SYSTEM STARTEN</button>
+        <button onclick="login()" class="btn btn-rk w-100">LOGIN</button>
         <p id="loginStatus" class="mt-3 text-danger fw-bold small"></p>
     </div>
 </div>
 
 <div id="listView" class="container mt-4">
     <div class="header-rk rounded-4">
-        <h3 id="welcomeMsg">EINSATZ-ZENTRALE</h3>
-        <div class="d-flex justify-content-center gap-2 mt-3">
-            <button class="btn btn-light fw-bold px-4" onclick="startFlow('RTW')">➕ NEUER EINSATZ</button>
-            <button class="btn btn-outline-light btn-sm" onclick="logout()">LOGOUT</button>
-        </div>
+        <h3 id="welcomeMsg">EINSATZÜBERSICHT</h3>
+        <button class="btn btn-light fw-bold mt-2" onclick="startFlow('RTW')">➕ NEUER EINSATZ</button>
+        <button class="btn btn-outline-light btn-sm mt-2" onclick="logout()">LOGOUT</button>
     </div>
-    <div class="card p-4">
-        <h5 class="fw-bold border-bottom pb-2">Berichtsarchiv (Cloud)</h5>
+    <div class="card p-4 shadow-sm">
+        <h5 class="fw-bold border-bottom pb-2">Berichtsarchiv</h5>
         <div class="table-responsive"><table class="table table-hover align-middle">
-            <thead><tr><th>E-Nr</th><th>Patient</th><th>Datum</th><th id="adminColHead" style="display:none;">Löschen</th></tr></thead>
-            <tbody id="protocolTableBody"></tbody>
+            <thead><tr><th>E-Nr</th><th>Patient</th><th>Datum</th><th>Aktion</th></tr></thead>
+            <tbody id="protocolTableBody" style="cursor: pointer;"></tbody>
         </table></div>
     </div>
 </div>
 
+<div id="detailView" class="container mt-3">
+    <div class="header-rk rounded-4">
+        <button class="btn btn-sm btn-light float-start" onclick="showList()">⬅ ZURÜCK</button>
+        <h3>PROTOKOLL DETAILS</h3>
+    </div>
+    <div id="detailContent" class="card p-4 shadow-sm bg-white"></div>
+</div>
+
 <div id="mainAppRTW" class="container mt-3">
     <div class="header-rk rounded-4">
-        <button class="btn btn-sm btn-light float-start" onclick="location.reload()">⬅ ABBRUCH</button>
-        <h3 class="mb-0">🚑 RTW NOTFALLPROTOKOLL</h3>
+        <button class="btn btn-sm btn-light float-start" onclick="showList()">⬅ ABBRUCH</button>
+        <h3>🚑 RTW NOTFALLPROTOKOLL</h3>
     </div>
 
     <form id="rtwForm">
-        <div class="section-title">1. Einsatzzeiten (S1-S7)</div>
+        <div class="section-title">1. Einsatzdaten & Zeiten (S1-S7)</div>
         <div class="card p-3">
             <div class="row g-2 mb-3">
                 <div class="col-6 col-md-4"><span class="time-label">Alarmierung</span><input type="time" id="t_alarm" class="form-control"></div>
@@ -82,106 +81,118 @@
                 <div class="col-6 col-md-4"><span class="time-label">S1 (Bereit)</span><input type="time" id="t_s1" class="form-control"></div>
             </div>
             <div class="row g-3">
-                <div class="col-md-6"><label class="form-label fw-bold">E-Nummer</label><input type="text" id="r_e_nr" class="form-control" required></div>
-                <div class="col-md-6"><label class="form-label fw-bold">Team / Funkname</label><input type="text" id="r_team" class="form-control"></div>
+                <div class="col-md-4"><label class="fw-bold">E-Nummer</label><input type="text" id="r_e_nr" class="form-control" required></div>
+                <div class="col-md-4"><label class="fw-bold">Fahrzeug</label><input type="text" id="r_fz" class="form-control"></div>
+                <div class="col-md-4"><label class="fw-bold">Team</label><input type="text" id="r_team" class="form-control"></div>
             </div>
         </div>
 
         <div class="section-title">2. Patient & Bodygramm</div>
         <div class="card p-3">
-            <input type="text" id="r_p_name" class="form-control mb-3" placeholder="Name, Vorname des Patienten">
+            <div class="row g-3 mb-3">
+                <div class="col-md-8"><input type="text" id="r_p_name" class="form-control" placeholder="Name, Vorname"></div>
+                <div class="col-md-4"><input type="date" id="r_p_geb" class="form-control"></div>
+                <div class="col-12"><input type="text" id="r_p_adr" class="form-control" placeholder="Anschrift / Wohnort"></div>
+            </div>
             <div class="bodygramm-container" id="bodyWrapper">
                 <img src="grafik.png" id="bodyImg" class="body-img" alt="[Bodygramm Grafik]">
             </div>
-            <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="clearMarkers()">Alle Marker entfernen</button>
+            <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="clearMarkers()">Alle Marker löschen</button>
         </div>
 
-        <div class="section-title">3. Klinischer Befund (ABCDE + AVPU)</div>
+        <div class="section-title">3. Befund (ABCDE)</div>
         <div class="vital-row">
-            <label class="text-danger fw-bold fs-5">A - AIRWAY</label>
+            <label class="text-danger fw-bold">A - AIRWAY</label>
             <select id="r_a_stat" class="form-select mb-2"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select>
-            <textarea id="r_a_text" class="form-control" rows="2" placeholder="Zusätzliche Notizen zu A (Freitext)..."></textarea>
+            <textarea id="r_a_text" class="form-control" rows="2" placeholder="Notizen zu A..."></textarea>
         </div>
-
         <div class="vital-row">
-            <label class="text-danger fw-bold fs-5">B - BREATHING</label>
+            <label class="text-danger fw-bold">B - BREATHING</label>
             <div class="row g-2 mb-2">
-                <div class="col-6"><input type="text" id="r_v_af" class="form-control" placeholder="AF"></div>
-                <div class="col-6"><input type="text" id="r_v_sp" class="form-control" placeholder="SpO2%"></div>
+                <div class="col-4"><input type="text" id="r_v_af" class="form-control" placeholder="AF"></div>
+                <div class="col-4"><input type="text" id="r_v_sp" class="form-control" placeholder="SpO2%"></div>
+                <div class="col-4"><select id="r_b_ausk" class="form-select"><option>o.B.</option><option>Giemen</option><option>Rasseln</option></select></div>
             </div>
-            <textarea id="r_b_text" class="form-control" rows="2" placeholder="Zusätzliche Notizen zu B (Freitext)..."></textarea>
+            <textarea id="r_b_text" class="form-control" rows="2" placeholder="Notizen zu B..."></textarea>
         </div>
-
         <div class="vital-row">
-            <label class="text-danger fw-bold fs-5">C - CIRCULATION</label>
+            <label class="text-danger fw-bold">C - CIRCULATION</label>
             <div class="row g-2 mb-2">
-                <div class="col-6"><input type="text" id="r_v_hf" class="form-control" placeholder="HF"></div>
-                <div class="col-6"><input type="text" id="r_v_rr" class="form-control" placeholder="RR"></div>
+                <div class="col-3"><input type="text" id="r_v_hf" class="form-control" placeholder="HF"></div>
+                <div class="col-3"><input type="text" id="r_v_rr" class="form-control" placeholder="RR"></div>
+                <div class="col-3"><select id="r_c_rekap" class="form-select"><option>< 2s</option><option>> 2s</option></select></div>
+                <div class="col-3"><select id="r_c_haut" class="form-select"><option>Warm/Trocken</option><option>Kalt/Schweißig</option></select></div>
             </div>
-            <textarea id="r_c_text" class="form-control" rows="2" placeholder="Zusätzliche Notizen zu C (Freitext)..."></textarea>
+            <textarea id="r_c_text" class="form-control" rows="2" placeholder="Notizen zu C..."></textarea>
         </div>
-
         <div class="vital-row">
-            <label class="text-danger fw-bold fs-5">D - DISABILITY (Neurologie)</label>
-            <label class="time-label mt-1">AVPU Schema</label>
-            <select id="r_v_avpu" class="form-select mb-2 fw-bold border-primary">
-                <option value="A">A (Alert - Wach)</option>
-                <option value="V">V (Voice - Reaktion auf Ansprache)</option>
-                <option value="P">P (Pain - Reaktion auf Schmerz)</option>
-                <option value="U">U (Unresponsive - Reaktionslos)</option>
-            </select>
-            <textarea id="r_d_text" class="form-control" rows="2" placeholder="Zusätzliche Notizen zu D (Freitext)..."></textarea>
+            <label class="text-danger fw-bold">D - DISABILITY</label>
+            <div class="row g-2 mb-2">
+                <div class="col-6"><select id="r_v_avpu" class="form-select fw-bold border-primary"><option value="A">A (Alert)</option><option value="V">V (Voice)</option><option value="P">P (Pain)</option><option value="U">U (Unresponsive)</option></select></div>
+                <div class="col-3"><input type="text" id="r_v_bz" class="form-control" placeholder="BZ"></div>
+                <div class="col-3"><select id="r_v_pup" class="form-select"><option>Isokor</option><option>Anisokor</option></select></div>
+            </div>
+            <textarea id="r_d_text" class="form-control" rows="2" placeholder="Notizen zu D..."></textarea>
         </div>
-
         <div class="vital-row">
-            <label class="text-danger fw-bold fs-5">E - EXPOSURE</label>
-            <textarea id="r_e_text" class="form-control mt-2" rows="2" placeholder="Notizen zu E (Freitext)..."></textarea>
+            <label class="text-danger fw-bold">E - EXPOSURE</label>
+            <input type="text" id="r_v_temp" class="form-control mb-2" placeholder="Temp °C">
+            <textarea id="r_e_text" class="form-control" rows="2" placeholder="Notizen zu E..."></textarea>
         </div>
 
-        <div class="section-title">4. Medikamente (Full List)</div>
+        <div class="section-title">4. Anamnese (OPQRST & SAMPLER)</div>
+        <div class="card p-3">
+            <div class="row g-2 mb-3">
+                <div class="col-4"><input type="text" id="o_o" class="form-control" placeholder="Onset"></div>
+                <div class="col-4"><input type="text" id="o_p" class="form-control" placeholder="Provoc."></div>
+                <div class="col-4"><input type="text" id="o_q" class="form-control" placeholder="Quality"></div>
+                <div class="col-4"><input type="text" id="o_r" class="form-control" placeholder="Radiat."></div>
+                <div class="col-4"><input type="text" id="o_s" class="form-control" placeholder="Severity"></div>
+                <div class="col-4"><input type="text" id="o_t" class="form-control" placeholder="Time"></div>
+            </div>
+            <hr>
+            <div class="row g-2">
+                <div class="col-12"><input type="text" id="s_s" class="form-control mb-1" placeholder="Symptome"></div>
+                <div class="col-12"><input type="text" id="s_a" class="form-control mb-1" placeholder="Allergien"></div>
+                <div class="col-12"><input type="text" id="s_m" class="form-control mb-1" placeholder="Medikamente"></div>
+                <div class="col-12"><input type="text" id="s_p" class="form-control mb-1" placeholder="Patientengeschichte"></div>
+                <div class="col-12"><input type="text" id="s_l" class="form-control mb-1" placeholder="Letzte Mahlzeit"></div>
+                <div class="col-12"><input type="text" id="s_e" class="form-control" placeholder="Ereignis"></div>
+            </div>
+        </div>
+
+        <div class="section-title">5. Medikamente</div>
         <div class="card p-3">
             <div class="d-flex gap-2 mb-3">
                 <select id="medSelect" class="form-select">
-                    <option value="">-- Medikament wählen --</option>
-                    <option>Adrenalin</option><option>Amiodaron</option><option>Anexate</option><option>Arduan</option>
-                    <option>Aspisol</option><option>Atropin</option><option>Beloc</option><option>Berodual</option>
-                    <option>Buscopan</option><option>Catapresan</option><option>Combivent</option><option>Decortin</option>
-                    <option>Diazepam</option><option>Dobutamin</option><option>Dopamin</option><option>Dormicum</option>
-                    <option>Ebrantil</option><option>Esmeron</option><option>Etomidat</option><option>Fenistil</option>
-                    <option>Fentanyl</option><option>Furosemid</option><option>Glukose 20%</option><option>Heparin</option>
-                    <option>Isoket</option><option>Ketanest S</option><option>Lidocain</option><option>Midazolam</option>
-                    <option>Morphin</option><option>Naloxon</option><option>Nitro-Spray</option><option>Novalgin</option>
-                    <option>Paspertin</option><option>Prednisolon</option><option>Propofol</option><option>Tavor</option>
-                    <option>Valium</option><option>Vomex</option>
+                    <option value="">-- Wählen --</option>
+                    <option>Adrenalin</option><option>Amiodaron</option><option>Anexate</option><option>Aspisol</option><option>Atropin</option><option>Beloc</option><option>Berodual</option><option>Buscopan</option><option>Catapresan</option><option>Combivent</option><option>Decortin</option><option>Diazepam</option><option>Dormicum</option><option>Ebrantil</option><option>Esmeron</option><option>Etomidat</option><option>Fenistil</option><option>Fentanyl</option><option>Furosemid</option><option>Glukose 20%</option><option>Heparin</option><option>Ketanest S</option><option>Lidocain</option><option>Morphin</option><option>Naloxon</option><option>Nitro-Spray</option><option>Novalgin</option><option>Paspertin</option><option>Prednisolon</option><option>Propofol</option><option>Tavor</option><option>Vomex</option>
                 </select>
                 <button type="button" class="btn btn-primary" onclick="addMed()">➕</button>
             </div>
             <div id="medList"></div>
         </div>
 
-        <div class="section-title">5. Protokoll Abschluss</div>
+        <div class="section-title">6. Einsatzbericht & Abschluss</div>
         <div class="card p-3">
-            <label class="form-label fw-bold">Ausführlicher Einsatzbericht</label>
-            <textarea id="r_text" class="form-control mb-3" rows="10" placeholder="Maßnahmen, Transportverlauf..."></textarea>
-            <label class="form-label fw-bold">Signatur Verantwortlicher</label>
+            <textarea id="r_text" class="form-control mb-3" rows="8" placeholder="Ausführlicher Bericht..."></textarea>
             <canvas id="sig-rtw" class="sig-canvas"></canvas>
-            <button type="button" class="btn btn-sm btn-link text-danger" onclick="sigRtw.clear()">Unterschrift löschen</button>
+            <button type="button" class="btn btn-sm btn-link text-danger" onclick="sigRtw.clear()">Signatur löschen</button>
         </div>
 
-        <button type="submit" class="btn btn-rk w-100 py-4 mb-5 shadow-lg fs-2">🚨 BERICHT FINALISIEREN</button>
+        <button type="submit" class="btn btn-rk w-100 py-4 mb-5 shadow-lg fs-2">🚨 SPEICHERN & DISCORD SENDEN</button>
     </form>
 </div>
 
 <div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content p-3 text-center">
-    <button onclick="place('Schmerz','S','m-pain')" class="btn btn-warning w-100 mb-2 py-2">🔥 Schmerz</button>
-    <button onclick="place('Fraktur','F','m-bone')" class="btn btn-primary w-100 mb-2 py-2">🦴 Fraktur</button>
-    <button onclick="place('Wunde','W','m-wound')" class="btn btn-danger w-100 py-2">🩸 Wunde</button>
+    <button onclick="place('S','m-pain')" class="btn btn-warning w-100 mb-2">🔥 Schmerz</button>
+    <button onclick="place('F','m-bone')" class="btn btn-primary w-100 mb-2">🦴 Fraktur</button>
+    <button onclick="place('W','m-wound')" class="btn btn-danger w-100">🩸 Wunde</button>
 </div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
 <script>
-    // --- KONFIGURATION ---
     const SUPABASE_URL = 'https://rnfbggoetkmgxqdvznrm.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg';
     const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
@@ -197,7 +208,6 @@
             currentUser = JSON.parse(saved);
             document.getElementById('loginView').style.display = 'none';
             document.getElementById('listView').classList.add('active-view');
-            document.getElementById('welcomeMsg').innerText = `E-ZENTRALE | ${currentUser.dienstnummer} (${currentUser.rolle || 'Sanitäter'})`;
             loadProtocols();
         }
     };
@@ -210,81 +220,69 @@
     }
 
     function logout() { localStorage.removeItem('rk_user'); location.reload(); }
-    function startFlow(type) { document.getElementById('listView').classList.remove('active-view'); document.getElementById('mainAppRTW').classList.add('active-view'); }
-
-    // --- DISCORD SENDEN ---
-    async function sendToDiscord(payload) {
-        const embed = {
-            embeds: [{
-                title: `🚒 EINSATZPROTOKOLL: ${payload.e_nr}`,
-                color: 14811162,
-                fields: [
-                    { name: "Patient", value: payload.p_name || "Unbekannt", inline: true },
-                    { name: "Team/FZ", value: document.getElementById('r_team').value || "-", inline: true },
-                    { name: "AVPU", value: document.getElementById('r_v_avpu').value, inline: true },
-                    { name: "Zeiten", value: `Alarm: ${document.getElementById('t_alarm').value} | S3: ${document.getElementById('t_s3').value} | S7: ${document.getElementById('t_s7').value}` },
-                    { name: "Klinik (ABCDE)", value: `A: ${document.getElementById('r_a_text').value || 'o.B.'}\nB: ${document.getElementById('r_b_text').value || 'o.B.'}\nC: ${document.getElementById('r_c_text').value || 'o.B.'}\nD: ${document.getElementById('r_d_text').value || 'o.B.'}` },
-                    { name: "Medikamente", value: selectedMeds.length > 0 ? selectedMeds.map(m => m.name + " (" + m.dose + ")").join(', ') : "Keine" },
-                    { name: "Einsatzbericht", value: document.getElementById('r_text').value.substring(0, 500) || "Kein Text" }
-                ],
-                footer: { text: `Erstellt von: ${currentUser.dienstnummer}` },
-                timestamp: new Date()
-            }]
-        };
-        await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(embed) });
-    }
-
-    // --- PROTOKOLL LÖSCHEN (ADMIN ONLY) ---
-    async function deleteProtocol(id) {
-        if(currentUser.rolle !== 'admin' && currentUser.rolle !== 'leitung') {
-            alert("ZUGRIFF VERWEIGERT: Nur Leitung/Admin darf löschen!");
-            return;
-        }
-        if(confirm("Protokoll unwiderruflich aus der Cloud löschen?")) {
-            const { error } = await _supabase.from('rd_berichte').delete().eq('id', id);
-            if(!error) { alert("Gelöscht!"); loadProtocols(); }
-            else { alert("Fehler: " + error.message); }
-        }
-    }
+    function startFlow(type) { document.getElementById('listView').classList.remove('active-view'); document.getElementById('detailView').classList.remove('active-view'); document.getElementById('mainAppRTW').classList.add('active-view'); }
+    function showList() { document.getElementById('mainAppRTW').classList.remove('active-view'); document.getElementById('detailView').classList.remove('active-view'); document.getElementById('listView').classList.add('active-view'); }
 
     async function loadProtocols() {
         const { data } = await _supabase.from('rd_berichte').select('*').order('created_at', {ascending: false});
-        const isAdmin = currentUser.rolle === 'admin' || currentUser.rolle === 'leitung';
-        if(isAdmin) document.getElementById('adminColHead').style.display = 'table-cell';
-        
+        const hasPower = currentUser.is_admin === true || currentUser.is_admin === 1 || currentUser.rolle === 'leitung';
         if(data) {
             document.getElementById('protocolTableBody').innerHTML = data.map(p => `
-                <tr>
+                <tr onclick="openProtocol(${p.id})">
                     <td><b>${p.e_nr}</b></td>
                     <td>${p.p_name}</td>
                     <td>${new Date(p.created_at).toLocaleDateString()}</td>
-                    ${isAdmin ? `<td><button class="btn btn-sm btn-danger" onclick="deleteProtocol(${p.id})"><i class="bi bi-trash"></i></button></td>` : ''}
+                    <td>
+                        ${hasPower ? `<button class="btn btn-sm btn-danger" onclick="deleteProtocol(event, ${p.id})"><i class="bi bi-trash"></i></button>` : '<i class="bi bi-lock"></i>'}
+                    </td>
                 </tr>
             `).join('');
         }
     }
 
+    async function deleteProtocol(e, id) {
+        e.stopPropagation();
+        const hasPower = currentUser.is_admin === true || currentUser.is_admin === 1 || currentUser.rolle === 'leitung';
+        if(!hasPower) return;
+        if(confirm("Diesen Bericht wirklich löschen?")) {
+            await _supabase.from('rd_berichte').delete().eq('id', id);
+            loadProtocols();
+        }
+    }
+
+    async function openProtocol(id) {
+        const { data } = await _supabase.from('rd_berichte').select('*').eq('id', id).single();
+        if(data) {
+            const d = data.daten;
+            let html = `<h4 class="text-danger">Einsatz ${data.e_nr}</h4><hr>`;
+            html += `<p><b>Patient:</b> ${data.p_name} | <b>Sanitäter:</b> ${data.erstellt_von}</p>`;
+            html += `<p><b>AVPU:</b> ${d.abcde?.d?.avpu || '-'}</p>`;
+            html += `<div class="p-3 border bg-light mb-3"><b>Bericht:</b><br>${d.bericht || ''}</div>`;
+            html += `<p><b>Medikamente:</b> ${d.meds?.map(m => m.name).join(', ') || 'Keine'}</p>`;
+            document.getElementById('detailContent').innerHTML = html + `<button class="btn btn-dark w-100" onclick="showList()">Schließen</button>`;
+            document.getElementById('listView').classList.remove('active-view');
+            document.getElementById('detailView').classList.add('active-view');
+        }
+    }
+
+    async function sendDiscord(payload) {
+        const embed = { embeds: [{ title: `🚒 NEUES PROTOKOLL: ${payload.e_nr}`, color: 14811162, fields: [
+            { name: "Patient", value: payload.p_name || "-", inline: true },
+            { name: "Team", value: document.getElementById('r_team').value || "-", inline: true },
+            { name: "AVPU", value: document.getElementById('r_v_avpu').value, inline: true },
+            { name: "Bericht", value: document.getElementById('r_text').value.substring(0, 500) }
+        ], footer: { text: "Erstellt von " + currentUser.dienstnummer } }]};
+        await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(embed)});
+    }
+
     function addMed() {
         const m = document.getElementById('medSelect').value;
         if(m) {
-            const id = 'med_' + Date.now();
-            selectedMeds.push({id: id, name: m, dose: ''});
-            renderMeds();
+            const id = Date.now();
+            selectedMeds.push({id: id, name: m});
+            document.getElementById('medList').innerHTML += `<div class="med-item"><span>${m}</span><button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button></div>`;
         }
     }
-    function renderMeds() {
-        document.getElementById('medList').innerHTML = selectedMeds.map(m => `
-            <div class="med-item">
-                <span><b>${m.name}</b></span>
-                <div class="d-flex gap-2">
-                    <input type="text" class="form-control form-control-sm" style="width:80px" placeholder="Dosis" onchange="updateDose('${m.id}', this.value)">
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeMed('${m.id}')">✕</button>
-                </div>
-            </div>
-        `).join('');
-    }
-    function updateDose(id, val) { const med = selectedMeds.find(x => x.id === id); if(med) med.dose = val; }
-    function removeMed(id) { selectedMeds = selectedMeds.filter(x => x.id !== id); renderMeds(); }
 
     document.getElementById('bodyImg').onclick = function(e) {
         const rect = this.getBoundingClientRect();
@@ -292,24 +290,29 @@
         curY = (e.clientY - rect.top) / rect.height * 100;
         modal.show();
     };
-    function place(l, s, c) {
-        markers.push({x: Math.round(curX), y: Math.round(curY), type: l});
+
+    function place(s, c) {
+        markers.push({x: Math.round(curX), y: Math.round(curY)});
         const d = document.createElement('div'); d.className = 'marker ' + c;
         d.style.left = curX + '%'; d.style.top = curY + '%'; d.innerText = s;
-        document.getElementById('bodyWrapper').appendChild(d);
-        modal.hide();
+        document.getElementById('bodyWrapper').appendChild(d); modal.hide();
     }
+
     function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
 
     document.getElementById('rtwForm').onsubmit = async (e) => { 
         e.preventDefault(); 
         const payload = { e_nr: document.getElementById('r_e_nr').value, p_name: document.getElementById('r_p_name').value };
-        const fullData = { abcde: { a: document.getElementById('r_a_text').value, b: document.getElementById('r_b_text').value }, meds: selectedMeds, markers: markers };
+        const data = { 
+            abcde: { a: document.getElementById('r_a_text').value, b: document.getElementById('r_b_text').value, c: document.getElementById('r_c_text').value, d: { avpu: document.getElementById('r_v_avpu').value } },
+            bericht: document.getElementById('r_text').value, 
+            meds: selectedMeds,
+            zeiten: { alarm: document.getElementById('t_alarm').value, s3: document.getElementById('t_s3').value, s7: document.getElementById('t_s7').value }
+        };
         
-        await _supabase.from('rd_berichte').insert([{ e_nr: payload.e_nr, p_name: payload.p_name, daten: fullData, erstellt_von: currentUser.dienstnummer }]);
-        await sendToDiscord(payload);
-        
-        alert("PROTOKOLL GESPEICHERT & AN DISCORD GESENDET!"); 
+        await _supabase.from('rd_berichte').insert([{ e_nr: payload.e_nr, p_name: payload.p_name, daten: data, erstellt_von: currentUser.dienstnummer }]);
+        await sendDiscord(payload);
+        alert("PROTOKOLL GESPEICHERT!"); 
         location.reload();
     };
 </script>
