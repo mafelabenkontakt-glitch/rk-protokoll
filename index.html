@@ -1,204 +1,271 @@
+const SUPABASE_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg";
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RK ePCR PRO</title>
+<title>RK ePCR SYSTEM</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-:root { --rk:#e2001a; }
+:root {
+    --rk-red:#e2001a;
+    --rk-dark:#b30014;
+}
 
-body { font-family:Segoe UI; background:#f4f7f6; }
-.dark { background:#1e1e1e; color:white; }
+body {
+    margin:0;
+    font-family:Segoe UI;
+    background:#f4f7f6;
+}
 
-.section { display:none; }
-.active { display:block; }
+/* LOGIN */
+#loginView {
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,var(--rk-red),var(--rk-dark));
+}
 
-.cardx {
+.login-card {
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    text-align:center;
+    width:90%;
+    max-width:400px;
+}
+
+/* HEADER */
+.header {
     background:white;
     padding:15px;
-    border-radius:15px;
-    margin-bottom:15px;
+    border-bottom:5px solid var(--rk-red);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
-.dark .cardx { background:#2b2b2b; }
 
-.header {
-    display:flex; justify-content:space-between;
-    padding:10px;
-    border-bottom:3px solid var(--rk);
+/* CARDS */
+.card {
     background:white;
+    margin:15px;
+    padding:15px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
-.dark .header { background:#111; }
 
-input, textarea, select {
-    margin-bottom:8px !important;
+/* TITLES */
+.section {
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+    margin:20px 15px 5px;
+    border-left:8px solid var(--rk-red);
 }
 
-canvas {
-    border:2px dashed #ccc;
+/* BUTTON */
+.btn {
+    background:var(--rk-red);
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    font-weight:bold;
     width:100%;
-    height:150px;
 }
+
+/* LIST */
+.list-item {
+    cursor:pointer;
+    border-left:6px solid var(--rk-red);
+}
+
+/* BODY IMG */
+.body {
+    width:100%;
+    border-radius:10px;
+}
+
+/* HIDDEN */
+.hidden { display:none; }
+
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-    <b>RK ePCR PRO</b>
-    <div>
-        <button onclick="toggleDark()" class="btn btn-sm btn-dark">🌙</button>
-        <button onclick="newEntry()" class="btn btn-sm btn-danger">NEU</button>
+<!-- LOGIN -->
+<div id="loginView">
+    <div class="login-card">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Red_Cross_icon.svg" width="60">
+        <h2 style="color:#e2001a;">RK CLOUD</h2>
+
+        <input id="dn" placeholder="Dienstnummer" class="card">
+        <input id="pw" type="password" placeholder="Passwort" class="card">
+
+        <button class="btn" onclick="login()">LOGIN</button>
+        <div id="err" style="color:red;"></div>
     </div>
 </div>
 
 <!-- LIST -->
-<div id="list"></div>
+<div id="listView" class="hidden">
+    <div class="header">
+        <b>🚑 Einsätze</b>
+        <button onclick="newEntry()">➕</button>
+    </div>
+    <div id="list"></div>
+</div>
 
 <!-- FORM -->
-<div id="form" class="section container mt-3">
+<div id="formView" class="hidden">
 
-<h5>Einsatz</h5>
-<div class="cardx">
-<input id="nr" placeholder="Einsatznummer" class="form-control" required>
-<input id="ort" placeholder="Ort" class="form-control">
-
-<b>Zeiten</b>
-<input type="time" id="s1" class="form-control" placeholder="Alarm">
-<input type="time" id="s3" class="form-control" placeholder="Ausgerückt">
-<input type="time" id="s4" class="form-control" placeholder="Ankunft">
-<input type="time" id="s7" class="form-control" placeholder="Transport">
-<input type="time" id="s8" class="form-control" placeholder="Frei">
+<div class="header">
+    <button onclick="back()">←</button>
+    <b>Protokoll</b>
 </div>
 
-<h5>Patient</h5>
-<div class="cardx">
-<input id="name" placeholder="Name" class="form-control">
-<input id="age" type="number" placeholder="Alter" class="form-control">
-<select id="gender" class="form-control">
-<option>M</option><option>W</option><option>D</option>
-</select>
+<div class="section">EINSATZ</div>
+<div class="card">
+    <input id="e_nr" placeholder="Einsatznummer">
+    <input id="ort" placeholder="Ort">
 </div>
 
-<h5>NACA</h5>
-<div class="cardx">
-<select id="naca" class="form-control">
-<option>0 - kein Befund</option>
-<option>1 - leicht</option>
-<option>2 - mäßig</option>
-<option>3 - ernst</option>
-<option>4 - schwer</option>
-<option>5 - akut lebensbedrohlich</option>
-<option>6 - reanimation</option>
-<option>7 - tot</option>
-</select>
+<div class="section">PATIENT</div>
+<div class="card">
+    <input id="p_name" placeholder="Name">
+    <input id="p_age" type="number" placeholder="Alter">
 </div>
 
-<h5>ABCDE</h5>
-<div class="cardx">
-<input id="a" placeholder="Airway" class="form-control" required>
-
-<input id="af" type="number" placeholder="AF" class="form-control">
-<input id="spo2" type="number" placeholder="SpO2" class="form-control">
-
-<input id="rr" placeholder="RR" class="form-control">
-<input id="hf" type="number" placeholder="HF" class="form-control">
-
-<input id="gcs" type="number" placeholder="GCS" class="form-control" required>
+<div class="section">ABCDE</div>
+<div class="card">
+    <input id="a" placeholder="A Atemwege">
+    <input id="b" placeholder="B Atmung">
+    <input id="c" placeholder="C Kreislauf">
+    <input id="d" placeholder="D Neurologie">
+    <input id="e" placeholder="E Umgebung">
 </div>
 
-<h5>SAMPLER</h5>
-<div class="cardx">
-<input id="sampler" placeholder="Kurzsammler" class="form-control">
+<div class="section">BODYCHECK</div>
+<div class="card">
+    <img src="grafik.png" class="body">
 </div>
 
-<h5>OPQRST</h5>
-<div class="cardx">
-<input id="opqrst" placeholder="Schmerzbeschreibung" class="form-control">
+<div class="section">BERICHT</div>
+<div class="card">
+    <textarea id="bericht" rows="5" placeholder="Bericht"></textarea>
 </div>
 
-<h5>Maßnahmen</h5>
-<div class="cardx">
-<textarea id="mass" class="form-control" placeholder="Maßnahmen"></textarea>
-</div>
-
-<h5>Bericht</h5>
-<div class="cardx">
-<textarea id="bericht" class="form-control" rows="5"></textarea>
-</div>
-
-<h5>Signatur</h5>
-<div class="cardx">
-<canvas id="sig"></canvas>
-<button onclick="clearSig()" class="btn btn-sm btn-secondary mt-2">Reset</button>
-</div>
-
-<button onclick="save()" class="btn btn-danger w-100">SPEICHERN</button>
+<button class="btn" onclick="save()">SPEICHERN</button>
 
 </div>
 
 <script>
 
-let entries = JSON.parse(localStorage.getItem("rk")) || [];
+// 🔑 SUPABASE
+const SUPABASE_URL = "DEINE_URL";
+const SUPABASE_KEY = "DEIN_KEY";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function render(){
-    document.getElementById("list").innerHTML = entries.map(e=>`
-        <div class="cardx">
-            <b>${e.nr}</b><br>
-            ${e.ort}<br>
-            <small>${e.time}</small>
-        </div>
-    `).join("");
+let user = null;
+
+// LOGIN
+async function login(){
+    const { data } = await db
+        .from("profiles")
+        .select("*")
+        .eq("dienstnummer", dn.value);
+
+    if(data && data[0] && data[0].passwort === pw.value){
+        user = data[0];
+
+        loginView.classList.add("hidden");
+        listView.classList.remove("hidden");
+
+        load();
+    } else {
+        err.innerText = "Falsche Daten";
+    }
 }
 
+// LOAD LIST
+async function load(){
+    const { data } = await db
+        .from("rd_berichte")
+        .select("*")
+        .order("created_at",{ascending:false});
+
+    list.innerHTML = `
+        ${data.map(d=>`
+            <div class="card list-item" onclick='openEntry(${JSON.stringify(d)})'>
+                <b>${d.e_nr}</b><br>
+                ${d.p_name}
+            </div>
+        `).join("")}
+    `;
+}
+
+// NEW
 function newEntry(){
-    document.getElementById("form").classList.add("active");
+    formView.classList.remove("hidden");
 }
 
-function save(){
+// BACK
+function back(){
+    formView.classList.add("hidden");
+}
 
-    if(!nr.value || !a.value || !gcs.value){
+// OPEN
+function openEntry(d){
+    formView.classList.remove("hidden");
+
+    e_nr.value = d.e_nr;
+    p_name.value = d.p_name;
+
+    a.value = d.daten.abcde.a;
+    b.value = d.daten.abcde.b;
+    c.value = d.daten.abcde.c;
+    d.value = d.daten.abcde.d;
+    e.value = d.daten.abcde.e;
+
+    bericht.value = d.daten.bericht;
+}
+
+// SAVE
+async function save(){
+
+    if(!e_nr.value || !a.value){
         alert("Pflichtfelder fehlen!");
         return;
     }
 
-    const e = {
-        nr:nr.value,
-        ort:ort.value,
-        naca:naca.value,
-        abcde:{a:a.value,gcs:gcs.value},
-        time:new Date().toLocaleString()
+    const entry = {
+        e_nr: e_nr.value,
+        p_name: p_name.value,
+        daten:{
+            abcde:{
+                a:a.value,
+                b:b.value,
+                c:c.value,
+                d:d.value,
+                e:e.value
+            },
+            bericht:bericht.value
+        },
+        erstellt_von: user.dienstnummer
     };
 
-    entries.push(e);
-    localStorage.setItem("rk", JSON.stringify(entries));
+    await db.from("rd_berichte").insert([entry]);
 
-    document.getElementById("form").classList.remove("active");
-    render();
+    alert("Gespeichert!");
+    formView.classList.add("hidden");
+    load();
 }
-
-function toggleDark(){
-    document.body.classList.toggle("dark");
-}
-
-render();
-
-/* SIGNATURE */
-let canvas = document.getElementById("sig");
-let ctx = canvas.getContext("2d");
-let draw=false;
-
-canvas.onmousedown=()=>draw=true;
-canvas.onmouseup=()=>draw=false;
-canvas.onmousemove=e=>{
-    if(!draw) return;
-    ctx.fillRect(e.offsetX,e.offsetY,2,2);
-};
-
-function clearSig(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
 
 </script>
 
