@@ -3,56 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, maximum-scale=1.0">
-<title>RK CLOUD OS – RTW/KTW</title>
+<title>RK CLOUD OS – RTW & KTW</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+/* ---------- DESIGN & DARKMODE ---------- */
 :root {
     --rk-red: #E2001A;
-    --rk-darkred: #B30014;
+    --rk-dark: #B30014;
     --grey: #2C3E50;
     --bg: #ffffff;
     --fg: #000000;
+    --card: #ffffff;
 }
-
 [data-theme="dark"] {
     --bg: #121212;
-    --fg: #e5e5e5;
+    --fg: #efefef;
+    --card: #1c1c1c;
+    --grey: #111822;
 }
-
 body {
     background: var(--bg);
     color: var(--fg);
     font-family: "Segoe UI", sans-serif;
 }
-
-.active-view { display:block!important; }
+.active-view { display:block !important; }
 #loginView,#listView,#flowSelect,#mainAppRTW,#mainAppKTW{display:none}
 
-/* Header */
-.rk-header{
-    background:var(--bg);
+/* ---------- LOGIN ---------- */
+#loginView {
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,var(--rk-red),var(--rk-dark));
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.login-card {
+    background:white;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+    width:90%;
+    max-width:380px;
+    text-align:center;
+}
+
+/* ---------- HEADER ---------- */
+.rk-header {
+    background: var(--card);
     border-bottom:4px solid var(--rk-red);
     padding:15px;
-    border-radius:10px;
-    margin-bottom:10px;
+    border-radius:12px;
+    margin-bottom:15px;
     display:flex;
     justify-content:space-between;
     align-items:center;
 }
 
-/* Cards */
-.card-custom{
-    background:var(--bg);
+/* ---------- CARDS ---------- */
+.card-custom {
+    background:var(--card);
     border:1px solid #ccc;
-    border-radius:16px;
+    border-radius:18px;
     padding:20px;
     margin-bottom:15px;
 }
 
-/* Sections */
-.section-header{
+/* ---------- SECTION HEADERS ---------- */
+.section-header {
     background:var(--grey);
     color:white;
     padding:12px;
@@ -62,37 +82,74 @@ body {
     margin:30px 0 15px;
 }
 
-/* Login */
-#loginView{
-    position:fixed;
-    inset:0;
-    background:linear-gradient(135deg,var(--rk-red),var(--rk-darkred));
-    display:flex;
-    justify-content:center;
-    align-items:center;
+/* Vitalwerte */
+.vital-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
 }
-.login-card{
-    background:white;
-    padding:35px;
-    border-radius:20px;
-    width:90%;
-    max-width:400px;
+.vital-field {
+    background:#f3f3f3;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+}
+.vital-field input {
+    width:100%;
+    background:transparent;
+    border:none;
+    font-weight:bold;
+    color:var(--rk-red);
     text-align:center;
 }
 
-/* KTW "A" Button */
-.ktw-button-a{
-    font-size:80px;
-    font-weight:bold;
-    padding:40px;
+/* KTW Button A */
+.ktw-button-a {
     width:100%;
+    padding:45px;
+    font-size:90px;
     border-radius:30px;
+    font-weight:900;
 }
+
+/* Bodygramm */
+.body-container {
+    position:relative;
+    width:100%;
+    max-width:350px;
+    margin:10px auto;
+}
+.body-img { width:100%; cursor:crosshair; }
+.marker {
+    position:absolute;
+    width:32px;height:32px;
+    border-radius:50%;
+    font-weight:bold;
+    color:white;
+    border:2px solid #fff;
+    display:flex;align-items:center;justify-content:center;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+.m-S{background:#f39c12;}
+.m-F{background:#2980b9;}
+.m-W{background:#c0392b;}
+
+/* Signature */
+.sig-canvas {
+    width:100%;
+    height:200px;
+    border:2px dashed #888;
+    border-radius:12px;
+    background:white;
+}
+
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+
+<!-- ███████████████████ LOGIN ███████████████████ -->
 <div id="loginView" class="active-view">
     <div class="login-card">
         <h2 class="fw-bold text-danger">RK CLOUD LOGIN</h2>
@@ -108,20 +165,25 @@ body {
     </div>
 </div>
 
-<!-- JOURNAL -->
+
+
+<!-- ███████████████████ JOURNAL ███████████████████ -->
 <div id="listView" class="container py-3">
     <div class="rk-header">
         <h4 class="fw-bold">EINSATZ‑JOURNAL</h4>
-        <button class="btn btn-danger rounded-pill fw-bold" onclick="showView('flowSelect')">+ NEU</button>
+        <button onclick="showView('flowSelect')" class="btn btn-danger fw-bold rounded-pill">+ NEU</button>
     </div>
+
     <div id="protocolList"></div>
 </div>
 
-<!-- FLOW SELECT -->
-<div id="flowSelect" class="container text-center py-5">
-    <h2 class="fw-bold mb-4">PROTOKOLL-TYP</h2>
 
-    <div class="row g-3">
+
+<!-- ███████████████████ FLOW SELECT ███████████████████ -->
+<div id="flowSelect" class="container text-center py-5">
+    <h2 class="fw-bold mb-4">PROTOKOLL‑TYP</h2>
+
+    <div class="row g-4">
         <div class="col-6">
             <button onclick="startFlow('RTW')" class="btn btn-danger w-100 py-4 rounded-4 fw-bold fs-3">🚑 RTW</button>
         </div>
@@ -131,25 +193,26 @@ body {
     </div>
 </div>
 
-<!-- KTW FORM -->
+
+
+<!-- ███████████████████ KTW FORM ███████████████████ -->
 <div id="mainAppKTW" class="container pb-5">
     <div class="rk-header">
-        <button class="btn btn-outline-secondary btn-sm" onclick="showView('listView')">⬅ Zurück</button>
+        <button onclick="showView('listView')" class="btn btn-outline-secondary btn-sm">⬅ Zurück</button>
         <h5 class="fw-bold m-0">KTW‑PROTO</h5>
     </div>
 
-    <div class="section-header">1. PATIENT & EINSATZ</div>
+    <div class="section-header">1. BASISDATEN</div>
     <div class="card-custom">
         <input id="k_einsatz" class="form-control mb-3 p-3" placeholder="Einsatznummer">
         <input id="k_name" class="form-control mb-3 p-3" placeholder="Patientenname">
-        <input id="k_info" class="form-control p-3" placeholder="Transportinfo / Ziel">
+        <input id="k_info" class="form-control p-3" placeholder="Transportinfo">
     </div>
 
-    <div class="section-header">2. TRANSPORT</div>
+    <div class="section-header">2. TRANSPORTSTATUS</div>
     <div class="card-custom text-center">
-        <!-- Der einzige Button -->
         <button class="btn btn-warning ktw-button-a" onclick="toggleA()">A</button>
-        <p class="mt-3 fw-bold">Aktueller Status: <span id="aState" class="text-danger">Nicht aktiviert</span></p>
+        <p class="mt-3 fw-bold">Status: <span id="aState" class="text-danger">Nicht aktiv</span></p>
     </div>
 
     <div class="section-header">3. BERICHT</div>
@@ -157,64 +220,215 @@ body {
         <textarea id="k_bericht" class="form-control" rows="6" placeholder="Transportbericht..."></textarea>
     </div>
 
-    <button onclick="submitKTW()" class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">
-        ABSENDEN
-    </button>
+    <button onclick="submitKTW()" class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">ABSENDEN</button>
 </div>
 
-<script>
-let user = null;
 
-// LOGIN
+
+<!-- ███████████████████ RTW FORM ███████████████████ -->
+<div id="mainAppRTW" class="container pb-5">
+
+    <div class="rk-header">
+        <button onclick="showView('listView')" class="btn btn-outline-secondary btn-sm">⬅ Zurück</button>
+        <h5 class="fw-bold m-0">RTW‑PROTO</h5>
+    </div>
+
+    <form id="rtwForm">
+
+        <div class="section-header">1. BASISDATEN</div>
+        <div class="card-custom">
+            <input id="r_e_nr" class="form-control mb-3 p-3 fw-bold" placeholder="Einsatznummer *">
+            <input id="r_p_name" class="form-control mb-3 p-3" placeholder="Patientenname">
+        </div>
+
+        <div class="section-header">2. ABCDE</div>
+        <div class="card-custom">
+            <div class="vital-grid">
+                <div class="vital-field"><label>AF</label><input id="r_v_af"></div>
+                <div class="vital-field"><label>SpO2</label><input id="r_v_sp"></div>
+                <div class="vital-field"><label>HF</label><input id="r_v_hf"></div>
+                <div class="vital-field"><label>RR SYS</label><input id="r_v_rrs"></div>
+                <div class="vital-field"><label>RR DIA</label><input id="r_v_rrd"></div>
+                <div class="vital-field"><label>BZ</label><input id="r_v_bz"></div>
+                <div class="vital-field"><label>GCS</label><input id="r_v_gcs"></div>
+                <div class="vital-field"><label>TEMP</label><input id="r_v_temp"></div>
+                <div class="vital-field"><label>EtCO2</label><input id="r_v_et"></div>
+            </div>
+        </div>
+
+        <div class="section-header">3. SAMPLER</div>
+        <div class="card-custom">
+            <input id="r_s_s" class="form-control mb-2 p-3" placeholder="Symptome">
+            <input id="r_s_a" class="form-control mb-2 p-3" placeholder="Allergien">
+            <input id="r_s_m" class="form-control mb-2 p-3" placeholder="Medikamente">
+            <input id="r_s_p" class="form-control mb-2 p-3" placeholder="Patientengeschichte">
+            <input id="r_s_l" class="form-control mb-2 p-3" placeholder="Letzte Mahlzeit">
+            <input id="r_s_e" class="form-control p-3" placeholder="Ereignis">
+        </div>
+
+        <div class="section-header">4. OPQRST</div>
+        <div class="card-custom">
+            <input id="r_o_o" class="form-control mb-2 p-3" placeholder="Beginn (Onset)">
+            <input id="r_o_p" class="form-control mb-2 p-3" placeholder="Provokation">
+            <input id="r_o_q" class="form-control mb-2 p-3" placeholder="Qualität">
+            <input id="r_o_r" class="form-control mb-2 p-3" placeholder="Region">
+            <input id="r_o_s" class="form-control mb-2 p-3" placeholder="Stärke 1–10">
+            <input id="r_o_t" class="form-control p-3" placeholder="Zeitlicher Verlauf">
+        </div>
+
+        <div class="section-header">5. BODYGRAMM</div>
+        <div class="body-container" id="bodyWrapper">
+            <img src="grafik.png" id="bodyImg" class="body-img">
+        </div>
+
+        <div class="btn-group w-100 mt-3">
+            <button type="button" class="btn btn-warning fw-bold" onclick="mType='S'">S</button>
+            <button type="button" class="btn btn-primary fw-bold" onclick="mType='F'">F</button>
+            <button type="button" class="btn btn-danger fw-bold" onclick="mType='W'">W</button>
+        </div>
+
+        <div class="section-header">6. BERICHT</div>
+        <div class="card-custom">
+            <textarea id="r_bericht" class="form-control mb-3" rows="6" placeholder="Bericht..."></textarea>
+            <canvas id="sig-rtw" class="sig-canvas"></canvas>
+        </div>
+
+        <button class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">ABSENDEN</button>
+    </form>
+</div>
+
+
+<script>
+/* ███ AUTH / LOGIN ███ */
+
 async function handleLogin() {
     let dn = login_dn.value.trim();
     let pw = login_pw.value.trim();
 
-    if(dn === "" || pw === "") {
-        loginError.innerText = "Bitte alles ausfüllen!";
+    if(dn==""||pw==""){
+        loginError.innerText="Bitte alles ausfüllen!";
         return;
     }
 
-    // Demo-Login
+    // ---- PLACEHOLDER SUPABASE ----
+    const SUPA_URL = "https://rnfbggoetkmgxqdvznrm.supabase.com";
+    const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg";
+
+    // DEMO LOGIN → du baust später SQL ein
     user = { dienstnummer: dn };
     showView("listView");
 }
 
-// VIEW
+
+/* ███ VIEW SYSTEM ███ */
 function showView(id){
-    document.querySelectorAll(".active-view").forEach(v=>v.classList.remove("active-view"));
+    document.querySelectorAll(".active-view")
+        .forEach(v=>v.classList.remove("active-view"));
     document.getElementById(id).classList.add("active-view");
+    window.scrollTo(0,0);
 }
 
-// FLOW
+/* ███ FLOW START ███ */
 function startFlow(type){
-    if(type === "KTW") showView("mainAppKTW");
-    if(type === "RTW") showView("mainAppRTW");
+    if(type==="RTW") showView("mainAppRTW");
+    if(type==="KTW") showView("mainAppKTW");
 }
 
-/* KTW A-Button */
-let a = false;
+
+/* ███ KTW LOGIC ███ */
+let a=false;
 function toggleA(){
-    a = !a;
-    aState.innerText = a ? "AKTIV" : "Nicht aktiviert";
-    aState.style.color = a ? "green" : "red";
+    a=!a;
+    aState.innerText=a?"AKTIV":"Nicht aktiv";
+    aState.style.color=a?"green":"red";
 }
 
-/* KTW SEND */
 function submitKTW(){
-    const data = {
+    let data={
         typ:"KTW",
         einsatz:k_einsatz.value,
         name:k_name.value,
         info:k_info.value,
-        a_status:a,
-        bericht:k_bericht.value
+        statusA:a,
+        bericht:k_bericht.value,
     };
 
-    console.log("KTW gespeichert:", data);
+    console.log("KTW DATA:",data);
+
+    // ---- PLACEHOLDER SQL INSERT ----
+    // fetch("https://rnfbggoetkmgxqdvznrm.supabase.com", {...})
+
     alert("KTW‑Protokoll übermittelt!");
     location.reload();
 }
+
+
+/* ███ BODYGRAMM ███ */
+let markers=[];
+let mType="S";
+
+bodyImg.onclick = function(e){
+    let r = bodyImg.getBoundingClientRect();
+    let x = e.clientX - r.left;
+    let y = e.clientY - r.top;
+
+    let m = document.createElement("div");
+    m.classList.add("marker","m-"+mType);
+    m.style.left = x+"px";
+    m.style.top = y+"px";
+    m.innerText = mType;
+
+    markers.push({ type:mType, x, y });
+    bodyWrapper.append(m);
+};
+
+
+/* ███ RTW SEND ███ */
+rtwForm.onsubmit = function(e){
+    e.preventDefault();
+
+    let payload={
+        typ:"RTW",
+        einsatz:r_e_nr.value,
+        name:r_p_name.value,
+        abcde:{
+            af:r_v_af.value,
+            sp:r_v_sp.value,
+            hf:r_v_hf.value,
+            rrs:r_v_rrs.value,
+            rrd:r_v_rrd.value,
+            bz:r_v_bz.value,
+            gcs:r_v_gcs.value,
+            temp:r_v_temp.value,
+            et:r_v_et.value
+        },
+        sampler:{
+            s:r_s_s.value,
+            a:r_s_a.value,
+            m:r_s_m.value,
+            p:r_s_p.value,
+            l:r_s_l.value,
+            e:r_s_e.value
+        },
+        opqrst:{
+            o:r_o_o.value,
+            p:r_o_p.value,
+            q:r_o_q.value,
+            r:r_o_r.value,
+            s:r_o_s.value,
+            t:r_o_t.value
+        },
+        bericht:r_bericht.value,
+        markers:markers
+    };
+
+    console.log("RTW DATA:",payload);
+
+    // ---- PLACEHOLDER SQL INSERT ----
+
+    alert("RTW‑Protokoll übermittelt!");
+    location.reload();
+};
 </script>
 
 </body>
