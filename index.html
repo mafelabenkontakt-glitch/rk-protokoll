@@ -1,451 +1,292 @@
 <!DOCTYPE html>
-
 <html lang="de">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RK Einsatzprotokoll | AVPU Edition</title>
-
+    <title>RK Einsatzprotokoll | Cloud Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-
         :root { --rk-red: #e2001a; --rk-dark: #b30014; }
-
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; font-size: 0.82rem; }
-
         .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 10px; }
-
         .hidden { display: none !important; }
-
         .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 5px 0; text-transform: uppercase; border-radius: 2px; }
-
         .card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 6px; margin-bottom: 8px; }
-
         .form-label { font-weight: bold; color: #444; margin-bottom: 1px; font-size: 0.7rem; }
-
         .schema-row { border-bottom: 1px solid #eee; padding: 8px 0; }
-
         .schema-header { display: flex; align-items: center; margin-bottom: 5px; }
-
         .schema-letter { width: 35px; height: 35px; background: var(--rk-red); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 4px; margin-right: 12px; flex-shrink: 0; font-size: 1.1rem; }
-
-        
-
-        /* Interaktive Badges */
-
         .opt-btn { font-size: 0.65rem; padding: 2px 6px; margin: 1px; border: 1px solid #ccc; background: #fff; border-radius: 10px; cursor: pointer; display: inline-block; transition: 0.2s; }
-
         .opt-btn.active { background: var(--rk-red); color: white; border-color: var(--rk-dark); }
-
         .avpu-btn { font-weight: bold; padding: 5px 10px; border: 2px solid #ddd; }
-
         .avpu-btn.active { border-color: var(--rk-dark); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-
-
-
         .bodygramm-container { position: relative; width: 280px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
-
         .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
-
         .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; }
-
         .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
-
         .sig-canvas { border: 1px solid #ccc; background: #fff; width: 100%; height: 120px; border-radius: 4px; touch-action: none; }
-
         .btn-rk { background: var(--rk-red); color: white; font-weight: bold; border: none; }
-
     </style>
-
 </head>
-
 <body>
 
-
-
 <div class="header-rk shadow-sm">
-
     <h5 class="m-0">ÖSTERREICHISCHES ROTES KREUZ</h5>
-
-    <small>Einsatzprotokoll | AVPU-Schema Fokus</small>
-
+    <small>Einsatzprotokoll | Cloud Edition</small>
 </div>
 
-
-
 <div class="container">
-
     <div id="loginSection" class="row justify-content-center mt-4">
-
         <div class="col-md-4"><div class="card p-4 shadow text-center">
-
             <h6 class="mb-3">Anmeldung</h6>
-
             <input type="text" id="username" class="form-control mb-2" placeholder="RK-Kennung">
-
-            <input type="password" id="password" class="form-control mb-3" placeholder="Passwort">
-
-            <button class="btn btn-rk w-100" onclick="attemptLogin()">ANMELDEN</button>
-
+            <input type="text" id="password" class="form-control mb-3" placeholder="Passwort">
+            <button class="btn btn-rk w-100" id="loginBtn" onclick="attemptLogin()">ANMELDEN</button>
             <div id="loginError" class="text-danger mt-2 small hidden">Zugriff verweigert!</div>
-
         </div></div>
-
     </div>
-
-
 
     <div id="mainMenu" class="hidden text-center mt-4">
-
         <div class="row g-2 justify-content-center">
-
             <div class="col-md-4"><button class="btn btn-rk w-100 p-4 shadow" onclick="showSection('protocolForm')">➕ NEUES PROTOKOLL</button></div>
-
             <div class="col-md-4"><button class="btn btn-info w-100 p-4 shadow text-white" onclick="openArchive()">📜 ARCHIV</button></div>
-
             <div id="adminBtn" class="col-md-4 hidden"><button class="btn btn-dark w-100 p-4 shadow" onclick="openAdmin()">🛠 ADMIN</button></div>
-
             <div class="col-12 mt-3"><button class="btn btn-link btn-sm text-muted" onclick="logout()">Abmelden</button></div>
-
         </div>
-
     </div>
-
-
 
     <div id="protocolForm" class="hidden">
-
         <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Menü</button>
-
         <form id="einsatzForm">
-
-            
-
             <div class="section-title">1. Einsatz & Patient</div>
-
             <div class="card p-3">
-
                 <div class="row g-2">
-
                     <div class="col-6"><label class="form-label">ZID</label><input type="text" id="e_nr" class="form-control form-control-sm" required></div>
-
                     <div class="col-6"><label class="form-label">FZ</label><input type="text" id="fz" class="form-control form-control-sm" placeholder="73/XXX"></div>
-
                     <div class="col-12"><label class="form-label">Name Patient</label><input type="text" id="p_name" class="form-control form-control-sm" required></div>
-
-                    <div class="col-4"><label class="form-label">Sex</label><select id="p_sex" class="form-select form-select-sm"><option>M</option><option>W</option><option>D</option></select></div>
-
-                    <div class="col-8"><label class="form-label">Geburtsdatum</label><input type="date" id="p_geb" class="form-control form-control-sm"></div>
-
-                    <div class="col-6"><label class="form-label">SV-Nr</label><input type="text" id="p_sv" class="form-control form-control-sm"></div>
-
-                    <div class="col-6"><label class="form-label">Kasse</label><input type="text" id="p_kasse" class="form-control form-control-sm"></div>
-
-                    <div class="col-4"><label class="form-label">Alarm</label><input type="time" id="t_alarm" class="form-control form-control-sm"></div>
-
-                    <div class="col-4"><label class="form-label">Am BO</label><input type="time" id="t_bo" class="form-control form-control-sm"></div>
-
-                    <div class="col-4"><label class="form-label">Bereit</label><input type="time" id="t_bereit" class="form-control form-control-sm"></div>
-
                 </div>
-
             </div>
 
-
-
-            <div class="section-title">2. Assessment (ABCDE)</div>
-
+            <div class="section-title">2. Assessment (AVPU)</div>
             <div class="card p-3">
-
-                <div class="schema-row">
-
-                    <div class="schema-header"><div class="schema-letter">A</div><strong>Airway</strong></div>
-
-                    <div class="mb-2">
-
-                        <span class="opt-btn" onclick="toggleBtn(this, 'abc_a_text', 'Frei')">Frei</span>
-
-                        <span class="opt-btn" onclick="toggleBtn(this, 'abc_a_text', 'Verlegt')">Verlegt</span>
-
-                        <span class="opt-btn" onclick="toggleBtn(this, 'abc_a_text', 'HWS-Schutz')">HWS-Schutz</span>
-
-                    </div>
-
-                    <input type="text" id="abc_a_text" class="form-control form-control-sm" placeholder="A-Befund Details...">
-
+                <div class="d-flex justify-content-between mb-2">
+                    <div class="opt-btn avpu-btn" id="avpu_A" onclick="setAVPU('A')">A</div>
+                    <div class="opt-btn avpu-btn" id="avpu_V" onclick="setAVPU('V')">V</div>
+                    <div class="opt-btn avpu-btn" id="avpu_P" onclick="setAVPU('P')">P</div>
+                    <div class="opt-btn avpu-btn" id="avpu_U" onclick="setAVPU('U')">U</div>
                 </div>
-
-                <div class="schema-row">
-
-                    <div class="schema-header"><div class="schema-letter">B</div><strong>Breathing</strong></div>
-
-                    <div class="row g-1 mb-2">
-
-                        <div class="col-4"><input type="text" id="v_af" class="form-control form-control-sm" placeholder="AF"></div>
-
-                        <div class="col-4"><input type="text" id="v_spo2" class="form-control form-control-sm" placeholder="SpO2%"></div>
-
-                        <div class="col-4"><input type="text" id="v_etco2" class="form-control form-control-sm" placeholder="etCO2"></div>
-
-                    </div>
-
-                    <input type="text" id="abc_b_text" class="form-control form-control-sm" placeholder="Auskultation / Thorax...">
-
-                </div>
-
-                <div class="schema-row">
-
-                    <div class="schema-header"><div class="schema-letter">C</div><strong>Circulation</strong></div>
-
-                    <div class="row g-1 mb-2">
-
-                        <div class="col-4"><input type="text" id="v_rr" class="form-control form-control-sm" placeholder="RR"></div>
-
-                        <div class="col-4"><input type="text" id="v_hf" class="form-control form-control-sm" placeholder="HF"></div>
-
-                        <div class="col-4"><input type="text" id="v_rekap" class="form-control form-control-sm" placeholder="Rekap"></div>
-
-                    </div>
-
-                    <input type="text" id="abc_c_text" class="form-control form-control-sm" placeholder="Pulsqualität / Haut...">
-
-                </div>
-
-                
-
-                <div class="schema-row">
-
-                    <div class="schema-header"><div class="schema-letter">D</div><strong>Disability (AVPU)</strong></div>
-
-                    <div class="d-flex justify-content-between mb-2">
-
-                        <div class="opt-btn avpu-btn" id="avpu_A" onclick="setAVPU('A')">A</div>
-
-                        <div class="opt-btn avpu-btn" id="avpu_V" onclick="setAVPU('V')">V</div>
-
-                        <div class="opt-btn avpu-btn" id="avpu_P" onclick="setAVPU('P')">P</div>
-
-                        <div class="opt-btn avpu-btn" id="avpu_U" onclick="setAVPU('U')">U</div>
-
-                    </div>
-
-                    <input type="hidden" id="v_avpu_val">
-
-                    <div class="row g-1 mb-2">
-
-                        <div class="col-6"><input type="text" id="v_bz" class="form-control form-control-sm" placeholder="BZ (mg/dl)"></div>
-
-                        <div class="col-6"><input type="text" id="v_pupillen" class="form-control form-control-sm" placeholder="Pupillen"></div>
-
-                    </div>
-
-                    <input type="text" id="abc_d_text" class="form-control form-control-sm" placeholder="Neurologische Details / FAST...">
-
-                </div>
-
-
-
-                <div class="schema-row">
-
-                    <div class="schema-header"><div class="schema-letter">E</div><strong>Exposure</strong></div>
-
-                    <input type="text" id="abc_e_text" class="form-control form-control-sm" placeholder="Temp / Bodycheck / Verletzungen...">
-
-                </div>
-
+                <input type="hidden" id="v_avpu_val">
             </div>
-
-
-
-            <div class="section-title">3. SAMPLER & OPQRST</div>
-
-            <div class="card p-3">
-
-                <label class="form-label">SAMPLER</label>
-
-                <textarea id="s_sampler" class="form-control form-control-sm mb-2" rows="2" placeholder="S-A-M-P-L-E-R"></textarea>
-
-                <label class="form-label">OPQRST</label>
-
-                <textarea id="o_opqrst" class="form-control form-control-sm" rows="2" placeholder="O-P-Q-R-S-T"></textarea>
-
-            </div>
-
-
 
             <div class="section-title">4. Bodygramm</div>
-
             <div class="card p-2 text-center">
-
-                <div class="bodygramm-container" id="bodyWrapper"><img src="grafik.png" id="bodyImg" class="body-img" alt="Grafik"></div>
-
-                <button type="button" class="btn btn-xs btn-outline-danger mt-1" onclick="clearMarkers()">Löschen</button>
-
+                <div class="bodygramm-container" id="bodyWrapper">
+                    <img src="https://via.placeholder.com/280x400?text=Körpergrafik" id="bodyImg" class="body-img">
+                </div>
+                <button type="button" class="btn btn-xs btn-outline-danger mt-1" onclick="clearMarkers()">Marker löschen</button>
             </div>
 
-
-
-            <div class="section-title">5. Bericht & Unterschrift</div>
-
-            <div class="card p-3">
-
-                <textarea id="v_text" class="form-control mb-2" rows="4" placeholder="Maßnahmen / Verlauf..."></textarea>
-
-                <canvas id="signature-pad" class="sig-canvas"></canvas>
-
-            </div>
-
-            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3 mb-5">🚨 EINSATZ ARCHIVIEREN</button>
-
+            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3 mb-5">🚨 EINSATZ IN CLOUD SPEICHERN</button>
         </form>
-
     </div>
 
-
-
     <div id="archiveSection" class="hidden">
-
         <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Menü</button>
-
-        <div class="card p-3 shadow"><h6>📜 ARCHIV</h6><div class="table-responsive"><table class="table table-sm table-striped"><tbody id="archiveTable"></tbody></table></div></div>
-
+        <div class="card p-3 shadow">
+            <h6>📜 CLOUD ARCHIV</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>ZID</th><th>Patient</th><th>Datum</th><th>Sanitäter</th><th>Aktion</th></tr></thead>
+                    <tbody id="archiveTable"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="adminSection" class="hidden">
-
         <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')">← Menü</button>
-
-        <div class="card p-3 shadow"><h6>🛠 ADMIN</h6><div id="userList" class="mb-2"></div><div class="row g-1"><div class="col-5"><input type="text" id="newU" class="form-control form-control-sm" placeholder="User"></div><div class="col-4"><input type="text" id="newP" class="form-control form-control-sm" placeholder="PW"></div><div class="col-3"><button class="btn btn-success btn-sm w-100" onclick="addUser()">+</button></div></div></div>
-
+        <div class="card p-3 shadow">
+            <h6>🛠 ADMIN: BENUTZERVERWALTUNG</h6>
+            <div id="userList" class="mb-3"></div>
+            <hr>
+            <h6>Neuen Benutzer hinzufügen</h6>
+            <div class="row g-1">
+                <div class="col-4"><input type="text" id="newU" class="form-control form-control-sm" placeholder="User"></div>
+                <div class="col-4"><input type="text" id="newP" class="form-control form-control-sm" placeholder="PW"></div>
+                <div class="col-3 d-flex align-items-center"><input type="checkbox" id="newIsAdmin" class="me-1"> <small>Admin?</small></div>
+                <div class="col-1"><button class="btn btn-success btn-sm w-100" onclick="addUser()">+</button></div>
+            </div>
+        </div>
     </div>
-
 </div>
 
-
-
 <div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content p-2">
-
     <button onclick="place('S','m-pain')" class="btn btn-warning btn-sm mb-1 w-100">Schmerz (S)</button>
-
     <button onclick="place('F','m-bone')" class="btn btn-primary btn-sm mb-1 w-100">Fraktur (F)</button>
-
     <button onclick="place('W','m-wound')" class="btn btn-danger btn-sm w-100">Wunde (W)</button>
-
 </div></div></div>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
-
-
-
 <script>
+    // --- SUPABASE KONFIGURATION ---
+    const SB_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
+    const SB_KEY = "sb_publishable_Ilcxhb0I07LY9r_dqBUSXg_mcfljlc4";
+    const sb = supabase.createClient(SB_URL, SB_KEY);
 
-    let reports = JSON.parse(localStorage.getItem('rk_reports')) || [];
-
-    let users = JSON.parse(localStorage.getItem('rk_users')) || [{u: "RK-02", p: "AppearIron22", r: "admin"}];
-
-    let currentUser = null, curX, curY;
-
-    const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
-
+    let currentUser = null;
+    let curX, curY;
     const modal = new bootstrap.Modal(document.getElementById('markerModal'));
 
+    // --- LOGIN ---
+    async function attemptLogin() {
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const btn = document.getElementById('loginBtn');
+        
+        btn.disabled = true;
+        btn.innerText = "Prüfe...";
 
+        const { data, error } = await sb
+            .from('rk_users')
+            .select('*')
+            .eq('u', u)
+            .eq('p', p)
+            .single();
 
-    // Spezielle Funktion für AVPU Selection
-
-    function setAVPU(val) {
-
-        document.querySelectorAll('.avpu-btn').forEach(b => b.classList.remove('active'));
-
-        document.getElementById('avpu_' + val).classList.add('active');
-
-        document.getElementById('v_avpu_val').value = val;
-
+        if (data) {
+            currentUser = data;
+            showSection('mainMenu');
+            if(data.r === 'admin') document.getElementById('adminBtn').classList.remove('hidden');
+        } else {
+            document.getElementById('loginError').classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerText = "ANMELDEN";
+        }
     }
 
-
-
-    function toggleBtn(el, inputId, val) {
-
-        el.classList.toggle('active');
-
-        const input = document.getElementById(inputId);
-
-        if (el.classList.contains('active')) { input.value = input.value ? input.value + ", " + val : val; }
-
+    // --- ADMIN / USER MANAGEMENT ---
+    async function renderUsers() {
+        const { data, error } = await sb.from('rk_users').select('*');
+        if (data) {
+            document.getElementById('userList').innerHTML = data.map(u => `
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <span><strong>${u.u}</strong> (${u.r})</span>
+                    ${u.u !== 'RK-02' ? `<button onclick="delU('${u.id}')" class="btn btn-danger btn-sm">Löschen</button>` : '<i>System</i>'}
+                </div>
+            `).join('');
+        }
     }
 
+    async function addUser() {
+        const u = document.getElementById('newU').value;
+        const p = document.getElementById('newP').value;
+        const isAdmin = document.getElementById('newIsAdmin').checked;
+        if(!u || !p) return alert("Bitte Felder ausfüllen");
 
-
-    function attemptLogin() {
-
-        const u = document.getElementById('username').value, p = document.getElementById('password').value;
-
-        const found = users.find(x => x.u === u && x.p === p);
-
-        if(found) { currentUser = found; showSection('mainMenu'); if(found.r === 'admin') document.getElementById('adminBtn').classList.remove('hidden'); }
-
-        else { document.getElementById('loginError').classList.remove('hidden'); }
-
+        const { error } = await sb.from('rk_users').insert([{ u, p, r: isAdmin ? 'admin' : 'user' }]);
+        if(!error) {
+            renderUsers();
+            document.getElementById('newU').value = "";
+            document.getElementById('newP').value = "";
+        } else {
+            alert("Fehler: " + error.message);
+        }
     }
 
+    async function delU(id) {
+        if(confirm("Benutzer wirklich löschen?")) {
+            await sb.from('rk_users').delete().eq('id', id);
+            renderUsers();
+        }
+    }
 
+    // --- PROTOKOLLE SPEICHERN & LADEN ---
+    document.getElementById('einsatzForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const zid = document.getElementById('e_nr').value;
+        const patient = document.getElementById('p_name').value;
+        
+        const { error } = await sb.from('rk_reports').insert([{
+            zid: zid,
+            patient: patient,
+            san: currentUser.u
+        }]);
 
-    function showSection(id) { document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+        if (!error) {
+            alert("Einsatz erfolgreich gespeichert!");
+            showSection('mainMenu');
+            this.reset();
+            clearMarkers();
+        } else {
+            alert("Speicherfehler: " + error.message);
+        }
+    };
+
+    async function openArchive() {
+        showSection('archiveSection');
+        const { data, error } = await sb.from('rk_reports').select('*').order('created_at', {ascending: false});
+        if (data) {
+            document.getElementById('archiveTable').innerHTML = data.map(r => `
+                <tr>
+                    <td>${r.zid}</td>
+                    <td>${r.patient}</td>
+                    <td>${new Date(r.created_at).toLocaleDateString()}</td>
+                    <td>${r.san || '-'}</td>
+                    <td><button class="btn btn-danger btn-xs" onclick="delRep('${r.id}')">X</button></td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    async function delRep(id) {
+        if(confirm("Eintrag löschen?")) {
+            await sb.from('rk_reports').delete().eq('id', id);
+            openArchive();
+        }
+    }
+
+    // --- HELPER / UI ---
+    function showSection(id) {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
 
     function logout() { location.reload(); }
 
-    function openArchive() { showSection('archiveSection'); renderArchive(); }
+    function openAdmin() {
+        showSection('adminSection');
+        renderUsers();
+    }
 
-    function renderArchive() { document.getElementById('archiveTable').innerHTML = reports.map((r, i) => `<tr><td>${r.zid}</td><td>${r.patient}</td><td>${r.date}</td><td><button class="btn btn-danger btn-xs" onclick="delRep(${i})">X</button></td></tr>`).join(''); }
-
-    function delRep(i) { reports.splice(i,1); localStorage.setItem('rk_reports', JSON.stringify(reports)); renderArchive(); }
-
-    function openAdmin() { showSection('adminSection'); renderUsers(); }
-
-    function renderUsers() { document.getElementById('userList').innerHTML = users.map((u, i) => `<div class="d-flex justify-content-between py-1 border-bottom">${u.u} (${u.r}) ${u.u!=='RK-02' ? `<button onclick="delU(${i})" class="btn btn-xs btn-danger">X</button>` : ''}</div>`).join(''); }
-
-    function addUser() { users.push({u:document.getElementById('newU').value, p:document.getElementById('newP').value, r:'user'}); localStorage.setItem('rk_users', JSON.stringify(users)); renderUsers(); }
-
-
+    function setAVPU(val) {
+        document.querySelectorAll('.avpu-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('avpu_' + val).classList.add('active');
+        document.getElementById('v_avpu_val').value = val;
+    }
 
     document.getElementById('bodyImg').onclick = function(e) {
-
-        const rect = this.getBoundingClientRect(); curX = (e.clientX - rect.left) / rect.width * 100; curY = (e.clientY - rect.top) / rect.height * 100; modal.show();
-
+        const rect = this.getBoundingClientRect();
+        curX = (e.clientX - rect.left) / rect.width * 100;
+        curY = (e.clientY - rect.top) / rect.height * 100;
+        modal.show();
     };
 
-    function place(s, c) { const d = document.createElement('div'); d.className = 'marker ' + c; d.style.left = curX + '%'; d.style.top = curY + '%'; d.innerText = s; document.getElementById('bodyWrapper').appendChild(d); modal.hide(); }
+    function place(s, c) {
+        const d = document.createElement('div');
+        d.className = 'marker ' + c;
+        d.style.left = curX + '%';
+        d.style.top = curY + '%';
+        d.innerText = s;
+        document.getElementById('bodyWrapper').appendChild(d);
+        modal.hide();
+    }
 
-    function clearMarkers() { document.querySelectorAll('.marker').forEach(m => m.remove()); }
-
-
-
-    document.getElementById('einsatzForm').onsubmit = function(e) {
-
-        e.preventDefault();
-
-        reports.push({zid: document.getElementById('e_nr').value, patient: document.getElementById('p_name').value, date: new Date().toLocaleDateString(), san: currentUser.u });
-
-        localStorage.setItem('rk_reports', JSON.stringify(reports));
-
-        alert("Einsatz erfolgreich gespeichert!"); showSection('mainMenu'); this.reset(); clearMarkers(); signaturePad.clear();
-
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-
-    };
-
+    function clearMarkers() {
+        document.querySelectorAll('.marker').forEach(m => m.remove());
+    }
 </script>
 
 </body>
-
 </html>
