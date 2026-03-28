@@ -3,16 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RK LOGIN FIX</title>
+<title>RK ePCR SYSTEM</title>
 
-<!-- ✅ WICHTIG: richtiger Supabase Import -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-body {
-    margin:0;
-    font-family:Arial;
-}
+:root { --rk:#e2001a; --rk-dark:#b30014; }
+
+body { margin:0; font-family:Segoe UI; background:#f4f7f6; }
 
 /* LOGIN */
 #loginView {
@@ -20,103 +18,242 @@ body {
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#e2001a;
+    background:linear-gradient(135deg,var(--rk),var(--rk-dark));
 }
 
 .card {
     background:white;
-    padding:30px;
+    padding:20px;
+    margin:15px;
     border-radius:15px;
-    text-align:center;
 }
 
-button {
-    background:#e2001a;
+/* HEADER */
+.header {
+    background:white;
+    padding:15px;
+    border-bottom:5px solid var(--rk);
+    display:flex;
+    justify-content:space-between;
+}
+
+/* BUTTON */
+.btn {
+    background:var(--rk);
     color:white;
     border:none;
     padding:10px;
+    border-radius:10px;
     width:100%;
     margin-top:10px;
 }
+
+/* SECTION */
+.section {
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+    margin:15px;
+    border-left:8px solid var(--rk);
+}
+
+.hidden { display:none; }
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
 <div id="loginView">
     <div class="card">
-        <h2>RK LOGIN</h2>
-
+        <h2 style="color:#e2001a;">RK LOGIN</h2>
         <input id="dn" placeholder="Dienstnummer"><br><br>
         <input id="pw" type="password" placeholder="Passwort"><br><br>
-
-        <button id="loginBtn">LOGIN</button>
-
+        <button class="btn" id="loginBtn">LOGIN</button>
         <div id="status"></div>
     </div>
 </div>
 
+<!-- LIST -->
+<div id="listView" class="hidden">
+    <div class="header">
+        <b>🚑 Einsätze</b>
+        <button onclick="newEntry()">➕</button>
+    </div>
+    <div id="list"></div>
+</div>
+
+<!-- FORM -->
+<div id="formView" class="hidden">
+
+<div class="header">
+    <button onclick="back()">←</button>
+    <b>Protokoll</b>
+</div>
+
+<div class="section">EINSATZ</div>
+<div class="card">
+    <input id="e_nr" placeholder="Einsatznummer">
+    <input id="p_name" placeholder="Patient">
+</div>
+
+<div class="section">ABCDE</div>
+<div class="card">
+    <input id="a" placeholder="A Atemwege">
+    <input id="b" placeholder="B Atmung">
+    <input id="c" placeholder="C Kreislauf">
+    <input id="d" placeholder="D Neurologie">
+    <input id="e" placeholder="E Umgebung">
+</div>
+
+<div class="section">BODYCHECK</div>
+<div class="card">
+    <img src="grafik.png" width="100%">
+</div>
+
+<div class="section">BERICHT</div>
+<div class="card">
+    <textarea id="bericht" rows="5"></textarea>
+</div>
+
+<button class="btn" onclick="save()">SPEICHERN</button>
+
+</div>
+
 <script>
 
-// ✅ SUPABASE FIX
+// 🔑 SUPABASE
 const SUPABASE_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg";
 
-// ⚠️ WICHTIG: v2 Syntax
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// DEBUG
-console.log("Supabase geladen:", db);
+let currentUser = null;
+let currentEntry = null;
 
-// BUTTON FIX
+// LOGIN BUTTON
 document.getElementById("loginBtn").addEventListener("click", login);
 
+// LOGIN
 async function login(){
 
-    const dnVal = document.getElementById("dn").value.trim();
-    const pwVal = document.getElementById("pw").value.trim();
-    const status = document.getElementById("status");
+    const dnVal = dn.value.trim();
+    const pwVal = pw.value.trim();
 
     status.innerText = "prüfe...";
 
-    try {
+    const { data, error } = await db
+        .from("profiles")
+        .select("*")
+        .eq("dienstnummer", dnVal)
+        .maybeSingle();
 
-        const { data, error } = await db
-            .from("profiles")
-            .select("*")
-            .eq("dienstnummer", dnVal)
-            .maybeSingle();
-
-        console.log("Antwort:", data, error);
-
-        if(error){
-            status.innerText = "DB Fehler!";
-            console.log(error);
-            return;
-        }
-
-        if(!data){
-            status.innerText = "User nicht gefunden!";
-            return;
-        }
-
-        if(data.passwort !== pwVal){
-            status.innerText = "Passwort falsch!";
-            return;
-        }
-
-        status.innerText = "LOGIN ERFOLGREICH ✅";
-
-        // 👉 TEST: Weiterleitung
-        setTimeout(()=>{
-            alert("Login funktioniert!");
-        },500);
-
-    } catch(err){
-        status.innerText = "JS Fehler!";
-        console.log(err);
+    if(error){
+        status.innerText = "DB Fehler!";
+        return;
     }
+
+    if(!data){
+        status.innerText = "User nicht gefunden!";
+        return;
+    }
+
+    if(data.passwort !== pwVal){
+        status.innerText = "Passwort falsch!";
+        return;
+    }
+
+    currentUser = data;
+
+    // 👉 VIEW SWITCH
+    loginView.classList.add("hidden");
+    listView.classList.remove("hidden");
+
+    loadReports();
+}
+
+// LOAD LIST
+async function loadReports(){
+
+    const { data } = await db
+        .from("rd_berichte")
+        .select("*")
+        .order("created_at",{ascending:false});
+
+    list.innerHTML = data.map(d=>`
+        <div class="card" onclick='openEntry(${JSON.stringify(d)})'>
+            <b>${d.e_nr}</b><br>
+            ${d.p_name || ""}
+        </div>
+    `).join("");
+}
+
+// NEW ENTRY
+function newEntry(){
+    currentEntry = null;
+    formView.classList.remove("hidden");
+}
+
+// BACK
+function back(){
+    formView.classList.add("hidden");
+}
+
+// OPEN ENTRY
+function openEntry(d){
+    currentEntry = d;
+
+    formView.classList.remove("hidden");
+
+    e_nr.value = d.e_nr;
+    p_name.value = d.p_name;
+
+    a.value = d.daten?.abcde?.a || "";
+    b.value = d.daten?.abcde?.b || "";
+    c.value = d.daten?.abcde?.c || "";
+    d.value = d.daten?.abcde?.d || "";
+    e.value = d.daten?.abcde?.e || "";
+
+    bericht.value = d.daten?.bericht || "";
+}
+
+// SAVE
+async function save(){
+
+    if(!e_nr.value){
+        alert("Einsatznummer fehlt!");
+        return;
+    }
+
+    const entry = {
+        e_nr: e_nr.value,
+        p_name: p_name.value,
+        daten:{
+            abcde:{
+                a:a.value,
+                b:b.value,
+                c:c.value,
+                d:d.value,
+                e:e.value
+            },
+            bericht:bericht.value
+        },
+        erstellt_von: currentUser.dienstnummer
+    };
+
+    if(currentEntry){
+        await db.from("rd_berichte")
+            .update(entry)
+            .eq("id", currentEntry.id);
+    } else {
+        await db.from("rd_berichte").insert([entry]);
+    }
+
+    alert("Gespeichert!");
+
+    formView.classList.add("hidden");
+    loadReports();
 }
 
 </script>
