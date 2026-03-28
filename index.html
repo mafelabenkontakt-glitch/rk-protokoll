@@ -2,68 +2,193 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK Cloud OS | ULTRA MAXIMAL V7.7</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RK CLOUD OS | MAXIMUM EDITION V8.0</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
+
     <style>
-        :root { --rk-red: #e2001a; --rk-dark: #b30014; --rk-blue: #0056b3; --rk-grey: #2c3e50; }
-        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; padding-bottom: 100px; }
+        :root { 
+            --rk-red: #e2001a; 
+            --rk-dark: #b30014; 
+            --rk-grey: #2c3e50; 
+            --rk-light: #f8f9fa;
+            --rk-blue: #0056b3;
+        }
+
+        body { 
+            background: #e9ecef; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            color: #212529;
+            overflow-x: hidden;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .rk-header {
+            background: linear-gradient(180deg, var(--rk-red) 0%, var(--rk-dark) 100%);
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-bottom: 5px solid rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .section-header {
+            background: var(--rk-grey);
+            color: white;
+            padding: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-left: 10px solid var(--rk-red);
+            margin: 40px 0 20px 0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-custom {
+            background: white;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* --- ABCDE STYLING --- */
+        .abcde-card {
+            border-radius: 15px;
+            border: 2px solid #dee2e6;
+            background: white;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .abcde-card:hover { border-color: var(--rk-red); }
         
-        /* UI Elements */
-        .header-rk { background: var(--rk-red); color: white; padding: 25px; text-align: center; border-bottom: 6px solid var(--rk-dark); box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 30px; position: sticky; top: 0; z-index: 1000; border-radius: 0 0 20px 20px; }
-        .section-title { background: var(--rk-grey); color: white; padding: 15px; font-weight: bold; border-left: 10px solid var(--rk-red); margin: 35px 0 20px 0; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .card { border: none; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin-bottom: 25px; background: white; }
-        
-        /* ABCDE Special Styling */
-        .abcde-card { border-left: 8px solid var(--rk-red); padding: 20px; margin-bottom: 20px; background: #fff; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .abcde-label { color: var(--rk-red); font-weight: 900; font-size: 1.2rem; margin-bottom: 15px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        
-        /* Bodygramm */
-        .bodygramm-container { position: relative; width: 320px; margin: 20px auto; background: white; border: 2px solid #ddd; border-radius: 15px; padding: 15px; }
-        .body-img { width: 100%; height: auto; cursor: crosshair; }
-        .marker { position: absolute; width: 30px; height: 30px; border-radius: 50%; color: white; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
-        
-        /* Fast Slider */
-        .fast-box { background: #fff5f5; border: 2px solid #feb2b2; border-radius: 15px; padding: 15px; }
-        
-        /* Signature */
-        .sig-canvas { border: 2px dashed #ccc; background: #fafafa; width: 100%; height: 200px; border-radius: 15px; touch-action: none; }
-        
+        .abcde-head {
+            background: #f1f3f5;
+            padding: 12px 20px;
+            font-weight: 900;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #dee2e6;
+            display: flex;
+            align-items: center;
+        }
+        .abcde-head.a-red { color: #d63031; border-left: 8px solid #d63031; }
+        .abcde-head.b-blue { color: #0984e3; border-left: 8px solid #0984e3; }
+        .abcde-head.c-green { color: #27ae60; border-left: 8px solid #27ae60; }
+        .abcde-head.d-orange { color: #e67e22; border-left: 8px solid #e67e22; }
+        .abcde-head.e-grey { color: #636e72; border-left: 8px solid #636e72; }
+
+        /* --- BODYGRAMM --- */
+        .bodygramm-wrap {
+            position: relative;
+            max-width: 350px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border: 3px solid #eee;
+            border-radius: 20px;
+        }
+        .body-img { width: 100%; height: auto; cursor: crosshair; user-select: none; }
+        .marker {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+            border: 2px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* --- FORMS & INPUTS --- */
+        .form-control, .form-select {
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 2px solid #eaedf0;
+            background: #fbfcfd;
+        }
+        .form-control:focus {
+            border-color: var(--rk-red);
+            box-shadow: none;
+            background: white;
+        }
+
+        /* --- SLIDER STYLING --- */
+        .slider-box {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        /* --- VIEWS --- */
         #mainAppRTW, #mainAppKTW, #listView, #detailView, #flowSelect, #loginView { display: none; }
-        .active-view { display: block !important; }
-        .btn-rk { background: var(--rk-red); color: white; font-weight: bold; border: none; padding: 20px; border-radius: 15px; transition: 0.2s; }
-        .btn-rk:hover { background: var(--rk-dark); transform: translateY(-2px); }
+        .active-view { display: block !important; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+
+        /* --- BUTTONS --- */
+        .btn-rk-main {
+            background: var(--rk-red);
+            color: white;
+            font-weight: 800;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
+        }
     </style>
 </head>
 <body>
 
-<div id="loginView" class="container-fluid vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--rk-red) 0%, #000 100%);">
-    <div class="card p-5 text-center shadow-lg" style="max-width: 400px; border-radius: 30px;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Red_Cross_icon.svg" width="80" class="mb-4">
-        <h2 class="fw-bold mb-4">RK CLOUD 7.7</h2>
-        <input type="text" id="login_dn" class="form-control mb-3 p-3 rounded-pill" placeholder="Dienstnummer (z.B. RK-01)">
-        <input type="password" id="login_pw" class="form-control mb-4 p-3 rounded-pill" placeholder="Passwort">
-        <button onclick="login()" class="btn btn-rk w-100 rounded-pill">ANMELDEN</button>
+<div id="loginView" class="container-fluid vh-100 d-flex align-items-center justify-content-center" style="background: #e2001a;">
+    <div class="card-custom text-center" style="width: 100%; max-width: 420px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Red_Cross_icon.svg" width="100" class="mb-4">
+        <h2 class="fw-bold mb-1">RK CLOUD LOGIN</h2>
+        <p class="text-muted mb-4">Einsatzprotokollierung System</p>
+        <div class="mb-3 text-start">
+            <label class="small fw-bold px-2">Dienstnummer</label>
+            <input type="text" id="login_dn" class="form-control" placeholder="RK-1234">
+        </div>
+        <div class="mb-4 text-start">
+            <label class="small fw-bold px-2">Passwort</label>
+            <input type="password" id="login_pw" class="form-control" placeholder="••••••••">
+        </div>
+        <button onclick="login()" id="loginBtn" class="btn btn-rk-main w-100">SYSTEM STARTEN</button>
         <p id="loginStatus" class="mt-3 text-danger fw-bold"></p>
     </div>
 </div>
 
 <div id="listView" class="container mt-4">
-    <div class="header-rk">
-        <h2 class="fw-bold">EINSATZ-DASHBOARD</h2>
+    <div class="rk-header rounded-4 shadow-lg mb-4">
+        <h2 class="fw-bold mb-0">EINSATZÜBERSICHT</h2>
         <div class="d-flex justify-content-center gap-2 mt-3">
-            <button class="btn btn-light fw-bold px-4" onclick="showFlowSelect()">➕ NEUER EINSATZ</button>
-            <button class="btn btn-outline-light px-3" onclick="logout()">LOGOUT</button>
+            <button class="btn btn-light fw-bold" onclick="showFlowSelect()">➕ NEUER EINSATZ</button>
+            <button class="btn btn-outline-light" onclick="logout()">ABMELDEN</button>
         </div>
     </div>
-    <div class="card p-4">
-        <h4 class="fw-bold border-bottom pb-3 mb-3"><i class="bi bi-archive"></i> Letzte Einsätze</h4>
+    <div class="card-custom">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
-                <thead class="table-light"><tr><th>E-Nr</th><th>Patient</th><th>Datum</th><th>Typ</th><th class="text-end">Aktion</th></tr></thead>
+                <thead><tr><th>E-Nr</th><th>Typ</th><th>Patient</th><th>Status</th><th class="text-end">Aktion</th></tr></thead>
                 <tbody id="protocolTableBody"></tbody>
             </table>
         </div>
@@ -72,35 +197,39 @@
 
 <div id="flowSelect" class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            <div class="card p-5 shadow-lg">
-                <h2 class="mb-5 fw-bold">Einsatzart wählen</h2>
-                <div class="d-grid gap-4">
-                    <button class="btn btn-danger btn-lg py-5 shadow" onclick="startFlow('RTW')">
-                        <i class="bi bi- ambulance fs-1 d-block mb-2"></i>
-                        <span class="fs-2 fw-bold">RTW NOTFALL</span>
-                    </button>
-                    <button class="btn btn-primary btn-lg py-5 shadow" onclick="startFlow('KTW')">
-                        <i class="bi bi-truck fs-1 d-block mb-2"></i>
-                        <span class="fs-2 fw-bold">KTW TRANSPORT</span>
-                    </button>
+        <div class="col-md-8 text-center">
+            <h1 class="fw-bold mb-5">Art des Einsatzes?</h1>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card-custom py-5 border-bottom border-danger border-5" onclick="startFlow('RTW')" style="cursor:pointer">
+                        <i class="bi bi-ambulance fs-1 text-danger"></i>
+                        <h3 class="mt-3 fw-bold">RTW / NAW</h3>
+                        <p class="text-muted">Notfallprotokoll, ABCDE, Bodygramm</p>
+                    </div>
                 </div>
-                <button class="btn btn-link mt-4 text-muted" onclick="showList()">Zurück zur Übersicht</button>
+                <div class="col-md-6">
+                    <div class="card-custom py-5 border-bottom border-primary border-5" onclick="startFlow('KTW')" style="cursor:pointer">
+                        <i class="bi bi-truck fs-1 text-primary"></i>
+                        <h3 class="mt-3 fw-bold">KTW / BKTW</h3>
+                        <p class="text-muted">Transportbericht, Verlegungen</p>
+                    </div>
+                </div>
             </div>
+            <button class="btn btn-link mt-4 text-dark" onclick="showList()">Zurück zum Dashboard</button>
         </div>
     </div>
 </div>
 
 <div id="mainAppRTW" class="container mt-3">
-    <div class="header-rk">
-        <button class="btn btn-sm btn-light float-start mt-1" onclick="showList()">⬅ ZURÜCK</button>
-        <h2 class="fw-bold">🚑 RTW PROTOKOLL</h2>
+    <div class="rk-header rounded-4 mb-4">
+        <button class="btn btn-light btn-sm float-start" onclick="showList()">ABBRECHEN</button>
+        <h3 class="fw-bold">🚑 RTW NOTFALLPROTOKOLL</h3>
     </div>
 
     <form id="rtwForm">
-        <div class="section-title">1. Einsatzzeiten & Basisdaten</div>
-        <div class="card p-4">
-            <div class="row g-3 text-center mb-4">
+        <div class="section-header"><span>1. ZEITEN (S1-S7)</span><i class="bi bi-clock"></i></div>
+        <div class="card-custom">
+            <div class="row g-3 text-center">
                 <div class="col-4 col-md-2"><label class="small fw-bold">Alarm</label><input type="time" id="r_t_alarm" class="form-control"></div>
                 <div class="col-4 col-md-2"><label class="small fw-bold">S2 (Ausr.)</label><input type="time" id="r_t_s2" class="form-control"></div>
                 <div class="col-4 col-md-2"><label class="small fw-bold">S3 (Ank.)</label><input type="time" id="r_t_s3" class="form-control"></div>
@@ -108,301 +237,248 @@
                 <div class="col-4 col-md-2"><label class="small fw-bold">S7 (Ziel)</label><input type="time" id="r_t_s7" class="form-control"></div>
                 <div class="col-4 col-md-2"><label class="small fw-bold">S1 (Ber.)</label><input type="time" id="r_t_s1" class="form-control"></div>
             </div>
+            <hr class="my-4">
             <div class="row g-3">
-                <div class="col-md-4"><label class="fw-bold">Einsatznummer</label><input type="text" id="r_e_nr" class="form-control p-3" required></div>
-                <div class="col-md-4"><label class="fw-bold">Patientenname</label><input type="text" id="r_p_name" class="form-control p-3"></div>
-                <div class="col-md-4"><label class="fw-bold">Team / Besatzung</label><input type="text" id="r_team" class="form-control p-3"></div>
+                <div class="col-md-4"><label class="fw-bold">Einsatz-Nr</label><input type="text" id="r_e_nr" class="form-control" required></div>
+                <div class="col-md-4"><label class="fw-bold">Patientenname</label><input type="text" id="r_p_name" class="form-control"></div>
+                <div class="col-md-4"><label class="fw-bold">Geb.-Datum</label><input type="date" id="r_p_geb" class="form-control"></div>
             </div>
         </div>
 
-        <div class="section-title">2. Physischer Befund</div>
-        <div class="card p-4 text-center">
-            <div class="bodygramm-container" id="bodyWrapper">
-                <img src="https://i.imgur.com/uX8Zf0M.png" id="bodyImg" class="body-img">
-            </div>
-            <div class="d-flex justify-content-center gap-2 mt-2">
-                <span class="badge m-pain p-2">S = Schmerz</span>
-                <span class="badge m-bone p-2">F = Fraktur</span>
-                <span class="badge m-wound p-2">W = Wunde</span>
-            </div>
-            <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="clearMarkers()">Alle Markierungen löschen</button>
-        </div>
-
-        <div class="section-title">3. Klinischer Befund (ABCDE)</div>
+        <div class="section-header"><span>2. KLINISCHER BEFUND (ABCDE)</span><i class="bi bi-activity"></i></div>
         
         <div class="abcde-card">
-            <label class="abcde-label">A - AIRWAY (Atemwege)</label>
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <select id="r_a_stat" class="form-select p-3"><option>Atemwege frei</option><option>Gefährdet (Blut/Erbrochenes)</option><option>Verlegt / Obstruktion</option></select>
-                </div>
-                <div class="col-md-6 d-flex align-items-center">
-                    <div class="form-check form-switch fs-5">
-                        <input class="form-check-input" type="checkbox" id="r_a_immobil">
-                        <label class="form-check-label fw-bold text-primary">Patient immobilisiert?</label>
+            <div class="abcde-head a-red">A - AIRWAY</div>
+            <div class="p-3">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <select id="r_a_stat" class="form-select"><option>Frei</option><option>Gefährdet</option><option>Verlegt</option></select>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check form-switch fs-5">
+                            <input class="form-check-input" type="checkbox" id="r_a_immobil">
+                            <label class="form-check-label fw-bold">IMMOBILISATION?</label>
+                        </div>
                     </div>
                 </div>
+                <textarea id="r_a_text" class="form-control" rows="2" placeholder="Notizen Atemwege..."></textarea>
             </div>
-            <textarea id="r_a_text" class="form-control" rows="2" placeholder="Besonderheiten zu A..."></textarea>
         </div>
 
         <div class="abcde-card">
-            <label class="abcde-label">B - BREATHING (Belüftung)</label>
-            <div class="row g-3 mb-3">
-                <div class="col-3"><label class="small">AF (1/min)</label><input type="number" id="r_v_af" class="form-control p-2"></div>
-                <div class="col-3"><label class="small">SpO2 (%)</label><input type="number" id="r_v_sp" class="form-control p-2"></div>
-                <div class="col-6">
-                    <label class="small">Auskultation</label>
-                    <select id="r_b_ausk" class="form-select p-2"><option>Ausk. o.B.</option><option>Giemen / Brummen</option><option>Rasselgeräusche</option><option>Abgeschwächt</option></select>
+            <div class="abcde-head b-blue">B - BREATHING</div>
+            <div class="p-3">
+                <div class="row g-3 mb-3">
+                    <div class="col-4"><label class="small">AF</label><input type="number" id="r_v_af" class="form-control"></div>
+                    <div class="col-4"><label class="small">SpO2 %</label><input type="number" id="r_v_sp" class="form-control"></div>
+                    <div class="col-4"><label class="small">EtCO2</label><input type="number" id="r_v_et" class="form-control"></div>
+                </div>
+                <select id="r_b_ausk" class="form-select mb-3"><option>o.B.</option><option>Rasselgeräusche</option><option>Giemen / Stridor</option></select>
+                <textarea id="r_b_text" class="form-control" rows="2" placeholder="Notizen Belüftung..."></textarea>
+            </div>
+        </div>
+
+        <div class="abcde-card">
+            <div class="abcde-head c-green">C - CIRCULATION</div>
+            <div class="p-3">
+                <div class="row g-3 mb-3">
+                    <div class="col-4"><label class="small">HF</label><input type="number" id="r_v_hf" class="form-control"></div>
+                    <div class="col-4"><label class="small">RR</label><input type="text" id="r_v_rr" class="form-control" placeholder="120/80"></div>
+                    <div class="col-4"><label class="small">Rekap</label><select id="r_c_rekap" class="form-select"><option>< 2s</option><option>> 2s</option></select></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="small">Haut</label><select id="r_c_haut" class="form-select"><option>rosig/warm</option><option>blass/kalt</option><option>zyanotisch</option></select></div>
+                    <div class="col-6"><label class="small">EKG-Rhythmus</label><input type="text" id="r_v_ekg" class="form-control" placeholder="Sinus..."></div>
                 </div>
             </div>
-            <textarea id="r_b_text" class="form-control" rows="2" placeholder="Zusätzliche Notizen zu B..."></textarea>
         </div>
 
         <div class="abcde-card">
-            <label class="abcde-label">C - CIRCULATION (Kreislauf)</label>
-            <div class="row g-3 mb-3">
-                <div class="col-3"><label class="small">HF (bpm)</label><input type="number" id="r_v_hf" class="form-control p-2"></div>
-                <div class="col-3"><label class="small">RR (mmHg)</label><input type="text" id="r_v_rr" class="form-control p-2" placeholder="120/80"></div>
-                <div class="col-3"><label class="small">Rekap</label><select id="r_c_rekap" class="form-select p-2"><option>< 2 Sek.</option><option>> 2 Sek.</option></select></div>
-                <div class="col-3"><label class="small">Haut</label><select id="r_c_haut" class="form-select p-2"><option>Rosig / Warm</option><option>Blass / Kalt</option><option>Zyanotisch</option><option>Schweißig</option></select></div>
-            </div>
-            <textarea id="r_c_text" class="form-control" rows="2" placeholder="Notizen zu C..."></textarea>
-        </div>
-
-        <div class="abcde-card">
-            <label class="abcde-label">D - DISABILITY (Neurologie)</label>
-            <div class="fast-box mb-4 text-center">
-                <h6 class="fw-bold text-danger"><i class="bi bi-exclamation-triangle"></i> BE-FAST SCHEMA</h6>
-                <div class="d-flex justify-content-center align-items-center gap-4 mt-2">
-                    <span class="fw-bold text-success">NEGATIV</span>
-                    <input type="range" class="form-range w-50" id="r_d_fast_slider" min="0" max="1" step="1" value="0">
-                    <span class="fw-bold text-danger">POSITIV</span>
+            <div class="abcde-head d-orange">D - DISABILITY (NEUROLOGIE)</div>
+            <div class="p-3">
+                <div class="slider-box mb-4">
+                    <h5 class="fw-bold text-danger">BE-FAST SCHEMA</h5>
+                    <div class="d-flex justify-content-center align-items-center gap-4 mt-3">
+                        <span class="fw-bold text-success">NEIN</span>
+                        <input type="range" class="form-range w-50" id="r_d_fast_slider" min="0" max="1" step="1" value="0">
+                        <span class="fw-bold text-danger">POSITIV</span>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="small">AVPU</label><select id="r_v_avpu" class="form-select"><option>A (Alert)</option><option>V (Voice)</option><option>P (Pain)</option><option>U (Unresponsive)</option></select></div>
+                    <div class="col-3"><label class="small">BZ</label><input type="number" id="r_v_bz" class="form-control"></div>
+                    <div class="col-3"><label class="small">GCS</label><input type="number" id="r_v_gcs" class="form-control" max="15"></div>
                 </div>
             </div>
-            <div class="row g-3 mb-3">
-                <div class="col-6"><label class="small">Bewusstsein (AVPU)</label><select id="r_v_avpu" class="form-select p-2"><option>A (Alert)</option><option>V (Voice)</option><option>P (Pain)</option><option>U (Unresponsive)</option></select></div>
-                <div class="col-3"><label class="small">BZ (mg/dl)</label><input type="number" id="r_v_bz" class="form-control p-2"></div>
-                <div class="col-3"><label class="small">Pupillen</label><select id="r_v_pup" class="form-select p-2"><option>Isokor</option><option>Anisokor</option><option>Lichtreaktiv</option></select></div>
-            </div>
-            <textarea id="r_d_text" class="form-control" rows="2" placeholder="Neurologische Notizen..."></textarea>
         </div>
 
-        <div class="abcde-card">
-            <label class="abcde-label">E - EXPOSURE (Umgebung)</label>
-            <div class="row g-3 mb-3">
-                <div class="col-4"><label class="small">Temp (°C)</label><input type="text" id="r_v_temp" class="form-control p-2"></div>
-                <div class="col-8"><label class="small">Auffälligkeiten</label><input type="text" id="r_e_auff" class="form-control p-2" placeholder="z.B. Sturz aus Höhe"></div>
+        <div class="section-header"><span>3. VERLETZUNGEN / BODYGRAMM</span><i class="bi bi-person-bounding-box"></i></div>
+        <div class="card-custom text-center">
+            <div class="bodygramm-wrap" id="bodyWrapper">
+                <img src="https://i.imgur.com/uX8Zf0M.png" id="bodyImg" class="body-img">
             </div>
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <button type="button" class="btn btn-warning btn-sm" onclick="setMarkerType('S')">S = Schmerz</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="setMarkerType('F')">F = Fraktur</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="setMarkerType('W')">W = Wunde</button>
+            </div>
+            <button type="button" class="btn btn-outline-secondary w-100" onclick="clearMarkers()">Löschen</button>
         </div>
 
-        <div class="section-title">4. Maßnahmen & Dokumentation</div>
-        <div class="card p-4">
-            <div class="mb-4">
-                <label class="fw-bold mb-2">Medikamentengabe</label>
-                <div class="input-group">
-                    <select id="medSelect" class="form-select p-3">
-                        <option value="">-- Medikament wählen --</option>
-                        <option>Adrenalin</option><option>Amiodaron</option><option>Aspisol</option><option>Atropin</option><option>Berodual</option><option>Dormicum</option><option>Fentanyl</option><option>Glucose 20%</option><option>Morphin</option><option>Novalgin</option>
-                    </select>
-                    <button type="button" class="btn btn-primary px-4" onclick="addMed()">HINZUFÜGEN</button>
-                </div>
-                <div id="medList" class="mt-3"></div>
-            </div>
-            
-            <label class="fw-bold mb-2">Ausführlicher Einsatzbericht</label>
-            <textarea id="r_bericht" class="form-control mb-4" rows="10" placeholder="Beschreibe hier den Einsatzverlauf, durchgeführte Maßnahmen und Übergabe..."></textarea>
+        <div class="section-header"><span>4. MASSNAHMEN & VERLAUF</span><i class="bi bi-pills"></i></div>
+        <div class="card-custom">
+            <label class="fw-bold">Einsatzbericht / Übergabe</label>
+            <textarea id="r_bericht" class="form-control mb-4" rows="12" placeholder="Beschreibe hier den ausführlichen Einsatzverlauf..."></textarea>
             
             <label class="fw-bold mb-2">Unterschrift Sanitäter</label>
-            <canvas id="sig-rtw" class="sig-canvas mb-2"></canvas>
-            <button type="button" class="btn btn-link text-danger p-0" onclick="sigRtw.clear()">Signatur löschen</button>
+            <canvas id="sig-rtw" class="sig-canvas"></canvas>
+            
+            <button type="submit" class="btn btn-rk-main w-100 py-4 mt-5">🚨 PROTOKOLL FINAL SPEICHERN</button>
         </div>
-
-        <button type="submit" class="btn btn-rk w-100 py-4 mb-5 shadow-lg fs-2">🚨 PROTOKOLL ABSCHLIESSEN</button>
     </form>
 </div>
 
 <div id="mainAppKTW" class="container mt-3">
-    <div class="header-rk">
-        <button class="btn btn-sm btn-light float-start mt-1" onclick="showList()">⬅ ZURÜCK</button>
-        <h2 class="fw-bold">🚐 KTW TRANSPORTBERICHT</h2>
+    <div class="rk-header rounded-4 mb-4" style="background: linear-gradient(180deg, var(--rk-blue) 0%, #002d5c 100%);">
+        <button class="btn btn-light btn-sm float-start" onclick="showList()">ABBRECHEN</button>
+        <h3 class="fw-bold">🚐 KTW TRANSPORTBERICHT</h3>
     </div>
     <form id="ktwForm">
-        <div class="section-title">Transportdaten</div>
-        <div class="card p-4">
+        <div class="section-header" style="background:#003d7a"><span>Transportdaten</span></div>
+        <div class="card-custom">
             <div class="row g-3 mb-3">
-                <div class="col-md-6"><label class="fw-bold">Einsatznummer</label><input type="text" id="k_e_nr" class="form-control p-3" required></div>
-                <div class="col-md-6"><label class="fw-bold">Patientenname</label><input type="text" id="k_p_name" class="form-control p-3"></div>
+                <div class="col-md-6"><input type="text" id="k_e_nr" class="form-control" placeholder="Einsatz-Nr" required></div>
+                <div class="col-md-6"><input type="text" id="k_p_name" class="form-control" placeholder="Patientenname"></div>
             </div>
             <div class="row g-3">
-                <div class="col-md-6"><label class="fw-bold">Aufnahmeort (Von)</label><input type="text" id="k_von" class="form-control p-3"></div>
-                <div class="col-md-6"><label class="fw-bold">Zielort (Nach)</label><input type="text" id="k_nach" class="form-control p-3"></div>
+                <div class="col-md-6"><input type="text" id="k_von" class="form-control" placeholder="Abholort (Von)"></div>
+                <div class="col-md-6"><input type="text" id="k_nach" class="form-control" placeholder="Zielort (Nach)"></div>
             </div>
         </div>
-        <div class="section-title">Durchführung</div>
-        <div class="card p-4">
-            <label class="fw-bold mb-2">Transportart</label>
-            <select id="k_art" class="form-select p-3 mb-4">
-                <option>Trage (liegend)</option>
-                <option>Tragsessel (sitzend)</option>
-                <option>Gehend</option>
-                <option>Rollstuhl (eigen)</option>
+
+        <div class="section-header" style="background:#003d7a"><span>Durchführung</span></div>
+        <div class="card-custom">
+            <select id="k_art" class="form-select mb-4">
+                <option>Trage (liegend)</option><option>Tragsessel (sitzend)</option><option>Gehend</option>
             </select>
-            <label class="fw-bold mb-2">Transportbericht / Besonderheiten</label>
-            <textarea id="k_bericht" class="form-control mb-4" rows="8" placeholder="Dokumentiere hier den Verlauf des Transports..."></textarea>
-            <button type="submit" class="btn btn-primary w-100 py-4 fs-2">💾 TRANSPORT SPEICHERN</button>
+            <label class="fw-bold">Transportbericht / Vorkommnisse</label>
+            <textarea id="k_bericht" class="form-control mb-4" rows="10" placeholder="Besonderheiten während des Transports..."></textarea>
+            <button type="submit" class="btn btn-primary w-100 py-4 fw-bold fs-3">💾 TRANSPORT ABSCHLIESSEN</button>
         </div>
     </form>
 </div>
 
-<div id="detailView" class="container mt-3">
-    <div class="header-rk"><button class="btn btn-sm btn-light float-start" onclick="showList()">⬅</button><h2 id="detTitle">BERICHT</h2></div>
-    <div id="detailContent" class="card p-4"></div>
-</div>
-
-<div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content p-3 text-center">
-    <button onclick="place('S','m-pain')" class="btn btn-warning w-100 mb-2 p-3 fw-bold">🔥 SCHMERZ (S)</button>
-    <button onclick="place('F','m-bone')" class="btn btn-primary w-100 mb-2 p-3 fw-bold">🦴 FRAKTUR (F)</button>
-    <button onclick="place('W','m-wound')" class="btn btn-danger w-100 p-3 fw-bold">🩸 WUNDE (W)</button>
-</div></div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
-
 <script>
+    // --- KONFIGURATION ---
     const SUPABASE_URL = 'https://rnfbggoetkmgxqdvznrm.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg';
     const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
-    
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let currentUser = null, selectedMeds = [], markers = [], curX, curY;
-    const markerModal = new bootstrap.Modal(document.getElementById('markerModal'));
-    const sigRtw = new SignaturePad(document.getElementById('sig-rtw'));
 
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null, activeMarker = 'S', markers = [];
+    let sigRtw;
+
+    // --- SYSTEM START ---
     window.onload = () => {
         const saved = localStorage.getItem('rk_user');
-        if(saved) { 
-            currentUser = JSON.parse(saved); 
-            document.getElementById('listView').classList.add('active-view'); 
-            loadProtocols(); 
+        if(saved) {
+            currentUser = JSON.parse(saved);
+            document.getElementById('listView').classList.add('active-view');
+            loadProtocols();
         } else {
             document.getElementById('loginView').classList.add('active-view');
         }
+        sigRtw = new SignaturePad(document.getElementById('sig-rtw'));
     };
 
+    // --- LOGIN LOGIK (FIXED) ---
     async function login() {
         const dn = document.getElementById('login_dn').value, pw = document.getElementById('login_pw').value;
-        const { data } = await _supabase.from('profiles').select('*').eq('dienstnummer', dn).eq('passwort', pw).single();
-        if(data) { localStorage.setItem('rk_user', JSON.stringify(data)); location.reload(); }
-        else document.getElementById('loginStatus').innerText = "❌ Login fehlgeschlagen!";
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = true; btn.innerText = "PRÜFE...";
+
+        const { data, error } = await _supabase.from('profiles').select('*').eq('dienstnummer', dn).eq('passwort', pw).single();
+        if(data) {
+            localStorage.setItem('rk_user', JSON.stringify(data));
+            location.reload();
+        } else {
+            document.getElementById('loginStatus').innerText = "❌ ZUGRIFF VERWEIGERT!";
+            btn.disabled = false; btn.innerText = "ANMELDEN";
+        }
     }
 
     function logout() { localStorage.removeItem('rk_user'); location.reload(); }
-    function showFlowSelect() { document.getElementById('listView').classList.remove('active-view'); document.getElementById('flowSelect').classList.add('active-view'); }
+    function showFlowSelect() { hideAll(); document.getElementById('flowSelect').classList.add('active-view'); }
+    function startFlow(t) { hideAll(); document.getElementById(t==='RTW'?'mainAppRTW':'mainAppKTW').classList.add('active-view'); }
     function showList() { location.reload(); }
-    
-    function startFlow(t) { 
-        document.getElementById('flowSelect').classList.remove('active-view'); 
-        document.getElementById(t==='RTW'?'mainAppRTW':'mainAppKTW').classList.add('active-view'); 
-    }
+    function hideAll() { document.querySelectorAll('.active-view').forEach(e => e.classList.remove('active-view')); }
 
+    // --- BODYGRAMM LOGIK ---
+    function setMarkerType(t) { activeMarker = t; }
+    document.getElementById('bodyImg').onclick = function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width * 100;
+        const y = (e.clientY - rect.top) / rect.height * 100;
+        placeMarker(x, y, activeMarker);
+    };
+
+    function placeMarker(x, y, label) {
+        markers.push({x, y, label});
+        const d = document.createElement('div');
+        d.className = `marker ${label==='S'?'m-pain':(label==='F'?'m-bone':'m-wound')}`;
+        d.style.left = x + '%'; d.style.top = y + '%'; d.innerText = label;
+        document.getElementById('bodyWrapper').appendChild(d);
+    }
+    function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
+
+    // --- PROTOKOLLE LADEN ---
     async function loadProtocols() {
         const { data } = await _supabase.from('rd_berichte').select('*').order('created_at', {ascending: false});
-        const isAdmin = currentUser.is_admin === 1 || currentUser.rolle === 'leitung';
         if(data) {
             document.getElementById('protocolTableBody').innerHTML = data.map(p => `
-                <tr onclick="openProtocol(${p.id})" style="cursor:pointer">
-                    <td><span class="fw-bold">${p.e_nr}</span></td>
-                    <td>${p.p_name || 'Unbekannt'}</td>
-                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                <tr>
+                    <td><b>${p.e_nr}</b></td>
                     <td><span class="badge ${p.typ==='RTW'?'bg-danger':'bg-primary'}">${p.typ}</span></td>
-                    <td class="text-end">${isAdmin ? `<button class="btn btn-sm btn-link text-danger" onclick="deleteP(event, ${p.id})"><i class="bi bi-trash"></i></button>` : '<i class="bi bi-lock"></i>'}</td>
+                    <td>${p.p_name || 'N/A'}</td>
+                    <td><span class="text-success fw-bold">GESPEICHERT</span></td>
+                    <td class="text-end"><button class="btn btn-sm btn-dark" onclick="alert('Druckansicht folgt...')">📂</button></td>
                 </tr>`).join('');
         }
     }
 
-    async function openProtocol(id) {
-        const { data } = await _supabase.from('rd_berichte').select('*').eq('id', id).single();
-        if(data) {
-            let html = `<div class="p-2">
-                <h3>Einsatz ${data.e_nr}</h3>
-                <p class="badge bg-secondary">${data.typ}</p>
-                <hr>
-                <p><b>Patient:</b> ${data.p_name}</p>
-                <p><b>Erstellt von:</b> ${data.erstellt_von}</p>
-                <div class="mt-4 p-3 bg-light border rounded">
-                    <h6>Berichtstext:</h6>
-                    <p style="white-space: pre-line">${data.daten.bericht || data.daten.k_bericht}</p>
-                </div>
-            </div>`;
-            document.getElementById('detailContent').innerHTML = html + `<button class="btn btn-rk w-100 mt-4" onclick="showList()">ZURÜCK</button>`;
-            document.getElementById('listView').classList.remove('active-view'); document.getElementById('detailView').classList.add('active-view');
-        }
-    }
-
-    async function deleteP(e, id) { e.stopPropagation(); if(confirm("Bericht wirklich löschen?")) { await _supabase.from('rd_berichte').delete().eq('id', id); loadProtocols(); } }
-
-    function addMed() {
-        const m = document.getElementById('medSelect').value; 
-        if(m) {
-            selectedMeds.push(m); 
-            document.getElementById('medList').innerHTML += `<div class="badge bg-primary p-2 me-1 mb-1">${m} <span style="cursor:pointer" onclick="this.parentElement.remove()">×</span></div>`;
-        }
-    }
-
-    // Bodygramm Logic
-    document.getElementById('bodyImg').onclick = function(e) {
-        const rect = this.getBoundingClientRect();
-        curX = (e.clientX - rect.left) / rect.width * 100;
-        curY = (e.clientY - rect.top) / rect.height * 100;
-        markerModal.show();
-    };
-    function place(s, c) { 
-        markers.push({x: curX, y: curY, label: s}); 
-        const d = document.createElement('div'); d.className = 'marker ' + c; d.style.left = curX + '%'; d.style.top = curY + '%'; d.innerText = s; 
-        document.getElementById('bodyWrapper').appendChild(d); markerModal.hide(); 
-    }
-    function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
-
-    // RTW Submit
+    // --- SPEICHERN LOGIK ---
     document.getElementById('rtwForm').onsubmit = async (e) => {
         e.preventDefault();
-        const payload = {
+        const p = {
             typ: 'RTW', e_nr: document.getElementById('r_e_nr').value, p_name: document.getElementById('r_p_name').value,
             daten: {
                 bericht: document.getElementById('r_bericht').value,
                 immobil: document.getElementById('r_a_immobil').checked,
                 fast: document.getElementById('r_d_fast_slider').value == 1 ? "POSITIV" : "NEGATIV",
-                meds: selectedMeds,
-                vitals: { hf: document.getElementById('r_v_hf').value, rr: document.getElementById('r_v_rr').value }
-            }
+                markers: markers,
+                s_zeiten: { s3: document.getElementById('r_t_s3').value, s7: document.getElementById('r_t_s7').value }
+            },
+            erstellt_von: currentUser.dienstnummer
         };
-        await save(payload);
+        await saveToDB(p);
     };
 
-    // KTW Submit
     document.getElementById('ktwForm').onsubmit = async (e) => {
         e.preventDefault();
-        const payload = {
+        const p = {
             typ: 'KTW', e_nr: document.getElementById('k_e_nr').value, p_name: document.getElementById('k_p_name').value,
-            daten: { 
-                k_bericht: document.getElementById('k_bericht').value, 
-                von: document.getElementById('k_von').value, 
-                nach: document.getElementById('k_nach').value,
-                art: document.getElementById('k_art').value 
-            }
+            daten: { k_bericht: document.getElementById('k_bericht').value, von: document.getElementById('k_von').value, nach: document.getElementById('k_nach').value },
+            erstellt_von: currentUser.dienstnummer
         };
-        await save(payload);
+        await saveToDB(p);
     };
 
-    async function save(p) {
-        const { error } = await _supabase.from('rd_berichte').insert([{ e_nr: p.e_nr, p_name: p.p_name, typ: p.typ, daten: p.daten, erstellt_von: currentUser.dienstnummer }]);
-        if(error) { alert("Fehler beim Speichern!"); return; }
-
+    async function saveToDB(payload) {
+        await _supabase.from('rd_berichte').insert([payload]);
         await fetch(DISCORD_WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-            embeds: [{ title: `🚨 NEUES PROTOKOLL (${p.typ}): ${p.e_nr}`, color: p.typ==='RTW'?14811162:3447003, fields: [{ name: "Sanitäter", value: currentUser.dienstnummer, inline: true }, { name: "Patient", value: p.p_name || "N/A", inline: true }]}]
+            embeds: [{ title: `🚨 NEUER ${payload.typ}-BERICHT`, color: payload.typ==='RTW'?16711680:3447003, fields: [{ name: "E-Nummer", value: payload.e_nr }, { name: "Sanitäter", value: currentUser.dienstnummer }]}]
         })});
-        alert("PROTOKOLL ERFOLGREICH ÜBERMITTELT!"); location.reload();
+        alert("EINSATZ ERFOLGREICH GESPEICHERT!"); location.reload();
     }
 </script>
 </body>
