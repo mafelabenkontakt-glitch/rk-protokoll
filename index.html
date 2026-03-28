@@ -5,28 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RK Einsatzprotokoll | Interactive Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --rk-red: #e2001a; --rk-dark: #b30014; --rk-light: #f8f9fa; }
+        :root { --rk-red: #e2001a; --rk-dark: #b30014; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; font-size: 0.85rem; }
-        .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 15px; }
+        .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 15px; position: sticky; top: 0; z-index: 1000; }
         .logo-svg { width: 140px; height: auto; fill: white; }
-        .hidden { display: none !important; }
-        .section-title { background: #343a40; color: white; padding: 8px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 8px 0; text-transform: uppercase; border-radius: 2px; }
+        .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 8px 0; text-transform: uppercase; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; }
         .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 10px; }
+        .form-label { font-weight: bold; color: #444; margin-bottom: 1px; font-size: 0.72rem; }
         
-        /* Interaktive ABCDE Badges */
-        .abcde-group { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
-        .btn-check:checked + .btn-outline-danger { background-color: var(--rk-red); color: white; }
-        .btn-check:checked + .btn-outline-success { background-color: #198754; color: white; }
+        /* Interaktive Buttons */
+        .quick-btn { font-size: 0.7rem; padding: 2px 8px; margin: 2px; border-radius: 10px; border: 1px solid #ddd; background: #fff; cursor: pointer; transition: 0.2s; }
+        .quick-btn:hover { background: var(--rk-red); color: white; }
         
         .bodygramm-container { position: relative; width: 300px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
         .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
-        .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; }
+        .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
         
         .sig-canvas { border: 2px solid #ccc; background: #fff; width: 100%; height: 140px; border-radius: 4px; touch-action: none; }
-        .btn-send { background: var(--rk-red); color: white; border: none; padding: 15px; width: 100%; font-weight: bold; border-radius: 10px; font-size: 1.1rem; }
+        .btn-send { background: var(--rk-red); color: white; border: none; padding: 15px; width: 100%; font-weight: bold; margin-top: 10px; border-radius: 10px; font-size: 1.1rem; }
+        .btn-archive { background: #6c757d; color: white; border: none; padding: 10px; width: 100%; font-weight: bold; margin-top: 5px; border-radius: 10px; }
+        
+        #archiveView { display: none; }
+        .archive-item { background: white; padding: 10px; margin-bottom: 5px; border-radius: 8px; border-left: 4px solid var(--rk-red); }
     </style>
 </head>
 <body>
@@ -36,130 +38,98 @@
         <path d="M40 20h20v20h20v20h-20v20h-20v-20h-20v-20h20z" fill="white"/>
         <text x="100" y="55" font-family="Arial" font-weight="bold" font-size="24" fill="white">ROTES KREUZ</text>
     </svg>
+    <div class="mt-2">
+        <button class="btn btn-sm btn-light" onclick="toggleView('form')">Protokoll</button>
+        <button class="btn btn-sm btn-outline-light" onclick="toggleView('archive')">Archiv</button>
+    </div>
 </div>
 
-<div class="container">
-    <div id="loginSection" class="row justify-content-center mt-4">
-        <div class="col-md-5"><div class="card p-4 shadow text-center">
-            <h5 class="mb-3">Sanitäter Login</h5>
-            <input type="text" id="username" class="form-control mb-2" placeholder="RK-Kennung">
-            <input type="password" id="password" class="form-control mb-3" placeholder="Passwort">
-            <button class="btn btn-danger w-100" onclick="attemptLogin()">ANMELDEN</button>
-            <div id="loginError" class="text-danger mt-2 small hidden">Anmeldedaten falsch!</div>
-        </div></div>
-    </div>
-
-    <div id="mainMenu" class="hidden text-center mt-3">
-        <div class="row g-2">
-            <div class="col-6"><button class="btn btn-outline-danger w-100 p-3 shadow-sm" onclick="showSection('protocolForm')">➕ NEU</button></div>
-            <div class="col-6"><button class="btn btn-outline-dark w-100 p-3 shadow-sm" onclick="openArchive()">📜 ARCHIV</button></div>
-            <div id="adminBtn" class="col-12 hidden"><button class="btn btn-dark w-100 mt-2" onclick="openAdmin()">🛠 ADMIN-BEREICH</button></div>
-        </div>
-        <hr>
-    </div>
-
-    <div id="protocolForm" class="hidden">
-        <form id="einsatzForm">
-            <div class="section-title">1. Einsatz & Team</div>
-            <div class="card p-3">
-                <div class="row g-2">
-                    <div class="col-6"><label class="form-label">Einsatz-Nr</label><input type="text" id="e_nr" class="form-control form-control-sm"></div>
-                    <div class="col-6"><label class="form-label">Fahrzeug</label><input type="text" id="fz" class="form-control form-control-sm"></div>
-                    <div class="col-12"><label class="form-label">Team</label><input type="text" id="team" class="form-control form-control-sm"></div>
-                </div>
-            </div>
-
-            <div class="section-title">2. Befund (Interaktiv)</div>
-            <div class="card p-3">
-                <div class="mb-3 border-bottom pb-2">
-                    <label class="form-label text-danger">A - Atemwege</label>
-                    <div class="abcde-group">
-                        <input type="radio" class="btn-check" name="airway" id="a1" value="Frei" checked>
-                        <label class="btn btn-sm btn-outline-success" for="a1">Frei</label>
-                        <input type="radio" class="btn-check" name="airway" id="a2" value="Gefährdet">
-                        <label class="btn btn-sm btn-outline-danger" for="a2">Gefährdet</label>
-                        <input type="radio" class="btn-check" name="airway" id="a3" value="Verlegt">
-                        <label class="btn btn-sm btn-outline-danger" for="a3">Verlegt</label>
-                    </div>
-                </div>
-
-                <div class="mb-3 border-bottom pb-2">
-                    <label class="form-label text-danger">B - Belüftung</label>
-                    <div class="row g-2">
-                        <div class="col-4"><input type="number" id="v_af" class="form-control form-control-sm" placeholder="AF"></div>
-                        <div class="col-4"><input type="number" id="v_spo2" class="form-control form-control-sm" placeholder="SpO2%"></div>
-                        <div class="col-4"><select id="v_lung" class="form-select form-select-sm"><option value="o.B.">o.B.</option><option value="Giemen">Giemen</option><option value="Rasseln">Rasseln</option></select></div>
-                    </div>
-                </div>
-
-                <div class="mb-3 border-bottom pb-2">
-                    <label class="form-label text-danger">C - Circulation</label>
-                    <div class="row g-2">
-                        <div class="col-4"><input type="text" id="v_rr" class="form-control form-control-sm" placeholder="RR (120/80)"></div>
-                        <div class="col-4"><input type="number" id="v_hf" class="form-control form-control-sm" placeholder="Puls"></div>
-                        <div class="col-4"><select id="v_rekall" class="form-select form-select-sm"><option value="< 2s">< 2s</option><option value="> 2s">> 2s</option></select></div>
-                    </div>
-                    <div class="abcde-group mt-1">
-                        <input type="checkbox" class="btn-check" id="c_skin1" value="Blass">
-                        <label class="btn btn-xs btn-outline-secondary" for="c_skin1">Blass</label>
-                        <input type="checkbox" class="btn-check" id="c_skin2" value="Zyanotisch">
-                        <label class="btn btn-xs btn-outline-secondary" for="c_skin2">Zyanose</label>
-                        <input type="checkbox" class="btn-check" id="c_skin3" value="Schweißig">
-                        <label class="btn btn-xs btn-outline-secondary" for="c_skin3">Schweißig</label>
-                    </div>
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label text-danger">D - Disability</label>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <select id="v_avpu" class="form-select form-select-sm">
-                                <option value="A (Alert)">A (Alert)</option>
-                                <option value="V (Verbal)">V (Verbal)</option>
-                                <option value="P (Pain)">P (Pain)</option>
-                                <option value="U (Unresponsive)">U (Unresponsive)</option>
-                            </select>
-                        </div>
-                        <div class="col-6"><input type="number" id="v_bz" class="form-control form-control-sm" placeholder="BZ (mg/dl)"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-title">3. Bodygramm & Anamnese</div>
-            <div class="bodygramm-container" id="bodyWrapper">
-                <img src="grafik.png" id="bodyImg" class="body-img" alt="Grafik fehlt!">
-            </div>
-            
-            <div class="card p-3 mt-2">
-                <textarea id="v_text" class="form-control" rows="3" placeholder="Zusätzliche Notizen / SAMPLER..."></textarea>
-            </div>
-
-            <div class="section-title">4. Unterschrift</div>
-            <div class="card p-3 mb-3">
-                <canvas id="signature-pad" class="sig-canvas"></canvas>
-                <button type="button" class="btn btn-sm btn-link text-danger" onclick="signaturePad.clear()">Löschen</button>
-            </div>
-
-            <button type="submit" class="btn btn-send shadow mb-5">🚨 PROTOKOLL ABSENDEN</button>
-        </form>
-    </div>
-
-    <div id="archiveSection" class="hidden">
-        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')"> Zurück</button>
-        <div id="archiveTable" class="list-group"></div>
-    </div>
-
-    <div id="adminSection" class="hidden">
-        <button class="btn btn-sm btn-secondary mb-2" onclick="showSection('mainMenu')"> Zurück</button>
+<div class="container" id="protocolView">
+    <form id="einsatzForm">
+        <div class="section-title">1. Einsatz & Team</div>
         <div class="card p-3">
-            <h6>User hinzufügen</h6>
-            <input type="text" id="newU" class="form-control mb-1" placeholder="Kennung">
-            <input type="text" id="newP" class="form-control mb-2" placeholder="Passwort">
-            <button class="btn btn-success" onclick="addUser()">Hinzufügen</button>
-            <hr>
-            <div id="userList"></div>
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">Einsatz-Nr</label><input type="text" id="e_nr" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Fahrzeug</label><input type="text" id="fz" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">Team</label><input type="text" id="team" class="form-control form-control-sm"></div>
+            </div>
         </div>
-    </div>
+
+        <div class="section-title">2. Befund (ABCDE) <small class="text-info" style="font-size:0.6rem">Tippen für Text</small></div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-12">
+                    <label class="form-label text-danger">A (Airway)</label>
+                    <div>
+                        <span class="quick-btn" onclick="addText('abc_a', 'Atemwege frei, spricht klar.')">Frei</span>
+                        <span class="quick-btn" onclick="addText('abc_a', 'Atemwege verlegt durch Erbrochenes/Fremdkörper.')">Verlegt</span>
+                    </div>
+                    <input type="text" id="abc_a" class="form-control form-control-sm">
+                </div>
+
+                <div class="col-8">
+                    <label class="form-label text-danger">B (Breathing)</label>
+                    <div>
+                        <span class="quick-btn" onclick="addText('abc_b', 'Seitengleiche Belüftung, keine Rasselgeräusche.')">o.B.</span>
+                        <span class="quick-btn" onclick="addText('abc_b', 'Giemen/Brummen hörbar, Dyspnoe.')">Obstruktiv</span>
+                    </div>
+                    <input type="text" id="abc_b" class="form-control form-control-sm">
+                </div>
+                <div class="col-2"><label class="form-label">AF</label><input type="number" id="v_af" class="form-control form-control-sm"></div>
+                <div class="col-2"><label class="form-label">SpO2</label><input type="number" id="v_spo2" class="form-control form-control-sm"></div>
+
+                <div class="col-6">
+                    <label class="form-label text-danger">C (Circulation)</label>
+                    <div>
+                        <span class="quick-btn" onclick="addText('abc_c', 'Radialispuls kräftig/rhythmisch. Haut warm/trocken.')">Stabil</span>
+                        <span class="quick-btn" onclick="addText('abc_c', 'Zentralisierung, Haut blass/kalt/schweißig.')">Schock</span>
+                    </div>
+                    <input type="text" id="abc_c" class="form-control form-control-sm">
+                </div>
+                <div class="col-3"><label class="form-label">HF</label><input type="number" id="v_hf" class="form-control form-control-sm"></div>
+                <div class="col-3"><label class="form-label">RR</label><input type="text" id="v_rr" class="form-control form-control-sm" placeholder="120/80"></div>
+                
+                <div class="col-12">
+                    <label class="form-label text-danger">D (Neurologie)</label>
+                    <div class="row g-2">
+                        <div class="col-4"><select id="v_avpu" class="form-select form-select-sm"><option value="A">A (Alert)</option><option value="V">V</option><option value="P">P</option><option value="U">U</option></select></div>
+                        <div class="col-4"><input type="text" id="v_bz" class="form-control form-control-sm" placeholder="BZ"></div>
+                        <div class="col-4"><select id="v_pup" class="form-select form-select-sm"><option value="Isokor">Isokor</option><option value="Anisokor">Anisokor</option></select></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">3. Körperstatus</div>
+        <div class="bodygramm-container" id="bodyWrapper">
+            <img src="grafik.png" id="bodyImg" class="body-img" alt="Grafik">
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-1" onclick="clearMarkers()">Marker löschen</button>
+
+        <div class="section-title">4. SAMPLER / Maßnahmen</div>
+        <div class="card p-3">
+            <textarea id="v_text" class="form-control mb-2" rows="5" placeholder="Hier den Fließtext zum Einsatzverlauf..."></textarea>
+            <div class="d-flex flex-wrap">
+                <span class="quick-btn" onclick="addText('v_text', 'Patient stabil übernommen. O2-Gabe (4l). Monitoring gestartet. Transport ohne Komplikationen.')">Standard-Verlauf</span>
+                <span class="quick-btn" onclick="addText('v_text', 'Übergabe an Schockraum-Team erfolgt.')">Übergabe SR</span>
+            </div>
+        </div>
+
+        <div class="section-title">5. Abschluss</div>
+        <div class="card p-3 text-center">
+            <canvas id="signature-pad" class="sig-canvas"></canvas>
+            <button type="button" class="btn btn-sm btn-link text-danger" onclick="signaturePad.clear()">Löschen</button>
+        </div>
+
+        <button type="submit" class="btn btn-send shadow">🚨 SENDEN & SPEICHERN</button>
+    </form>
+</div>
+
+<div class="container" id="archiveView">
+    <div class="section-title">Einsatz-Archiv</div>
+    <div id="archiveList">
+        </div>
+    <button class="btn btn-archive mt-3" onclick="clearArchive()">Archiv leeren</button>
 </div>
 
 <div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content text-center p-3">
@@ -170,104 +140,82 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
-
 <script>
-    const SB_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
-    const SB_KEY = "sb_publishable_Ilcxhb0I07LY9r_dqBUSXg_mcfljlc4"; // Dein Key
-    const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT";
-    
-    const sb = supabase.createClient(SB_URL, SB_KEY);
-    let currentUser = null, markers = [], curX, curY;
-    const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
+    const WEBHOOK = 'YOUR_WEBHOOK_URL'; // Hier Webhook einfügen
+    let markers = [], curX, curY;
     const modal = new bootstrap.Modal(document.getElementById('markerModal'));
+    const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
 
-    // --- LOGIN ---
-    async function attemptLogin() {
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
-        const { data, error } = await sb.from('rk_users').select('*').eq('u', u).eq('p', p).single();
-
-        if (data) {
-            currentUser = data;
-            showSection('mainMenu');
-            if(data.r === 'admin') document.getElementById('adminBtn').classList.remove('hidden');
-        } else {
-            document.getElementById('loginError').classList.remove('hidden');
-        }
+    // Ansicht wechseln
+    function toggleView(view) {
+        document.getElementById('protocolView').style.display = view === 'form' ? 'block' : 'none';
+        document.getElementById('archiveView').style.display = view === 'archive' ? 'block' : 'none';
+        if(view === 'archive') loadArchive();
     }
 
-    // --- FORMULAR SENDEN ---
-    document.getElementById('einsatzForm').onsubmit = async function(e) {
-        e.preventDefault();
-        const btn = document.querySelector('.btn-send');
-        btn.innerText = "Wird übertragen...";
-        btn.disabled = true;
-
-        const reportData = {
-            e_nr: document.getElementById('e_nr').value,
-            san: currentUser.u,
-            patient: "Name: " + (document.getElementById('p_name')?.value || "N.N."),
-            befund: `A: ${document.querySelector('input[name="airway"]:checked').value}, B: AF ${document.getElementById('v_af').value}, C: RR ${document.getElementById('v_rr').value}, D: ${document.getElementById('v_avpu').value}`
-        };
-
-        // 1. Cloud Speicher
-        await sb.from('rk_reports').insert([{ zid: reportData.e_nr, patient: reportData.patient, san: reportData.san }]);
-
-        // 2. Discord Webhook
-        const formData = new FormData();
-        const mainEmbed = {
-            title: "🚑 NEUES PROTOKOLL: " + reportData.e_nr,
-            color: 14811162,
-            fields: [
-                { name: "👤 Sanitäter", value: reportData.san, inline: true },
-                { name: "🩺 ABCDE Status", value: reportData.befund },
-                { name: "📝 Bericht", value: document.getElementById('v_text').value || "Kein Text" }
-            ],
-            timestamp: new Date()
-        };
-        formData.append('payload_json', JSON.stringify({ embeds: [mainEmbed] }));
-
-        await fetch(DISCORD_WEBHOOK, { method: 'POST', body: formData });
-
-        alert("✅ Erfolgreich übermittelt!");
-        location.reload();
-    };
-
-    // --- HELPER ---
-    function showSection(id) {
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('mainMenu').classList.add('hidden');
-        document.getElementById('protocolForm').classList.add('hidden');
-        document.getElementById('archiveSection').classList.add('hidden');
-        document.getElementById('adminSection').classList.add('hidden');
-        document.getElementById(id).classList.remove('hidden');
+    // Interaktiver Text-Inserter
+    function addText(targetId, text) {
+        const el = document.getElementById(targetId);
+        if(el.value) el.value += " " + text;
+        else el.value = text;
     }
 
-    // Bodygramm Marker
+    // Bodygramm Logik
     document.getElementById('bodyImg').onclick = function(e) {
         const rect = this.getBoundingClientRect();
         curX = (e.clientX - rect.left) / rect.width * 100;
         curY = (e.clientY - rect.top) / rect.height * 100;
         modal.show();
     };
+
     function place(l, s, c) {
+        markers.push({x: Math.round(curX), y: Math.round(curY), type: l});
         const d = document.createElement('div');
         d.className = 'marker ' + c; d.style.left = curX + '%'; d.style.top = curY + '%'; d.innerText = s;
         document.getElementById('bodyWrapper').appendChild(d);
         modal.hide();
     }
-    function clearMarkers() { document.querySelectorAll('.marker').forEach(m => m.remove()); }
 
-    // Admin & Archiv Funktionen (vereinfacht)
-    async function openAdmin() { showSection('adminSection'); renderUsers(); }
-    async function renderUsers() {
-        const { data } = await sb.from('rk_users').select('*');
-        document.getElementById('userList').innerHTML = data.map(u => `<div>${u.u} (${u.r})</div>`).join('');
+    function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
+
+    // Archiv Logik
+    function loadArchive() {
+        const archive = JSON.parse(localStorage.getItem('rk_archive') || '[]');
+        const container = document.getElementById('archiveList');
+        container.innerHTML = archive.length ? '' : '<p class="text-center mt-4">Keine Einsätze gespeichert.</p>';
+        archive.reverse().forEach(entry => {
+            container.innerHTML += `
+                <div class="archive-item shadow-sm">
+                    <strong>Nr: ${entry.nr}</strong> | ${entry.date}<br>
+                    <small>${entry.text.substring(0, 100)}...</small>
+                </div>`;
+        });
     }
-    async function addUser() {
-        const u = document.getElementById('newU').value; const p = document.getElementById('newP').value;
-        await sb.from('rk_users').insert([{ u, p, r: 'user' }]); renderUsers();
-    }
+
+    function clearArchive() { if(confirm('Archiv wirklich löschen?')) { localStorage.removeItem('rk_archive'); loadArchive(); } }
+
+    // Submit Logik
+    document.getElementById('einsatzForm').onsubmit = async function(e) {
+        e.preventDefault();
+        
+        const data = {
+            nr: document.getElementById('e_nr').value || "unbekannt",
+            date: new Date().toLocaleString('de-DE'),
+            text: document.getElementById('v_text').value,
+            team: document.getElementById('team').value
+        };
+
+        // Im Archiv speichern
+        const archive = JSON.parse(localStorage.getItem('rk_archive') || '[]');
+        archive.push(data);
+        localStorage.setItem('rk_archive', JSON.stringify(archive));
+
+        alert("✅ Protokoll gespeichert!");
+        // Hier könnte nun die generateBodygrammImage & Fetch-Logik von vorher folgen
+        this.reset();
+        clearMarkers();
+        signaturePad.clear();
+    };
 </script>
 </body>
 </html>
