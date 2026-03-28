@@ -3,126 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK Einsatzdatenbank | Intern</title>
+    <title>RK Einsatzdatenbank | Zentral-Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root { --rk-red: #e2001a; --rk-dark: #b30014; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; font-size: 0.85rem; }
         .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); }
         .hidden { display: none !important; }
-        .admin-panel { background: white; border-radius: 8px; padding: 20px; margin-top: 20px; border: 1px solid #ddd; }
-        .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 15px; }
+        .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 10px; }
         .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 8px 0; text-transform: uppercase; }
-        .btn-rk { background: var(--rk-red); color: white; border: none; }
+        .btn-rk { background: var(--rk-red); color: white; }
         .btn-rk:hover { background: var(--rk-dark); color: white; }
+        .admin-box { background: #fff; border: 2px solid #343a40; border-radius: 10px; padding: 20px; }
+        .form-label { font-weight: bold; font-size: 0.75rem; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="header-rk shadow">
     <h4 class="m-0">ÖSTERREICHISCHES ROTES KREUZ</h4>
-    <small>Einsatzdokumentationssystem v2.6 (ÖNORM konform)</small>
+    <small>Zentrales Einsatzdokumentationssystem</small>
 </div>
 
 <div class="container mt-4">
     
     <div id="loginSection" class="row justify-content-center">
         <div class="col-md-4">
-            <div class="card p-4 shadow-sm">
-                <h5 class="text-center mb-3">Zentrales Login</h5>
-                <input type="text" id="username" class="form-control mb-2" placeholder="Benutzerkennung (z.B. RK-02)">
+            <div class="card p-4 shadow">
+                <h5 class="text-center mb-3">Login-Portal</h5>
+                <input type="text" id="username" class="form-control mb-2" placeholder="Benutzerkennung">
                 <input type="password" id="password" class="form-control mb-3" placeholder="Passwort">
                 <button class="btn btn-rk w-100" onclick="attemptLogin()">Anmelden</button>
-                <div id="loginError" class="text-danger mt-2 text-center small hidden">Zugriff verweigert!</div>
+                <div id="loginError" class="text-danger mt-2 text-center small hidden">Login fehlgeschlagen!</div>
             </div>
         </div>
     </div>
 
     <div id="mainMenu" class="hidden">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 id="welcomeText">Willkommen</h5>
-            <button class="btn btn-outline-secondary btn-sm" onclick="logout()">Abmelden</button>
+        <div class="d-flex justify-content-between mb-4">
+            <h5 id="welcomeMsg">Willkommen</h5>
+            <button class="btn btn-sm btn-outline-danger" onclick="logout()">Logout</button>
         </div>
-        
         <div class="row g-3">
             <div class="col-md-6">
-                <button class="btn btn-rk w-100 p-4" onclick="showSection('protocolForm')">➕ NEUES PROTOKOLL</button>
+                <button class="btn btn-rk w-100 p-4 shadow-sm" onclick="showSection('protocolForm')">📝 NEUES PROTOKOLL ERSTELLEN</button>
             </div>
             <div id="adminBtn" class="col-md-6 hidden">
-                <button class="btn btn-dark w-100 p-4" onclick="showSection('adminSection')">🛠 ADMIN-BEREICH</button>
+                <button class="btn btn-dark w-100 p-4 shadow-sm" onclick="showSection('adminSection')">⚙️ BENUTZER & BERICHTE VERWALTEN</button>
             </div>
         </div>
     </div>
 
     <div id="protocolForm" class="hidden">
-        <button class="btn btn-sm btn-link mb-2" onclick="showSection('mainMenu')">← Zurück</button>
+        <button class="btn btn-sm btn-secondary mb-3" onclick="showSection('mainMenu')">← Zurück</button>
         <form id="einsatzForm">
-            <div class="section-title">1. Einsatzdaten & Rechtliche Hinweise</div>
-            <div class="card p-3 bg-light">
-                <small class="text-muted">Gemäß § 22 SanG besteht Dokumentationspflicht. Alle Daten sind vertraulich zu behandeln.</small>
-                <div class="row g-2 mt-2">
-                    <div class="col-6"><label class="form-label">Einsatz-Nr (ZID)</label><input type="text" id="e_nr" class="form-control" required></div>
-                    <div class="col-6"><label class="form-label">Dienststelle</label><input type="text" class="form-control" value="LV Niederösterreich" readonly></div>
+            <div class="section-title">1. Erweiterte Einsatzdaten</div>
+            <div class="card p-3">
+                <div class="row g-2">
+                    <div class="col-md-4"><label class="form-label">Einsatz-Nr (ZID)</label><input type="text" class="form-control" required></div>
+                    <div class="col-md-4"><label class="form-label">Fahrzeug (Funkrufname)</label><input type="text" class="form-control" placeholder="z.B. 73/102"></div>
+                    <div class="col-md-4"><label class="form-label">Einsatzart</label>
+                        <select class="form-select"><option>Notfalleinsatz</option><option>Krankentransport</option><option>Ambulanzdienst</option></select>
+                    </div>
+                    <div class="col-md-12"><label class="form-label">Einsatzort (Straße, PLZ, Ort)</label><input type="text" class="form-control"></div>
+                    
+                    <div class="col-6 col-md-2"><label class="form-label">Alarmzeit</label><input type="time" class="form-control"></div>
+                    <div class="col-6 col-md-2"><label class="form-label">Ausrückzeit</label><input type="time" class="form-control"></div>
+                    <div class="col-6 col-md-2"><label class="form-label">Ankunft Ort</label><input type="time" class="form-control"></div>
+                    <div class="col-6 col-md-2"><label class="form-label">Abfahrt Ort</label><input type="time" class="form-control"></div>
+                    <div class="col-6 col-md-2"><label class="form-label">Ankunft Ziel</label><input type="time" class="form-control"></div>
+                    <div class="col-6 col-md-2"><label class="form-label">Einsatzbereit</label><input type="time" class="form-control"></div>
                 </div>
             </div>
-            
-            <div class="section-title">2. Patientendaten</div>
+
+            <div class="section-title">2. Team & Begleitung</div>
             <div class="card p-3">
-                 <input type="text" id="p_name" class="form-control mb-2" placeholder="Nachname, Vorname">
-                 <input type="text" id="p_sv" class="form-control" placeholder="Versicherungsnummer (10-stellig)">
+                <div class="row g-2">
+                    <div class="col-md-6"><label class="form-label">Transportführer</label><input type="text" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label">Fahrer</label><input type="text" class="form-control"></div>
+                    <div class="col-md-12"><label class="form-label">Weitere Helfer / Praktikanten</label><input type="text" class="form-control"></div>
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-rk w-100 p-3 shadow mt-3">✅ PROTOKOLL FINALISIEREN & SPEICHERN</button>
+            <div class="alert alert-info">Hier folgen die restlichen Sektionen (ABCDE, SAMPLER, Bodygramm)...</div>
+            
+            <button type="submit" class="btn btn-rk w-100 p-3 mb-5 shadow">EINSATZ ABSCHLIESSEN</button>
         </form>
     </div>
 
     <div id="adminSection" class="hidden">
-        <button class="btn btn-sm btn-link mb-2" onclick="showSection('mainMenu')">← Zurück</button>
-        <div class="admin-panel shadow-sm">
-            <h3>Admin-Dashboard</h3>
+        <button class="btn btn-sm btn-secondary mb-3" onclick="showSection('mainMenu')">← Zurück</button>
+        <div class="admin-box shadow">
+            <h4>Admin-Zentrale</h4>
             <hr>
-            <h6>Benutzerverwaltung</h6>
-            <table class="table table-sm">
-                <thead><tr><th>User</th><th>Rolle</th><th>Aktion</th></tr></thead>
-                <tbody id="userTable">
-                    <tr><td>RK-02</td><td>Admin</td><td>-</td></tr>
-                </tbody>
-            </table>
-            <button class="btn btn-sm btn-dark" onclick="addUser()">+ Admin hinzufügen</button>
+            <h5>Benutzerverwaltung</h5>
+            <div class="table-responsive">
+                <table class="table table-hover mt-2">
+                    <thead class="table-dark">
+                        <tr><th>Benutzername</th><th>Rolle</th><th>Aktion</th></tr>
+                    </thead>
+                    <tbody id="userTable">
+                        </tbody>
+                </table>
+            </div>
             
-            <h6 class="mt-4">Gespeicherte Berichte (Datenbankzugriff)</h6>
-            <div id="dbPlaceholder" class="alert alert-secondary">Keine Berichte zur Bearbeitung vorhanden.</div>
+            <div class="card p-3 bg-light">
+                <h6>Neuen Benutzer anlegen</h6>
+                <div class="row g-2">
+                    <div class="col-md-4"><input type="text" id="newU" class="form-control" placeholder="Username"></div>
+                    <div class="col-md-4"><input type="text" id="newP" class="form-control" placeholder="Passwort"></div>
+                    <div class="col-md-2">
+                        <select id="newR" class="form-select">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2"><button class="btn btn-success w-100" onclick="addUser()">Hinzufügen</button></div>
+                </div>
+            </div>
         </div>
     </div>
 
 </div>
 
 <script>
-    // System-Status
-    let currentUser = null;
-    const users = [
-        {user: "RK-02", pass: "AppearIron22", role: "admin"}
+    // Initial-Daten (Admin-User)
+    let users = [
+        {u: "RK-02", p: "AppearIron22", r: "admin"}
     ];
+    let currentUser = null;
 
-    // Login Logik
     function attemptLogin() {
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
-        const found = users.find(x => x.user === u && x.pass === p);
+        const found = users.find(x => x.u === u && x.p === p);
 
         if(found) {
             currentUser = found;
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('welcomeText').innerText = `Angemeldet als: ${found.user}`;
-            if(found.role === 'admin') document.getElementById('adminBtn').classList.remove('hidden');
+            document.getElementById('welcomeMsg').innerText = `Angemeldet als: ${found.u} (${found.r})`;
+            
+            if(found.r === 'admin') {
+                document.getElementById('adminBtn').classList.remove('hidden');
+            }
+            renderUserTable();
         } else {
             document.getElementById('loginError').classList.remove('hidden');
         }
     }
 
-    function logout() {
-        location.reload(); // Einfachster Reset
+    function renderUserTable() {
+        const tbody = document.getElementById('userTable');
+        tbody.innerHTML = '';
+        users.forEach((user, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${user.u}</td>
+                    <td><span class="badge ${user.r === 'admin' ? 'bg-danger' : 'bg-primary'}">${user.r}</span></td>
+                    <td>
+                        ${user.u !== 'RK-02' ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${index})">Löschen</button>` : '-'}
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function addUser() {
+        const u = document.getElementById('newU').value;
+        const p = document.getElementById('newP').value;
+        const r = document.getElementById('newR').value;
+        if(u && p) {
+            users.push({u, p, r});
+            renderUserTable();
+            document.getElementById('newU').value = '';
+            document.getElementById('newP').value = '';
+            alert(`Benutzer ${u} wurde als ${r} angelegt.`);
+        }
+    }
+
+    function deleteUser(index) {
+        if(confirm("Benutzer wirklich löschen?")) {
+            users.splice(index, 1);
+            renderUserTable();
+        }
     }
 
     function showSection(id) {
@@ -132,21 +195,13 @@
         document.getElementById(id).classList.remove('hidden');
     }
 
-    function addUser() {
-        const name = prompt("Name des neuen Admins:");
-        if(name) {
-            const tbody = document.getElementById('userTable');
-            tbody.innerHTML += `<tr><td>${name}</td><td>Admin</td><td><button class="btn btn-danger btn-sm">Löschen</button></td></tr>`;
-        }
-    }
+    function logout() { location.reload(); }
 
-    // Formular-Handling
-    document.getElementById('einsatzForm').onsubmit = function(e) {
+    document.getElementById('einsatzForm').onsubmit = (e) => {
         e.preventDefault();
-        alert("Daten wurden lokal verschlüsselt und in der (simulierten) RK-Datenbank gespeichert.");
+        alert("Protokoll wurde gespeichert (Simuliert).");
         showSection('mainMenu');
     };
 </script>
-
 </body>
 </html>
