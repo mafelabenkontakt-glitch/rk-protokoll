@@ -1,222 +1,299 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RK CLOUD OS - Tactical V5 Demo Admin</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-:root {
-    --rk-red: #E2001A;
-}
-body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-.rk-header-main { background: var(--rk-red); color: white; padding: 12px; position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-.view-section { display: none; padding: 15px; }
-.active-view { display: block !important; }
-.module-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-.module-title { font-size: 0.75rem; font-weight: 800; color: #6c757d; text-transform: uppercase; margin-bottom: 12px; }
-.btn-choice { border: 1px solid #ddd; background: #f8f9fa; padding: 5px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-right: 5px;}
-.btn-choice.active { background: var(--rk-red); color: white; border-color: var(--rk-red);}
-.vital-input { font-size: 1.2rem; font-weight: 700; color: var(--rk-red); text-align: center; border: none; background: #fdfdfd; width: 100%; }
-.vital-box { border: 2px solid #eee; border-radius: 10px; padding: 5px; background: white; margin-bottom:5px;}
-.body-canvas { position: relative; width: 100%; max-width: 320px; margin: 0 auto; border: 1px solid #ddd; border-radius: 15px; overflow: hidden; }
-.marker { position: absolute; width: 25px; height: 25px; border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; }
-.nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1500; }
-.nav-item { flex: 1; text-align: center; padding: 10px; font-size: 0.75rem; font-weight: bold; color: #666; text-decoration: none; }
-.nav-item.active { color: var(--rk-red); border-top: 3px solid var(--rk-red); }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RK Einsatzprotokoll | Professional Full</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --rk-red: #e2001a; --rk-dark: #b30014; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; font-size: 0.85rem; }
+        .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 15px; }
+        .logo-svg { width: 160px; height: auto; fill: white; margin-bottom: 5px; }
+        .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 8px 0; text-transform: uppercase; border-radius: 2px; }
+        .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; }
+        .form-label { font-weight: bold; color: #444; margin-bottom: 1px; font-size: 0.72rem; }
+        .bodygramm-container { position: relative; width: 320px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
+        .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
+        .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
+        .sig-canvas { border: 2px solid #ccc; background: #fff; width: 100%; height: 140px; border-radius: 4px; touch-action: none; }
+        .btn-send { background: var(--rk-red); color: white; border: none; padding: 15px; width: 100%; font-weight: bold; margin-top: 25px; border-radius: 10px; font-size: 1.1rem; }
+    </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginView" class="active-view d-flex align-items-center justify-content-center" style="height:100vh; background:var(--rk-red);">
-  <div class="bg-white p-5 rounded-4 shadow-lg text-center" style="width:360px;">
-    <h1 class="fw-bold text-danger">RK CLOUD</h1>
-    <p class="small text-muted mb-4">Tactical OS V5.0</p>
-    <input id="login_dn" class="form-control mb-2 p-3 text-center" placeholder="Dienstnummer">
-    <input id="login_pw" type="password" class="form-control mb-4 p-3 text-center" placeholder="Passwort">
-    <button id="loginBtn" class="btn btn-dark w-100 py-3 fw-bold rounded-pill">EINSATZ STARTEN</button>
-  </div>
+<div class="header-rk shadow">
+    <svg class="logo-svg" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 20h20v20h20v20h-20v20h-20v-20h-20v-20h20z" fill="white"/>
+        <text x="100" y="55" font-family="Arial" font-weight="bold" font-size="24" fill="white">ROTES KREUZ</text>
+        <text x="100" y="75" font-family="Arial" font-size="14" fill="white">ÖSTERREICH</text>
+    </svg>
 </div>
 
-<!-- APP -->
-<div id="appInterface" style="display:none;">
-
-  <div class="rk-header-main d-flex justify-content-between align-items-center">
-    <span id="header_label" class="fw-bold">JOURNAL</span>
-  </div>
-
-  <!-- LIST / NEW REPORT -->
-  <div id="listView" class="view-section active-view">
-    <button onclick="startNewReport()" class="btn btn-danger w-100 py-3 mb-3 rounded-4 fw-bold fs-5">🚑 NEUER EINSATZ</button>
-    <div id="protocolList"></div>
-  </div>
-
-  <!-- EDIT REPORT -->
-  <div id="editView" class="view-section">
-
-    <div class="module-card">
-      <div class="module-title">Einsatz & Patient</div>
-      <div class="row g-2">
-        <div class="col-7"><input id="r_p_name" class="form-control" placeholder="Name, Vorname"></div>
-        <div class="col-5"><input id="r_e_nr" class="form-control" placeholder="Einsatz-Nr"></div>
-        <div class="col-7"><input id="r_p_svnr" class="form-control" placeholder="SV-Nr"></div>
-        <div class="col-5"><input id="r_p_geb" type="date" class="form-control"></div>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="module-title">ABCDE (Triage)</div>
-      <div id="abcde_container">
-        <div class="d-flex align-items-center mb-3">
-          <div class="flex-grow-1">
-            <span class="btn-choice" onclick="quickTag('abcde_a','Frei')">A-Frei</span>
-            <span class="btn-choice" onclick="quickTag('abcde_a','Verlegt')">A-Verlegt</span>
-            <input id="abcde_a" class="form-control form-control-sm mt-1" placeholder="Atemweg Details...">
-          </div>
+<div class="container">
+    <form id="einsatzForm">
+        
+        <div class="section-title">1. Einsatz & Team</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">Einsatz-Nr</label><input type="text" id="e_nr" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Fahrzeug</label><input type="text" id="fz" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">Team (Besatzung)</label><input type="text" id="team" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Alarmzeit</label><input type="time" id="t_alarm" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Ankunft Ort</label><input type="time" id="t_ankunft" class="form-control form-control-sm"></div>
+            </div>
         </div>
-        <div class="d-flex align-items-center mb-3">
-          <div class="flex-grow-1">
-            <span class="btn-choice" onclick="quickTag('abcde_b','Normal')">B-Normal</span>
-            <span class="btn-choice" onclick="quickTag('abcde_b','Dyspnoe')">B-Dyspnoe</span>
-            <input id="abcde_b" class="form-control form-control-sm mt-1" placeholder="Belüftung Details...">
-          </div>
+
+        <div class="section-title">2. Patientendaten</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-12"><label class="form-label">Name</label><input type="text" id="p_name" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Geburtsdatum</label><input type="date" id="p_geb" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">SV-Nummer</label><input type="text" id="p_sv" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">Adresse (Straße, Ort)</label><input type="text" id="p_adr" class="form-control form-control-sm"></div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <div class="module-card">
-      <div class="module-title">Vitalwerte</div>
-      <div class="row g-2 text-center">
-        <div class="col-4 vital-box"><label class="small text-muted">HF</label><input id="v_hf" type="number" class="vital-input" placeholder="--"></div>
-        <div class="col-4 vital-box"><label class="small text-muted">RR</label><input id="v_rr" type="text" class="vital-input" placeholder="--/--"></div>
-        <div class="col-4 vital-box"><label class="small text-muted">SpO2</label><input id="v_spo2" type="number" class="vital-input" placeholder="--"></div>
-      </div>
-    </div>
+        <div class="section-title text-center">3. Bodygramm</div>
+        <div class="bodygramm-container" id="bodyWrapper">
+            <img src="grafik.png" id="bodyImg" class="body-img" alt="Bild 'grafik.png' fehlt!">
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-1" onclick="clearMarkers()">Marker löschen</button>
 
-    <div class="module-card">
-      <div class="module-title">Befund (Marker)</div>
-      <div class="body-canvas">
-        <img src="https://i.imgur.com/8rkQdNJ.png" id="bodyImg" class="w-100" style="cursor:crosshair;">
-        <div id="markerLayer"></div>
-      </div>
-      <div class="d-flex justify-content-between mt-2">
-        <button class="btn btn-warning w-100 me-1 fw-bold" onclick="mType='S'">SCHMERZ</button>
-        <button class="btn btn-primary w-100 me-1 fw-bold" onclick="mType='F'">FRAKTUR</button>
-        <button class="btn btn-danger w-100 fw-bold" onclick="mType='W'">WUNDE</button>
-      </div>
-    </div>
+        <div class="section-title">4. Befund (ABCDE)</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-12">
+                    <label class="form-label text-danger">A (Airway)</label>
+                    <select id="abc_a" class="form-select form-select-sm">
+                        <option value="n.e.">- Wählen -</option>
+                        <option value="Frei">Frei</option>
+                        <option value="Verlegt">Verlegt</option>
+                        <option value="Gefährdet">Gefährdet</option>
+                    </select>
+                </div>
+                <div class="col-8"><label class="form-label text-danger">B (Breathing)</label><input type="text" id="abc_b" class="form-control form-control-sm"></div>
+                <div class="col-2"><label class="form-label">AF</label><input type="text" id="v_af" class="form-control form-control-sm"></div>
+                <div class="col-2"><label class="form-label">SpO2</label><input type="text" id="v_spo2" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label text-danger">C (Circulation)</label><input type="text" id="abc_c" class="form-control form-control-sm"></div>
+                <div class="col-3"><label class="form-label">Puls</label><input type="text" id="v_hf" class="form-control form-control-sm"></div>
+                <div class="col-3"><label class="form-label">RR</label><input type="text" id="v_rr" class="form-control form-control-sm"></div>
+                
+                <div class="col-12"><label class="form-label text-danger">D (Disability)</label><input type="text" id="abc_d" class="form-control form-control-sm" placeholder="Zusatzbefunde..."></div>
+                
+                <div class="col-4">
+                    <label class="form-label">AVPU</label>
+                    <select id="v_avpu" class="form-select form-select-sm">
+                        <option value="n.e.">-</option>
+                        <option value="A (Alert)">A (Alert)</option>
+                        <option value="V (Verbal)">V (Verbal)</option>
+                        <option value="P (Pain)">P (Pain)</option>
+                        <option value="U (Unresponsive)">U (Unresponsive)</option>
+                    </select>
+                </div>
+                <div class="col-4"><label class="form-label">BZ</label><input type="text" id="v_bz" class="form-control form-control-sm"></div>
+                <div class="col-4">
+                    <label class="form-label">Pupillen</label>
+                    <select id="v_pup" class="form-select form-select-sm">
+                        <option value="n.e.">-</option>
+                        <option value="isokor, LR">Isokor, LR</option>
+                        <option value="anisokor">Anisokor</option>
+                        <option value="entrundet">Entrundet</option>
+                        <option value="miosis">Miosis</option>
+                        <option value="mydriasis">Mydriasis</option>
+                        <option value="keine LR">Keine LR</option>
+                    </select>
+                </div>
+                <div class="col-12"><label class="form-label text-danger">E (Exposure)</label><input type="text" id="abc_e" class="form-control form-control-sm"></div>
+            </div>
+        </div>
 
-    <div class="module-card" id="adminPanel" style="display:none;">
-      <div class="module-title">Admin: Neuer Benutzer</div>
-      <input id="newUserDN" class="form-control mb-2" placeholder="Dienstnummer">
-      <input id="newUserPW" class="form-control mb-2" placeholder="Passwort">
-      <button class="btn btn-success w-100" onclick="addNewUser()">Benutzer hinzufügen</button>
-      <div id="userList" class="mt-2"></div>
-    </div>
+        <div class="section-title">5. Anamnese (SAMPLER)</div>
+        <div class="card p-3">
+            <div class="row g-1">
+                <div class="col-6"><label class="form-label">S (Symptome)</label><input type="text" id="s_s" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">A (Allergien)</label><input type="text" id="s_a" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">M (Medikamente)</label><input type="text" id="s_m" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">P (Patientengeschichte)</label><input type="text" id="s_p" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">L (Letzte Mahlzeit)</label><input type="text" id="s_l" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">E (Ereignis)</label><input type="text" id="s_e" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">R (Risikofaktoren)</label><input type="text" id="s_r" class="form-control form-control-sm"></div>
+            </div>
+        </div>
 
-  </div>
+        <div class="section-title">6. Schmerz (OPQRST)</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">O (Onset)</label><input type="text" id="o_o" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">P (Provokation)</label><input type="text" id="o_p" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Q (Qualität)</label><input type="text" id="o_q" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">R (Region)</label><input type="text" id="o_r" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">S (Stärke 1-10)</label><input type="text" id="o_s" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">T (Time)</label><input type="text" id="o_t" class="form-control form-control-sm"></div>
+            </div>
+        </div>
 
-  <!-- Navigation -->
-  <div class="nav-bottom">
-    <a href="#" onclick="switchTab('listView')" class="nav-item active">JOURNAL</a>
-    <a href="#" onclick="switchTab('editView')" class="nav-item">EINSATZ</a>
-  </div>
+        <div class="section-title">7. Maßnahmen & Übergabe</div>
+        <div class="card p-3">
+            <textarea id="v_text" class="form-control mb-2" rows="4" placeholder="Maßnahmen/Verlauf..."></textarea>
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">Transportziel</label><input type="text" id="t_ziel" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Übergabe an</label><input type="text" id="handover" class="form-control form-control-sm"></div>
+            </div>
+        </div>
 
+        <div class="section-title">8. Unterschrift</div>
+        <div class="card p-3 mb-3 text-center">
+            <canvas id="signature-pad" class="sig-canvas"></canvas>
+            <button type="button" class="btn btn-sm btn-link text-danger" onclick="signaturePad.clear()">Löschen</button>
+        </div>
+
+        <button type="submit" class="btn btn-send shadow">🚨 PROTOKOLL ABSENDEN</button>
+    </form>
 </div>
 
+<div class="modal fade" id="markerModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content text-center p-3">
+    <button onclick="place('Schmerz','S','m-pain')" class="btn btn-warning w-100 mb-2">Schmerz (S)</button>
+    <button onclick="place('Fraktur','F','m-bone')" class="btn btn-primary w-100 mb-2">Fraktur (F)</button>
+    <button onclick="place('Wunde','W','m-wound')" class="btn btn-danger w-100">Wunde (W)</button>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
 <script>
-let currentUser = null;
-let markers = [];
-let mType = "S";
+    const WEBHOOK = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
+    let markers = [], curX, curY;
+    const modal = new bootstrap.Modal(document.getElementById('markerModal'));
+    const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
 
-// Demo Benutzer
-let users = [
-  {dn:"RK-02", pw:"AppearIron22", admin:true},
-  {dn:"RK-03", pw:"Test1234", admin:false}
-];
+    document.getElementById('bodyImg').onclick = function(e) {
+        const rect = this.getBoundingClientRect();
+        curX = (e.clientX - rect.left) / rect.width * 100;
+        curY = (e.clientY - rect.top) / rect.height * 100;
+        modal.show();
+    };
 
-document.getElementById("loginBtn").addEventListener("click",()=>{
-  const dn = document.getElementById("login_dn").value;
-  const pw = document.getElementById("login_pw").value;
-
-  const user = users.find(u => u.dn === dn && u.pw === pw);
-  if(user){
-    currentUser = user;
-    document.getElementById("loginView").style.display="none";
-    document.getElementById("appInterface").style.display="block";
-    if(user.admin){
-      document.getElementById("adminPanel").style.display="block";
-      renderUserList();
+    function place(l, s, c) {
+        markers.push({x: Math.round(curX), y: Math.round(curY), type: l});
+        const d = document.createElement('div');
+        d.className = 'marker ' + c; d.style.left = curX + '%'; d.style.top = curY + '%'; d.innerText = s;
+        document.getElementById('bodyWrapper').appendChild(d);
+        modal.hide();
     }
-    alert("Login erfolgreich! Willkommen "+dn);
-  }else{
-    alert("Zugriff verweigert. Dienstnummer oder Passwort falsch.");
-  }
-});
 
-// Navigation
-function switchTab(id){
-  document.querySelectorAll(".view-section").forEach(v=>v.classList.remove("active-view"));
-  document.getElementById(id).classList.add("active-view");
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  event.target.classList.add("active");
-}
+    function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
 
-// ABCDE Tags
-function quickTag(target,val){
-  const el=document.getElementById(target);
-  el.value = el.value ? el.value + ", " + val : val;
-}
+    // Funktion, um das Bodygramm mit Markern in ein echtes Bild (Blob) zu verwandeln
+    function generateBodygrammImage() {
+        return new Promise((resolve) => {
+            const img = document.getElementById('bodyImg');
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || 320;
+            canvas.height = img.naturalHeight || 500;
+            const ctx = canvas.getContext('2d');
+            
+            // Hintergrundbild zeichnen (falls es geladen wurde)
+            if (img.complete && img.naturalWidth > 0) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
 
-// Marker
-document.getElementById("bodyImg").onclick=function(e){
-  const r=this.getBoundingClientRect();
-  const x=((e.clientX - r.left)/r.width)*100;
-  const y=((e.clientY - r.top)/r.height)*100;
-  const m=document.createElement("div");
-  const colors={S:'#f39c12',F:'#3498db',W:'#c0392b'};
-  m.className="marker";
-  m.style.left=x+"%"; m.style.top=y+"%";
-  m.style.background=colors[mType];
-  m.innerText=mType;
-  markers.push({type:mType,x,y});
-  document.getElementById("markerLayer").appendChild(m);
-};
+            // Alle Marker einzeichnen
+            markers.forEach(m => {
+                const cx = (m.x / 100) * canvas.width;
+                const cy = (m.y / 100) * canvas.height;
+                
+                // Kreis
+                ctx.beginPath();
+                ctx.arc(cx, cy, 14, 0, 2 * Math.PI);
+                if(m.type === 'Schmerz') ctx.fillStyle = '#fd7e14';
+                else if(m.type === 'Fraktur') ctx.fillStyle = '#0d6efd';
+                else ctx.fillStyle = '#dc3545';
+                ctx.fill();
+                
+                // Weißer Rand
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+                
+                // Buchstabe
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const letter = m.type === 'Schmerz' ? 'S' : (m.type === 'Fraktur' ? 'F' : 'W');
+                ctx.fillText(letter, cx, cy);
+            });
 
-// Neuer Einsatz
-function startNewReport(){
-  switchTab('editView');
-  markers=[];
-  document.getElementById("r_p_name").value="";
-  document.getElementById("r_e_nr").value="";
-  document.getElementById("v_hf").value="";
-  document.getElementById("v_rr").value="";
-  document.getElementById("v_spo2").value="";
-  document.getElementById("abcde_a").value="";
-  document.getElementById("abcde_b").value="";
-  document.getElementById("markerLayer").innerHTML="";
-}
+            canvas.toBlob(blob => resolve(blob), 'image/png');
+        });
+    }
 
-// Admin: Benutzer hinzufügen
-function addNewUser(){
-  const dn=document.getElementById("newUserDN").value;
-  const pw=document.getElementById("newUserPW").value;
-  if(dn && pw){
-    users.push({dn,pw,admin:false});
-    renderUserList();
-    alert("Neuer Benutzer hinzugefügt: "+dn);
-    document.getElementById("newUserDN").value="";
-    document.getElementById("newUserPW").value="";
-  } else alert("Dienstnummer und Passwort ausfüllen.");
-}
+    document.getElementById('einsatzForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.querySelector('.btn-send');
+        btn.innerText = "Sende...";
+        
+        // Marker als Text zusammenfassen
+        const mStr = markers.map(m => `• ${m.type} [Koordinaten: ${m.x}% | ${m.y}%]`).join('\n') || "Keine Auffälligkeiten markiert";
+        
+        const formData = new FormData();
+        const embeds = [];
 
-function renderUserList(){
-  const list = document.getElementById("userList");
-  list.innerHTML = users.map(u=>u.dn+(u.admin?" (Admin)":"")).join("<br>");
-}
+        // 1. Haupt-Embed (Text + Bodygramm)
+        const mainEmbed = {
+            title: "🚑 EINSATZPROTOKOLL: " + (document.getElementById('e_nr').value || "Keine Nr."),
+            color: 14811162,
+            fields: [
+                { name: "📋 Team & Zeiten", value: `**Team:** ${document.getElementById('team').value || "-"}\n**FZ:** ${document.getElementById('fz').value || "-"}\n**Zeiten:** Alarm: ${document.getElementById('t_alarm').value || "-"} | Ankunft: ${document.getElementById('t_ankunft').value || "-"}` },
+                { name: "👤 Patient", value: `**Name:** ${document.getElementById('p_name').value || "Unbekannt"}\n**SV:** ${document.getElementById('p_sv').value || "-"}` },
+                { name: "🩺 ABCDE", value: `**A:** ${document.getElementById('abc_a').value}\n**B:** ${document.getElementById('abc_b').value || "-"}\n**C:** RR: ${document.getElementById('v_rr').value || "-"}, HF: ${document.getElementById('v_hf').value || "-"}\n**D:** AVPU: ${document.getElementById('v_avpu').value}, BZ: ${document.getElementById('v_bz').value || "-"}, Pupillen: ${document.getElementById('v_pup').value}\n**E:** ${document.getElementById('abc_e').value || "-"}` },
+                { name: "🧍 Bodygramm-Punkte", value: mStr },
+                { name: "📋 SAMPLER", value: `**S:** ${document.getElementById('s_s').value || "-"}\n**A:** ${document.getElementById('s_a').value || "-"}\n**M:** ${document.getElementById('s_m').value || "-"}\n**P:** ${document.getElementById('s_p').value || "-"}\n**L:** ${document.getElementById('s_l').value || "-"}\n**E:** ${document.getElementById('s_e').value || "-"}\n**R:** ${document.getElementById('s_r').value || "-"}` },
+                { name: "📉 OPQRST", value: `**O:** ${document.getElementById('o_o').value || "-"} | **P:** ${document.getElementById('o_p').value || "-"} | **Q:** ${document.getElementById('o_q').value || "-"}\n**R:** ${document.getElementById('o_r').value || "-"} | **S:** ${document.getElementById('o_s').value || "-"} | **T:** ${document.getElementById('o_t').value || "-"}` },
+                { name: "📝 Bericht", value: `${document.getElementById('v_text').value || "Kein Text"}\n**Ziel:** ${document.getElementById('t_ziel').value || "-"}\n**Übergabe:** ${document.getElementById('handover').value || "-"}` }
+            ],
+            image: { url: 'attachment://bodygramm.png' }, // Das Bodygramm als Bild
+            timestamp: new Date()
+        };
+        embeds.push(mainEmbed);
 
+        // Bodygramm-Bild generieren und anhängen
+        const bodyBlob = await generateBodygrammImage();
+        formData.append('file1', bodyBlob, 'bodygramm.png');
+
+        // 2. Unterschrift als extra Embed anfügen (falls vorhanden)
+        if (!signaturePad.isEmpty()) {
+            const dataURL = signaturePad.toDataURL("image/png");
+            const sigBlob = await (await fetch(dataURL)).blob();
+            formData.append('file2', sigBlob, 'unterschrift.png');
+            
+            embeds.push({
+                color: 14811162,
+                image: { url: 'attachment://unterschrift.png' } // Die Unterschrift als zweites Bild unten dran
+            });
+        }
+
+        // Alles verpacken
+        formData.append('payload_json', JSON.stringify({ embeds: embeds }));
+
+        try {
+            const res = await fetch(WEBHOOK, { method: 'POST', body: formData });
+            if(res.ok) {
+                alert("✅ Protokoll inklusive Bodygramm gesendet!");
+                btn.innerText = "🚨 PROTOKOLL ABSENDEN";
+            } else {
+                alert("❌ Fehler beim Senden! (Code: " + res.status + ")");
+                btn.innerText = "🚨 PROTOKOLL ABSENDEN";
+            }
+        } catch(err) {
+            alert("Netzwerkfehler: " + err);
+            btn.innerText = "🚨 PROTOKOLL ABSENDEN";
+        }
+    };
 </script>
-
 </body>
 </html>
