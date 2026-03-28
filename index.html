@@ -3,221 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK CLOUD OS - Rettungsdienst-Protokoll V4</title>
+    <title>RK CLOUD OS - Professional</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* ---------- CORE DESIGN (RK) ---------- */
         :root {
-            --rk-red: #E2001A; /* RK Rot */
-            --rk-dark: #B30014;
-            --rk-grey-dark: #2C3E50;
-            --rk-grey-light: #BDC3C7;
-            --bg: #F4F7F6;
-            --card-bg: #FFFFFF;
-            --field-bg: #F9F9F9;
+            --rk-red: #E2001A;
+            --rk-grey: #2C3E50;
+            --bg: #F0F2F5;
         }
-
-        body { background: var(--bg); font-family: "Segoe UI", sans-serif; padding-bottom: 80px; }
+        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; padding-bottom: 100px; }
         
-        /* VIEWS */
         #loginView, #listView, #flowSelect, #mainAppRTW, #mainAppKTW, #adminView { display: none; }
         .active-view { display: block !important; }
         #loginView.active-view { display: flex !important; }
 
-        /* ---------- HEADER ---------- */
-        .rk-header {
-            background: var(--card-bg);
-            border-bottom: 4px solid var(--rk-red);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .rk-logo-txt { font-weight: 900; color: var(--rk-red); font-size: 1.1rem; }
-        .rk-logo-sub { font-size: 0.7rem; color: var(--rk-grey-dark); margin-top: -3px; }
+        /* RK Header */
+        .rk-header { background: #fff; border-bottom: 4px solid var(--rk-red); padding: 15px; border-radius: 0 0 15px 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section-header { background: var(--rk-grey); color: white; padding: 10px 15px; font-weight: bold; border-left: 6px solid var(--rk-red); border-radius: 4px; margin: 25px 0 10px; text-transform: uppercase; font-size: 0.8rem; }
+        .card-custom { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
 
-        /* ---------- UI ELEMENTS ---------- */
-        .section-header {
-            background: var(--rk-grey-dark);
-            color: white;
-            padding: 10px 15px;
-            font-weight: bold;
-            border-left: 6px solid var(--rk-red);
-            border-radius: 6px;
-            margin: 25px 0 10px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 1.5px;
-        }
-        .card-custom { background: var(--card-bg); border: 1px solid #ddd; border-radius: 16px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .grid-3, .grid-2 { display: grid; gap: 12px; }
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        /* Equal Buttons Fix */
+        .flow-btn { height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 1.4rem; border-radius: 15px; border: none; transition: 0.3s; width: 100%; color: white; }
+        .btn-rtw { background: var(--rk-red); }
+        .btn-ktw { background: #2980b9; }
 
-        /* Input Fields - "Clinical" Look */
-        .form-control, .form-select { border: 1px solid #ddd; background: var(--field-bg); border-radius: 10px; padding: 12px; font-size: 0.95rem; }
-        .form-control:focus, .form-select:focus { border-color: var(--rk-red); box-shadow: 0 0 0 0.2rem rgba(226,0,26,0.1); }
-        .form-control-sm { padding: 8px; font-size: 0.85rem; }
+        /* ABCDE Hybrid */
+        .abcde-row { border-left: 4px solid var(--rk-red); padding-left: 10px; margin-bottom: 15px; }
+        .abcde-title { font-weight: 900; color: var(--rk-red); font-size: 1.2rem; }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 5px; margin: 5px 0; }
+        .tag-btn { font-size: 0.7rem; border: 1px solid #ccc; background: #fff; border-radius: 20px; padding: 3px 10px; cursor: pointer; }
+        .tag-btn.active { background: var(--rk-red); color: white; border-color: var(--rk-red); }
 
-        /* Vital Fields */
-        .v-field { background: var(--field-bg); border: 1px solid #eee; border-radius: 10px; padding: 8px; text-align: center; }
-        .v-field label { display: block; font-size: 11px; color: #666; font-weight: bold; margin-bottom: 4px; }
-        .v-field input, .v-field select { width: 100%; border: none; background: transparent; text-align: center; font-weight: 900; color: var(--rk-red); font-size: 1.1rem; outline: none; }
-        .v-field input[placeholder] { font-size: 0.9rem; font-weight: 500; color: #999; }
+        /* Bodygramm */
+        .body-container { position: relative; width: 100%; max-width: 300px; margin: auto; }
+        .body-img { width: 100%; border-radius: 10px; cursor: crosshair; background: #fff; }
+        .marker { position: absolute; width: 24px; height: 24px; border-radius: 50%; color: white; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; border: 2px solid #fff; }
+        .m-S { background: #f39c12; } .m-F { background: #3498db; } .m-W { background: #c0392b; }
 
-        /* ABCDE */
-        .abcde-box { border-left: 4px solid var(--rk-red); padding-left: 12px; margin-bottom: 15px; }
-        .abcde-letter { font-weight: 900; color: var(--rk-red); font-size: 1.3rem; margin-right: 8px; font-style: italic; }
-
-        /* ---------- BUTTONS ---------- */
-        .btn-rk-full { background: var(--rk-red); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; width: 100%; box-shadow: 0 4px 10px rgba(226,0,26,0.2); }
-        .btn-rk-full:hover { background: var(--rk-dark); transform: translateY(-2px); }
-        .btn-check-list { display: flex; flex-wrap: wrap; gap: 6px; }
-        .measure-pill { display: none; }
-        .measure-label { border: 1px solid #ddd; padding: 8px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 600; color: var(--rk-grey-dark); cursor: pointer; transition: 0.2s; background: white; }
-        .measure-pill:checked + .measure-label { background: var(--rk-red); color: white; border-color: var(--rk-red); box-shadow: 0 2px 5px rgba(226,0,26,0.2); }
-
-        /* ---------- BODYGRAMM ---------- */
-        .body-container { position: relative; width: 100%; max-width: 300px; margin: auto; background: white; border-radius: 20px; padding: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .body-img { width: 100%; cursor: crosshair; }
-        .marker { position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; color: white; font-weight: 900; font-size: 12px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 3px 6px rgba(0,0,0,0.3); font-family: sans-serif; }
-        .m-S { background: #E67E22; } /* Schmerz - Orange */
-        .m-F { background: #3498DB; } /* Fraktur - Blau */
-        .m-W { background: #C0392B; } /* Wunde - Rot */
-
-        /* ---------- LOGIN ---------- */
-        #loginView { position: fixed; inset: 0; background: linear-gradient(135deg, var(--rk-red), var(--rk-dark)); justify-content: center; align-items: center; z-index: 10000; }
-        .login-card { background: white; padding: 45px; border-radius: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); width: 90%; max-width: 400px; text-align: center; }
+        /* Login */
+        #loginView { position: fixed; inset: 0; background: var(--rk-red); justify-content: center; align-items: center; z-index: 10000; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="loginView" class="active-view">
-    <div class="login-card">
-        <h1 class="fw-bold text-danger mb-2">RK CLOUD</h1>
-        <p class="text-muted small">Sanitäts-Einsatzprotokoll</p>
-        <input id="login_dn" class="form-control mt-4 mb-3 p-3 text-center rounded-pill" placeholder="Dienstnummer">
-        <input id="login_pw" type="password" class="form-control mb-5 p-3 text-center rounded-pill" placeholder="Passwort">
-        <button onclick="handleLogin()" class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow">LOGIN</button>
-        <div id="loginError" class="mt-3 text-danger small fw-bold"></div>
+    <div class="login-card shadow-lg">
+        <h2 class="fw-bold text-danger">RK CLOUD</h2>
+        <input id="login_dn" class="form-control mt-4 mb-2 p-3 rounded-pill text-center" placeholder="Dienstnummer">
+        <input id="login_pw" type="password" class="form-control mb-4 p-3 rounded-pill text-center" placeholder="Passwort">
+        <button onclick="handleLogin()" class="btn btn-danger w-100 py-3 rounded-pill fw-bold">ANMELDEN</button>
     </div>
 </div>
 
 <div id="listView" class="container py-3">
-    <div class="rk-header">
+    <div class="rk-header d-flex justify-content-between align-items-center">
+        <div class="fw-bold text-danger">EINSATZ-JOURNAL</div>
         <div>
-            <div class="rk-logo-txt">Österreichisches Rotes Kreuz</div>
-            <div class="rk-logo-sub">Landesverband Wien</div>
-        </div>
-        <div>
-            <button id="adminToggle" onclick="showView('adminView')" class="btn btn-outline-dark btn-sm d-none me-1">ADMIN</button>
-            <button onclick="showView('flowSelect')" class="btn btn-danger btn-sm fw-bold rounded-pill shadow-sm">+ NEU</button>
+            <button id="adminToggle" onclick="showView('adminView')" class="btn btn-sm btn-dark d-none me-1">ADMIN</button>
+            <button onclick="showView('flowSelect')" class="btn btn-sm btn-danger fw-bold">+ NEU</button>
         </div>
     </div>
-    <div id="protocolList"></div>
+    <div id="protocolList" class="mt-3"></div>
 </div>
 
-<div id="adminView" class="container py-3">
-    <div class="rk-header">
-        <button onclick="showView('listView')" class="btn btn-sm text-muted">Zurück</button>
-        <h5 class="fw-bold m-0 text-dark">Benutzerverwaltung</h5>
+<div id="flowSelect" class="container py-5">
+    <h3 class="text-center fw-bold mb-4">PROTOKOLL-TYP</h3>
+    <div class="row g-3">
+        <div class="col-6"><button onclick="startFlow('RTW')" class="flow-btn btn-rtw">🚑<br>RTW</button></div>
+        <div class="col-6"><button onclick="startFlow('KTW')" class="flow-btn btn-ktw">🚐<br>KTW</button></div>
     </div>
-    <div class="card-custom text-center">
-        <h6 class="mb-3 text-start">Neuen Sani anlegen</h6>
-        <input id="adm_dn" class="form-control mb-2" placeholder="Dienstnummer (z.B. RK-03)">
-        <input id="adm_pw" class="form-control mb-2" placeholder="Passwort">
-        <div class="form-check form-switch mb-4 text-start d-inline-block">
-            <input class="form-check-input" type="checkbox" id="adm_is_admin">
-            <label class="form-check-label">Administrator / Leitung</label>
-        </div>
-        <button onclick="createUser()" class="btn btn-success w-100 rounded-pill py-2 fw-bold">SPEICHERN</button>
-    </div>
-</div>
-
-<div id="flowSelect" class="container py-5 text-center">
-    <h3 class="fw-bold mb-5 text-dark">EINSATZ-TYP WÄHLEN</h3>
-    <button onclick="startFlow('RTW')" class="btn-rk-full mb-3 shadow-lg">🚑 NOTFALL (RTW/SEF)</button>
-    <button onclick="startFlow('KTW')" class="btn btn-primary w-100 py-4 mb-3 fs-3 rounded-4 shadow-sm" style="background:#2980b9; border:none; text-transform:uppercase; font-weight:bold;">🚐 TRANSPORT (KTW)</button>
-    <button onclick="showView('listView')" class="btn btn-link mt-4 text-muted">Abbrechen</button>
+    <div class="text-center mt-5"><button onclick="showView('listView')" class="btn btn-link text-muted">Zurück</button></div>
 </div>
 
 <div id="mainAppRTW" class="container pb-5">
-    <div class="rk-header">
-        <button onclick="showView('listView')" class="btn btn-sm text-muted">Abbrechen</button>
-        <h6 class="m-0 fw-bold">EINSATZPROTOKOLL</h6>
-        <button onclick="submitRTW()" class="btn btn-success btn-sm fw-bold shadow-sm">ABSENDEN</button>
+    <div class="rk-header d-flex justify-content-between">
+        <button onclick="showView('listView')" class="btn btn-sm">Abbrechen</button>
+        <span class="fw-bold">NOTFALLPROTOKOLL</span>
+        <button onclick="submitRTW()" class="btn btn-success btn-sm">SENDEN</button>
     </div>
 
-    <div class="section-header">1. Basisdaten & Zeiten</div>
+    <div class="section-header">1. Einsatzdaten</div>
     <div class="card-custom grid-2">
-        <input id="r_e_nr" class="form-control form-control-sm fw-bold" placeholder="Einsatz-Nr *">
-        <input id="r_p_name" class="form-control form-control-sm" placeholder="Patientenname">
+        <input id="r_e_nr" class="form-control" placeholder="Einsatz-Nr *">
+        <input id="r_fzg" class="form-control" placeholder="Fahrzeug (z.B. 72/101)">
+        <input id="r_ort" class="form-control col-12" placeholder="Einsatzort">
+        <input id="r_zeit" type="time" class="form-control" placeholder="Übernahmezeit">
     </div>
 
-    <div class="section-header">2. ABCDE - Primärerhebung</div>
+    <div class="section-header">2. Patientendaten</div>
     <div class="card-custom">
-        <div class="abcde-box"><span class="abcde-letter">A</span><small>(Airway)</small><input id="abcde_a" class="form-control form-control-sm mt-1" placeholder="Frei, verlegt, abgesaugt..."></div>
-        <div class="abcde-box"><span class="abcde-letter">B</span><small>(Breathing)</small><input id="abcde_b" class="form-control form-control-sm mt-1" placeholder="Belüftung, Atemfrequenz..."></div>
-        <div class="abcde-box"><span class="abcde-letter">C</span><small>(Circulation)</small><input id="abcde_c" class="form-control form-control-sm mt-1" placeholder="Puls, Rekap-Zeit, Blutverlust..."></div>
-        <div class="abcde-box"><span class="abcde-letter">D</span><small>(Disability)</small><input id="abcde_d" class="form-control form-control-sm mt-1" placeholder="AVPU, Pupillen, Neuro..."></div>
-        <div class="abcde-box"><span class="abcde-letter">E</span><small>(Exposure)</small><input id="abcde_e" class="form-control form-control-sm mt-1" placeholder="Wärmeerhalt, Trauma-Check..."></div>
-    </div>
-
-    <div class="section-header">3. Vitalwerte (Monitoring)</div>
-    <div class="card-custom">
-        <div class="grid-3 mb-3">
-            <div class="v-field"><label>HF /min</label><input id="r_hf" type="number"></div>
-            <div class="v-field"><label>SpO2 %</label><input id="r_spo2" type="number"></div>
-            <div class="v-field"><label>AF /min</label><input id="r_af" type="number"></div>
-            <div class="v-field"><label>RR SYS</label><input id="r_sys" type="number"></div>
-            <div class="v-field"><label>RR DIA</label><input id="r_dia" type="number"></div>
-            <div class="v-field"><label>BZ mg/dl</label><input id="r_bz" type="number"></div>
-            <div class="v-field"><label>GCS</label><input id="r_gcs" type="number" placeholder="3-15"></div>
-            <div class="v-field"><label>TEMP °C</label><input id="r_temp" type="number" step="0.1"></div>
-            <div class="v-field"><label>AVPU</label><select id="r_avpu"><option>A</option><option>V</option><option>P</option><option>U</option></select></div>
+        <div class="row g-2">
+            <div class="col-12"><input id="r_p_name" class="form-control" placeholder="Name, Vorname"></div>
+            <div class="col-6"><input id="r_p_geb" type="date" class="form-control"></div>
+            <div class="col-6"><select id="r_p_sex" class="form-select"><option>M</option><option>W</option><option>D</option></select></div>
+            <div class="col-12"><input id="r_p_svnr" class="form-control" placeholder="SV-Nummer (10-stellig)"></div>
         </div>
-        <textarea id="r_verlauf" class="form-control small" rows="2" placeholder="Verlauf & Re-Evaluation (z.B. O2 Gabe)..."></textarea>
     </div>
 
-    <div class="section-header">4. Anamnese (SAMPLER)</div>
-    <div class="card-custom">
-        <input id="r_s_s" class="form-control form-control-sm mb-2" placeholder="Symptome (S)">
-        <input id="r_s_a" class="form-control form-control-sm mb-2" placeholder="Allergien (A)">
-        <input id="r_s_m" class="form-control form-control-sm mb-2" placeholder="Medikamente (M)">
-        <input id="r_s_p" class="form-control form-control-sm" placeholder="Patientengeschichte (P)">
-    </div>
-
-    <div class="section-header">5. Maßnahmen / SOP</div>
-    <div class="card-custom">
-        <div class="btn-check-list" id="measures_list">
-            <input type="checkbox" class="measure-pill" id="m1" value="O2"><label class="measure-label" for="m1">O2 Gabe</label>
-            <input type="checkbox" class="measure-pill" id="m2" value="IV"><label class="measure-label" for="m2">i.v. Zugang</label>
-            <input type="checkbox" class="measure-pill" id="m3" value="EKG12"><label class="measure-label" for="m3">12-Kanal EKG</label>
-            <input type="checkbox" class="measure-pill" id="m4" value="Lagerung"><label class="measure-label" for="m4">Lagerung</label>
-            <input type="checkbox" class="measure-pill" id="m5" value="Wundversorgung"><label class="measure-label" for="m5">Wundversorgung</label>
+    <div class="section-header">3. ABCDE Schema</div>
+    <div class="card-custom" id="abcde_container">
+        <div class="abcde-row">
+            <span class="abcde-title">A</span> <small>Airway</small>
+            <div class="tag-cloud" data-target="abcde_a_text">
+                <span class="tag-btn" onclick="addTag(this, 'Frei')">Frei</span>
+                <span class="tag-btn" onclick="addTag(this, 'Verlegt')">Verlegt</span>
+                <span class="tag-btn" onclick="addTag(this, 'HWS-Schutz')">HWS-Schutz</span>
+            </div>
+            <input id="abcde_a_text" class="form-control form-control-sm" placeholder="Details...">
         </div>
-        <textarea id="r_meds" class="form-control mt-2" rows="2" placeholder="Verabreichte Medikamente / Infusionen..."></textarea>
+        <div class="abcde-row">
+            <span class="abcde-title">B</span> <small>Breathing</small>
+            <div class="tag-cloud" data-target="abcde_b_text">
+                <span class="tag-btn" onclick="addTag(this, 'Zyanose')">Zyanose</span>
+                <span class="tag-btn" onclick="addTag(this, 'Giemen')">Giemen</span>
+                <span class="tag-btn" onclick="addTag(this, 'Spastik')">Spastik</span>
+            </div>
+            <input id="abcde_b_text" class="form-control form-control-sm" placeholder="Details...">
+        </div>
+        <div class="abcde-row">
+            <span class="abcde-title">C</span> <small>Circulation</small>
+            <div class="tag-cloud" data-target="abcde_c_text">
+                <span class="tag-btn" onclick="addTag(this, 'Rekap >2s')">Rekap >2s</span>
+                <span class="tag-btn" onclick="addTag(this, 'Blass/Kalt')">Blass/Kalt</span>
+                <span class="tag-btn" onclick="addTag(this, 'Zentraler Puls')">Zentr. Puls</span>
+            </div>
+            <input id="abcde_c_text" class="form-control form-control-sm" placeholder="Details...">
+        </div>
+        </div>
+
+    <div class="section-header">4. Vitalwerte</div>
+    <div class="card-custom">
+        <div class="row g-2 text-center">
+            <div class="col-4 small">HF<input id="v_hf" class="form-control text-center text-danger fw-bold"></div>
+            <div class="col-4 small">SpO2<input id="v_spo2" class="form-control text-center text-danger fw-bold"></div>
+            <div class="col-4 small">RR<input id="v_rr" class="form-control text-center text-danger fw-bold" placeholder="120/80"></div>
+        </div>
     </div>
 
-    <div class="section-header">6. Befund / Bodygramm</div>
-    <div class="body-container shadow-sm border" id="bodyWrapper">
-        <img src="grafik.png" id="bodyImg" class="body-img"> </div>
-    <div class="btn-group w-100 mt-2 px-3">
+    <div class="section-header">5. SAMPLER-Anamnese</div>
+    <div class="card-custom">
+        <input id="s_s" class="form-control mb-1 form-control-sm" placeholder="Symptome">
+        <input id="s_a" class="form-control mb-1 form-control-sm" placeholder="Allergien">
+        <input id="s_m" class="form-control mb-1 form-control-sm" placeholder="Medikamente">
+        <input id="s_p" class="form-control mb-1 form-control-sm" placeholder="Patientengeschichte">
+        <input id="s_l" class="form-control mb-1 form-control-sm" placeholder="Letzte Mahlzeit">
+        <input id="s_e" class="form-control mb-1 form-control-sm" placeholder="Ereignis">
+        <input id="s_r" class="form-control mb-1 form-control-sm" placeholder="Risikofaktoren">
+    </div>
+
+    <div class="section-header">6. Bodygramm</div>
+    <div class="body-container">
+        <img src="grafik.png" id="bodyImg" class="body-img shadow-sm border">
+        <div id="markerBox"></div>
+    </div>
+    <div class="btn-group w-100 mt-2 px-4">
         <button class="btn btn-warning btn-sm fw-bold" onclick="mType='S'">S</button>
         <button class="btn btn-primary btn-sm fw-bold" onclick="mType='F'">F</button>
         <button class="btn btn-danger btn-sm fw-bold" onclick="mType='W'">W</button>
     </div>
 
-    <div class="section-header">7. Übergabebericht (SBAR)</div>
-    <div class="card-custom">
-        <textarea id="r_bericht" class="form-control" rows="5" placeholder="S: Situation, B: Background, A: Assessment, R: Recommendation..."></textarea>
-    </div>
+    <div class="section-header">7. Übergabe (SBAR)</div>
+    <textarea id="r_sbar" class="form-control card-custom" rows="4" placeholder="Übergabebericht..."></textarea>
 </div>
 
 <script>
@@ -228,7 +175,6 @@ let currentUser = null;
 let markers = [];
 let mType = "S";
 
-/* ENGINE */
 function showView(id) {
     document.querySelectorAll('body > div').forEach(div => div.classList.remove('active-view'));
     document.getElementById(id).classList.add('active-view');
@@ -236,7 +182,6 @@ function showView(id) {
     window.scrollTo(0,0);
 }
 
-/* AUTH */
 async function handleLogin() {
     const dn = document.getElementById("login_dn").value;
     const pw = document.getElementById("login_pw").value;
@@ -251,27 +196,26 @@ async function handleLogin() {
     } else alert("Dienstnummer oder Passwort falsch.");
 }
 
-/* ADMIN */
-async function createUser() {
-    const dn = document.getElementById("adm_dn").value;
-    const pw = document.getElementById("adm_pw").value;
-    const admin = document.getElementById("adm_is_admin").checked;
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
-        method: "POST",
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ dienstnummer: dn, passwort: pw, is_admin: admin })
-    });
-    if(res.ok) { alert("User angelegt."); showView('listView'); }
-}
-
-/* FLOWS */
 function startFlow(type) {
     markers = [];
-    document.querySelectorAll('.marker').forEach(m => m.remove());
+    document.getElementById("markerBox").innerHTML = "";
     showView(type === 'RTW' ? 'mainAppRTW' : 'mainAppKTW');
 }
 
-/* BODYGRAMM */
+/* Tag System for ABCDE */
+function addTag(btn, val) {
+    btn.classList.toggle('active');
+    const inputId = btn.parentElement.getAttribute('data-target');
+    const input = document.getElementById(inputId);
+    let currentVal = input.value;
+    if(btn.classList.contains('active')) {
+        input.value = currentVal ? currentVal + ", " + val : val;
+    } else {
+        input.value = currentVal.replace(val, "").replace(", ,", ",").trim();
+    }
+}
+
+/* Bodygramm */
 document.getElementById("bodyImg").onclick = function(e) {
     let r = this.getBoundingClientRect();
     let x = ((e.clientX - r.left) / r.width) * 100;
@@ -280,39 +224,33 @@ document.getElementById("bodyImg").onclick = function(e) {
     m.className = `marker m-${mType}`;
     m.style.left = x + "%"; m.style.top = y + "%"; m.innerText = mType;
     markers.push({type: mType, x, y});
-    document.getElementById("bodyWrapper").appendChild(m);
+    document.getElementById("markerBox").appendChild(m);
 };
 
-/* SPEICHERN */
 async function submitRTW() {
-    let measures = [];
-    document.querySelectorAll('#measures_list input:checked').forEach(i => measures.push(i.value));
-
     let payload = {
         e_nr: document.getElementById("r_e_nr").value,
         p_name: document.getElementById("r_p_name").value,
         erstellt_von: currentUser.dienstnummer,
         daten: {
-            abcde: { a: abcde_a.value, b: abcde_b.value, c: abcde_c.value, d: abcde_d.value, e: abcde_e.value },
-            vital: { hf: r_hf.value, spo2: r_spo2.value, af: r_af.value, sys: r_sys.value, dia: r_dia.value, bz: r_bz.value, gcs: r_gcs.value, avpu: r_avpu.value, verlauf: r_verlauf.value },
-            sampler: { s: r_s_s.value, a: r_s_a.value, m: r_s_m.value, p: r_s_p.value },
-            measures: measures,
-            meds: r_meds.value,
-            bericht: r_bericht.value,
+            einsatz: { fzg: r_fzg.value, ort: r_ort.value, zeit: r_zeit.value },
+            patient: { geb: r_p_geb.value, sex: r_p_sex.value, svnr: r_p_svnr.value },
+            abcde: { a: abcde_a_text.value, b: abcde_b_text.value, c: abcde_c_text.value },
+            vital: { hf: v_hf.value, spo2: v_spo2.value, rr: v_rr.value },
+            sampler: { s: s_s.value, a: s_a.value, m: s_m.value, p: s_p.value, l: s_l.value, e: s_e.value, r: s_r.value },
+            sbar: r_sbar.value,
             markers: markers
         }
     };
     if(!payload.e_nr) return alert("Einsatznummer fehlt!");
-
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rd_berichte`, {
         method: "POST",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     });
-    if(res.ok) { alert("Einsatzbericht erfolgreich gespeichert!"); showView('listView'); }
+    if(res.ok) { alert("Gespeichert!"); showView('listView'); }
 }
 
-/* JOURNAL */
 async function loadReports() {
     const list = document.getElementById("protocolList");
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rd_berichte?order=created_at.desc`, {
@@ -320,20 +258,12 @@ async function loadReports() {
     });
     const data = await res.json();
     list.innerHTML = data.map(b => `
-        <div class="card-custom shadow-sm border-start border-5 border-danger">
-            <div class="d-flex justify-content-between align-items-center">
-                <strong># ${b.e_nr}</strong>
-                <button onclick="printReport('${b.e_nr}')" class="btn btn-outline-secondary btn-sm rounded-pill text-uppercase fw-bold" style="font-size:10px;">DRUCKEN</button>
-            </div>
-            <div class="text-dark">${b.p_name || 'Unbekannter Patient'}</div>
-            <div class="text-muted small">${new Date(b.created_at).toLocaleString('de-DE')} von ${b.erstellt_von}</div>
+        <div class="card-custom border-start border-danger border-5">
+            <div class="d-flex justify-content-between"><strong>#${b.e_nr}</strong><small>${b.erstellt_von}</small></div>
+            <div>${b.p_name || 'N.N.'}</div>
+            <div class="text-muted small">${new Date(b.created_at).toLocaleString()}</div>
         </div>
-    `).join('') || '<div class="text-center p-5 text-muted">Keine Berichte vorhanden.</div>';
-}
-
-/* DRUCK-PLATZHALTER */
-function printReport(e_nr) {
-    alert("Druckfunktion für Einsatz #" + e_nr + " demnächst verfügbar. Es wird ein SBAR-Übergabeprotokoll als PDF generiert.");
+    `).join('');
 }
 </script>
 </body>
