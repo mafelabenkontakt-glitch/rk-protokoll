@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, maximum-scale=1.0">
 <title>RK CLOUD OS – RTW & KTW</title>
 
+<!-- BOOTSTRAP -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
@@ -27,9 +28,10 @@ body {
     background: var(--bg);
     color: var(--fg);
     font-family: "Segoe UI", sans-serif;
+    padding-bottom: 80px;
 }
 .active-view { display:block !important; }
-#loginView,#listView,#flowSelect,#mainAppRTW,#mainAppKTW{display:none}
+#loginView,#listView,#flowSelect,#mainAppRTW,#mainAppKTW { display:none }
 
 /* ---------- LOGIN ---------- */
 #loginView {
@@ -82,7 +84,7 @@ body {
     margin:30px 0 15px;
 }
 
-/* Vitalwerte */
+/* ---------- VITALWERTE ---------- */
 .vital-grid {
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -103,7 +105,7 @@ body {
     text-align:center;
 }
 
-/* KTW Button A */
+/* ---------- KTW BUTTON A ---------- */
 .ktw-button-a {
     width:100%;
     padding:45px;
@@ -112,7 +114,7 @@ body {
     font-weight:900;
 }
 
-/* Bodygramm */
+/* ---------- BODYGRAMM ---------- */
 .body-container {
     position:relative;
     width:100%;
@@ -135,7 +137,7 @@ body {
 .m-F{background:#2980b9;}
 .m-W{background:#c0392b;}
 
-/* Signature */
+/* ---------- SIGNATUR ---------- */
 .sig-canvas {
     width:100%;
     height:200px;
@@ -143,11 +145,9 @@ body {
     border-radius:12px;
     background:white;
 }
-
 </style>
 </head>
 <body>
-
 
 <!-- ███████████████████ LOGIN ███████████████████ -->
 <div id="loginView" class="active-view">
@@ -166,8 +166,7 @@ body {
 </div>
 
 
-
-<!-- ███████████████████ JOURNAL ███████████████████ -->
+<!-- █████████████████ JOURNAL █████████████████ -->
 <div id="listView" class="container py-3">
     <div class="rk-header">
         <h4 class="fw-bold">EINSATZ‑JOURNAL</h4>
@@ -178,25 +177,28 @@ body {
 </div>
 
 
-
-<!-- ███████████████████ FLOW SELECT ███████████████████ -->
+<!-- ███████████████ PROTOKOLL AUSWAHL ███████████████ -->
 <div id="flowSelect" class="container text-center py-5">
     <h2 class="fw-bold mb-4">PROTOKOLL‑TYP</h2>
 
     <div class="row g-4">
         <div class="col-6">
-            <button onclick="startFlow('RTW')" class="btn btn-danger w-100 py-4 rounded-4 fw-bold fs-3">🚑 RTW</button>
+            <button onclick="startFlow('RTW')" class="btn btn-danger w-100 py-4 rounded-4 fw-bold fs-3">
+                🚑 RTW
+            </button>
         </div>
         <div class="col-6">
-            <button onclick="startFlow('KTW')" class="btn btn-primary w-100 py-4 rounded-4 fw-bold fs-3">🚐 KTW</button>
+            <button onclick="startFlow('KTW')" class="btn btn-primary w-100 py-4 rounded-4 fw-bold fs-3">
+                🚐 KTW
+            </button>
         </div>
     </div>
 </div>
 
 
-
-<!-- ███████████████████ KTW FORM ███████████████████ -->
+<!-- ███████████████████ KTW ███████████████████ -->
 <div id="mainAppKTW" class="container pb-5">
+
     <div class="rk-header">
         <button onclick="showView('listView')" class="btn btn-outline-secondary btn-sm">⬅ Zurück</button>
         <h5 class="fw-bold m-0">KTW‑PROTO</h5>
@@ -209,7 +211,7 @@ body {
         <input id="k_info" class="form-control p-3" placeholder="Transportinfo">
     </div>
 
-    <div class="section-header">2. TRANSPORTSTATUS</div>
+    <div class="section-header">2. TRANSPORT STATUS</div>
     <div class="card-custom text-center">
         <button class="btn btn-warning ktw-button-a" onclick="toggleA()">A</button>
         <p class="mt-3 fw-bold">Status: <span id="aState" class="text-danger">Nicht aktiv</span></p>
@@ -220,12 +222,13 @@ body {
         <textarea id="k_bericht" class="form-control" rows="6" placeholder="Transportbericht..."></textarea>
     </div>
 
-    <button onclick="submitKTW()" class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">ABSENDEN</button>
+    <button onclick="submitKTW()" class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">
+        ABSENDEN
+    </button>
 </div>
 
 
-
-<!-- ███████████████████ RTW FORM ███████████████████ -->
+<!-- ███████████████████ RTW ███████████████████ -->
 <div id="mainAppRTW" class="container pb-5">
 
     <div class="rk-header">
@@ -293,47 +296,50 @@ body {
             <canvas id="sig-rtw" class="sig-canvas"></canvas>
         </div>
 
-        <button class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">ABSENDEN</button>
+        <button class="btn btn-danger w-100 py-4 rounded-pill fw-bold fs-4">
+            ABSENDEN
+        </button>
     </form>
 </div>
 
 
 <script>
-/* ███ AUTH / LOGIN ███ */
+/* ███ PLACEHOLDER KEYS ███ */
 
-async function handleLogin() {
+const SUPABASE_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOj";
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT";
+
+/* ███ LOGIN ███ */
+async function handleLogin(){
     let dn = login_dn.value.trim();
     let pw = login_pw.value.trim();
 
-    if(dn==""||pw==""){
-        loginError.innerText="Bitte alles ausfüllen!";
+    if(!dn || !pw){
+        loginError.innerText = "Bitte alles ausfüllen!";
         return;
     }
 
-    // ---- PLACEHOLDER SUPABASE ----
-    const SUPA_URL = "https://rnfbggoetkmgxqdvznrm.supabase.com";
-    const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg";
+    /* später ersetzen:
+    fetch(`${SUPABASE_URL}/rest/v1/profiles`, {...})
+    */
 
-    // DEMO LOGIN → du baust später SQL ein
-    user = { dienstnummer: dn };
+    user = { dienstnummer: dn }; // TEMP LOGIN
     showView("listView");
 }
 
-
-/* ███ VIEW SYSTEM ███ */
+/* VIEW SYSTEM */
 function showView(id){
-    document.querySelectorAll(".active-view")
-        .forEach(v=>v.classList.remove("active-view"));
+    document.querySelectorAll(".active-view").forEach(v=>v.classList.remove("active-view"));
     document.getElementById(id).classList.add("active-view");
     window.scrollTo(0,0);
 }
 
-/* ███ FLOW START ███ */
+/* FLOW */
 function startFlow(type){
-    if(type==="RTW") showView("mainAppRTW");
-    if(type==="KTW") showView("mainAppKTW");
+    if(type === "RTW") showView("mainAppRTW");
+    if(type === "KTW") showView("mainAppKTW");
 }
-
 
 /* ███ KTW LOGIC ███ */
 let a=false;
@@ -350,18 +356,25 @@ function submitKTW(){
         name:k_name.value,
         info:k_info.value,
         statusA:a,
-        bericht:k_bericht.value,
+        bericht:k_bericht.value
     };
 
     console.log("KTW DATA:",data);
 
-    // ---- PLACEHOLDER SQL INSERT ----
-    // fetch("https://rnfbggoetkmgxqdvznrm.supabase.com", {...})
+    /* SQL-INSERT PLATZHALTER
+    fetch(`${SUPABASE_URL}/rest/v1/ktw_protokolle`, {
+        method:"POST",
+        headers:{
+            "apikey":SUPABASE_KEY,
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(data)
+    });
+    */
 
-    alert("KTW‑Protokoll übermittelt!");
+    alert("KTW‑Protokoll gespeichert!");
     location.reload();
 }
-
 
 /* ███ BODYGRAMM ███ */
 let markers=[];
@@ -372,16 +385,15 @@ bodyImg.onclick = function(e){
     let x = e.clientX - r.left;
     let y = e.clientY - r.top;
 
-    let m = document.createElement("div");
+    let m=document.createElement("div");
     m.classList.add("marker","m-"+mType);
-    m.style.left = x+"px";
-    m.style.top = y+"px";
-    m.innerText = mType;
+    m.style.left=x+"px";
+    m.style.top=y+"px";
+    m.innerText=mType;
 
-    markers.push({ type:mType, x, y });
-    bodyWrapper.append(m);
+    markers.push({type:mType,x,y});
+    bodyWrapper.appendChild(m);
 };
-
 
 /* ███ RTW SEND ███ */
 rtwForm.onsubmit = function(e){
@@ -424,9 +436,9 @@ rtwForm.onsubmit = function(e){
 
     console.log("RTW DATA:",payload);
 
-    // ---- PLACEHOLDER SQL INSERT ----
+    /* SQL-INSERT PLATZHALTER */
 
-    alert("RTW‑Protokoll übermittelt!");
+    alert("RTW‑Protokoll gespeichert!");
     location.reload();
 };
 </script>
