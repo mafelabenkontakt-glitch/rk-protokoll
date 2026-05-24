@@ -3,442 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RETTUNGSDIENST | Cloud-Leitstelle</title>
+    <title>RK Einsatzprotokoll | Professional Full</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { 
-            --rd-red: #cc0000; --rd-dark: #2b2b2b; --rd-white: #FFFFFF; --rd-yellow: #ffcc00;
-        }
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; font-size: 0.85rem; }
+        :root { --rk-red: #e2001a; --rk-dark: #b30014; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; font-size: 0.85rem; }
         
-        .rd-banner { 
-            background-color: var(--rd-red); 
-            width: 100%; 
-            display: flex; align-items: center; justify-content: start; 
-            gap: 15px; padding: 10px 20px; 
-            border-bottom: 3px solid var(--rd-yellow); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); color: var(--rd-white);
-        }
-        .rd-text-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
-        .rd-word { color: var(--rd-white); font-size: 28px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .header-rk { background-color: var(--rk-red); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--rk-dark); margin-bottom: 15px; position: sticky; top: 0; z-index: 1000; }
+        .logo-svg { width: 160px; height: auto; fill: white; margin-bottom: 5px; }
+        .section-title { background: #343a40; color: white; padding: 6px 12px; font-weight: bold; border-left: 5px solid var(--rk-red); margin: 15px 0 8px 0; text-transform: uppercase; border-radius: 2px; }
+        .card { border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 10px; }
+        .form-label { font-weight: bold; color: #444; margin-bottom: 1px; font-size: 0.72rem; }
         
-        .nav-tabs { border-bottom: none; margin-top: 10px; }
-        .nav-link { color: #666; font-weight: bold; border: none !important; cursor: pointer; transition: 0.3s; }
-        .nav-link.active { color: var(--rd-red) !important; border-bottom: 3px solid var(--rd-red) !important; background: none !important; }
-
-        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 10px; margin-bottom: 15px; }
-        .btn-rd { background: var(--rd-red); color: white; border: none; font-weight: bold; }
-        .btn-rd:hover { background: #a30000; color: white; }
+        /* Interaktive Buttons */
+        .quick-btn { font-size: 0.7rem; padding: 2px 8px; margin: 2px; border-radius: 10px; border: 1px solid #ddd; background: #fff; cursor: pointer; transition: 0.2s; display: inline-block; }
+        .quick-btn:hover { background: var(--rk-red); color: white; }
         
-        /* Statusfarben nach BOS (leicht angepasst für RD) */
-        .status-badge { width: 35px; height: 35px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; }
-        .status-1 { background-color: #ba68c8; } /* Frei auf Funk */
-        .status-2 { background-color: #4caf50; } /* Frei auf Wache */
-        .status-3 { background-color: #ff9800; } /* Einsatz übernommen */
-        .status-4 { background-color: #f44336; } /* Am Berufungsort */
-        .status-6 { background-color: #9e9e9e; } /* Nicht einsatzbereit */
-        .status-7 { background-color: #00bcd4; } /* Patient aufgenommen */
-        .status-8 { background-color: #3f51b5; } /* Am Zielort (Spital) */
+        .bodygramm-container { position: relative; width: 320px; margin: 0 auto; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 5px; }
+        .body-img { width: 100%; height: auto; cursor: crosshair; display: block; }
+        .marker { position: absolute; width: 22px; height: 22px; border-radius: 50%; color: white; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid white; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .m-pain { background: #fd7e14; } .m-bone { background: #0d6efd; } .m-wound { background: #dc3545; }
         
-        .unit-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .incident-card { border-left: 6px solid var(--rd-red); margin-bottom: 10px; }
-        .report-card, .person-card { border-left: 5px solid var(--rd-yellow); position: relative; }
-        .warn-border { border-left: 5px solid var(--rd-red) !important; }
+        .sig-canvas { border: 2px solid #ccc; background: #fff; width: 100%; height: 140px; border-radius: 4px; touch-action: none; }
         
-        .view-section { display: none; }
-        .active-view { display: block !important; }
-
-        .delete-btn { position: absolute; top: 10px; right: 10px; background: rgba(204, 0, 0, 0.1); color: #cc0000; border: none; border-radius: 5px; padding: 2px 8px; font-size: 0.7rem; }
-        .ekis-box { background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; padding: 15px; }
-        
-        .unit-actions { display: flex; align-items: center; gap: 10px; }
-        .btn-unit-del { background: none; border: none; color: #dc3545; font-size: 1.1rem; cursor: pointer; padding: 0 5px; }
-
-        .legal-section { margin-top: 50px; padding-top: 20px; border-top: 1px solid #ccc; color: #6c757d; font-size: 0.75rem; }
-        .legal-section h6 { font-weight: bold; margin-top: 15px; color: #495057; }
+        #archiveView { display: none; }
+        .archive-item { background: white; padding: 10px; margin-bottom: 5px; border-radius: 8px; border-left: 4px solid var(--rk-red); }
+        .btn-send { background: var(--rk-red); color: white; border: none; padding: 15px; width: 100%; font-weight: bold; margin-top: 25px; border-radius: 10px; font-size: 1.1rem; }
+        .btn-archive { background: #6c757d; color: white; border: none; padding: 10px; width: 100%; font-weight: bold; margin-top: 5px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="rd-banner">
-    <div class="rd-text-area">
-        <div style="height: 10px; width: 100px; background: var(--rd-yellow); border-radius: 5px; margin-bottom: 5px;"></div>
-        <h1 class="rd-word">RETTUNGSDIENST</h1>
+<div class="header-rk">
+    <svg class="logo-svg" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 20h20v20h20v20h-20v20h-20v-20h-20v-20h20z" fill="white"/>
+        <text x="100" y="55" font-family="Arial" font-weight="bold" font-size="24" fill="white">ROTES KREUZ</text>
+        <text x="100" y="75" font-family="Arial" font-size="14" fill="white">ÖSTERREICH</text>
+    </svg>
+    <div class="mt-2">
+        <button class="btn btn-sm btn-light" onclick="toggleView('form')">Protokoll</button>
+        <button class="btn btn-sm btn-outline-light" onclick="toggleView('archive')">Archiv</button>
     </div>
 </div>
 
-<div class="container mt-3">
-    <ul class="nav nav-tabs mb-4">
-        <li class="nav-item"><a id="tab-dispatch" class="nav-link active" onclick="switchTab('dispatch')">🎧 Disposition</a></li>
-        <li class="nav-item"><a id="tab-reports" class="nav-link" onclick="switchTab('reports')">📑 Einsatzprotokolle</a></li>
-        <li class="nav-item"><a id="tab-persons" class="nav-link" onclick="switchTab('persons')">🚑 Patientenkartei</a></li>
-    </ul>
-
-    <div id="dispatchView" class="view-section active-view">
-        <div class="row g-3">
-            <div class="col-md-7">
-                <div class="card h-100 p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0 fw-bold">Aktive Notfälle & Transporte</h5>
-                        <button class="btn btn-sm btn-danger fw-bold" onclick="openIncidentModal()">+ Neuer Einsatz</button>
-                    </div>
-                    <div id="incidentList" class="list-group">
-                        <div class="text-center text-muted py-4">Lade Einsätze...</div>
-                    </div>
-                </div>
+<div class="container" id="protocolView">
+    <form id="einsatzForm">
+        
+        <div class="section-title">1. Einsatz & Team</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">Einsatz-Nr</label><input type="text" id="e_nr" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Fahrzeug</label><input type="text" id="fz" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">Team (Besatzung)</label><input type="text" id="team" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Alarmzeit</label><input type="time" id="t_alarm" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Ankunft Ort</label><input type="time" id="t_ankunft" class="form-control form-control-sm"></div>
             </div>
-            <div class="col-md-5">
-                <div class="card h-100 p-0">
-                    <div class="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold">Fahrzeug-Tableau</h5>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-danger fw-bold" onclick="openUnitModal()">+ RTW/KTW</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="loadUnits()">🔄</button>
+        </div>
+
+        <div class="section-title">2. Patientendaten</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-12"><label class="form-label">Name</label><input type="text" id="p_name" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Geburtsdatum</label><input type="date" id="p_geb" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">SV-Nummer</label><input type="text" id="p_sv" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">Adresse (Straße, Ort)</label><input type="text" id="p_adr" class="form-control form-control-sm"></div>
+            </div>
+        </div>
+
+        <div class="section-title text-center">3. Bodygramm</div>
+        <div class="bodygramm-container" id="bodyWrapper">
+            <img src="grafik.png" id="bodyImg" class="body-img" alt="Bild 'grafik.png' fehlt!">
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-1 mb-3" onclick="clearMarkers()">Marker löschen</button>
+
+        <div class="section-title">4. Befund (ABCDE)</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-12">
+                    <label class="form-label text-danger">A (Airway)</label>
+                    <div class="mb-1">
+                        <span class="quick-btn" onclick="addText('abc_a', 'Atemwege frei, spricht klar.')">Frei</span>
+                        <span class="quick-btn" onclick="addText('abc_a', 'Atemwege verlegt durch Erbrochenes/Fremdkörper.')">Verlegt</span>
+                    </div>
+                    <select id="abc_a" class="form-select form-select-sm">
+                        <option value="n.e.">- Wählen -</option>
+                        <option value="Frei">Frei</option>
+                        <option value="Verlegt">Verlegt</option>
+                        <option value="Gefährdet">Gefährdet</option>
+                    </select>
+                </div>
+
+                <div class="col-8">
+                    <label class="form-label text-danger">B (Breathing)</label>
+                    <div class="mb-1">
+                        <span class="quick-btn" onclick="addText('abc_b', 'Seitengleiche Belüftung, keine Rasselgeräusche.')">o.B.</span>
+                        <span class="quick-btn" onclick="addText('abc_b', 'Giemen/Brummen hörbar, Dyspnoe.')">Obstruktiv</span>
+                    </div>
+                    <input type="text" id="abc_b" class="form-control form-control-sm">
+                </div>
+                <div class="col-2"><label class="form-label">AF</label><input type="number" id="v_af" class="form-control form-control-sm"></div>
+                <div class="col-2"><label class="form-label">SpO2</label><input type="number" id="v_spo2" class="form-control form-control-sm"></div>
+
+                <div class="col-6">
+                    <label class="form-label text-danger">C (Circulation)</label>
+                    <div class="mb-1">
+                        <span class="quick-btn" onclick="addText('abc_c', 'Radialispuls kräftig/rhythmisch. Haut warm/trocken.')">Stabil</span>
+                        <span class="quick-btn" onclick="addText('abc_c', 'Zentralisierung, Haut blass/kalt/schweißig.')">Schock</span>
+                    </div>
+                    <input type="text" id="abc_c" class="form-control form-control-sm">
+                </div>
+                <div class="col-3"><label class="form-label">HF/Puls</label><input type="number" id="v_hf" class="form-control form-control-sm"></div>
+                <div class="col-3"><label class="form-label">RR</label><input type="text" id="v_rr" class="form-control form-control-sm" placeholder="120/80"></div>
+                
+                <div class="col-12 mt-2">
+                    <label class="form-label text-danger">D (Neurologie / Disability)</label>
+                    <input type="text" id="abc_d" class="form-control form-control-sm mb-1" placeholder="Zusatzbefunde...">
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <label class="form-label">AVPU</label>
+                            <select id="v_avpu" class="form-select form-select-sm">
+                                <option value="n.e.">-</option>
+                                <option value="A (Alert)">A (Alert)</option>
+                                <option value="V (Verbal)">V (Verbal)</option>
+                                <option value="P (Pain)">P (Pain)</option>
+                                <option value="U (Unresponsive)">U (Unresponsive)</option>
+                            </select>
+                        </div>
+                        <div class="col-4"><label class="form-label">BZ</label><input type="text" id="v_bz" class="form-control form-control-sm" placeholder="mg/dl"></div>
+                        <div class="col-4">
+                            <label class="form-label">Pupillen</label>
+                            <select id="v_pup" class="form-select form-select-sm">
+                                <option value="n.e.">-</option>
+                                <option value="isokor, LR">Isokor, LR</option>
+                                <option value="anisokor">Anisokor</option>
+                                <option value="entrundet">Entrundet</option>
+                                <option value="miosis">Miosis</option>
+                                <option value="mydriasis">Mydriasis</option>
+                                <option value="keine LR">Keine LR</option>
+                            </select>
                         </div>
                     </div>
-                    <div id="unitList"></div>
                 </div>
-            </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mt-3 px-2 text-muted fw-bold">
-            <span id="liveClock">00:00:00</span>
-            <span id="incidentCount">Einsätze: 0</span>
-        </div>
-    </div>
 
-    <div id="reportsView" class="view-section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">Protokoll-Archiv</h4>
-            <div class="dropdown">
-                <button class="btn btn-rd dropdown-toggle" data-bs-toggle="dropdown">+ Protokoll anlegen</button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" onclick="openReportModal('Notfalleinsatz')">🚨 Notfalleinsatz</a></li>
-                    <li><a class="dropdown-item" onclick="openReportModal('Krankentransport')">🚐 Krankentransport</a></li>
-                    <li><a class="dropdown-item" onclick="openReportModal('Fehleinsatz')">❌ Fehleinsatz</a></li>
-                </ul>
+                <div class="col-12 mt-2"><label class="form-label text-danger">E (Exposure)</label><input type="text" id="abc_e" class="form-control form-control-sm"></div>
             </div>
         </div>
-        <div id="reportLoading" class="text-center my-4 small text-muted">Lade Daten...</div>
-        <div id="reportList"></div>
-    </div>
 
-    <div id="personsView" class="view-section">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">Patienten-Datenbank</h4>
-            <button class="btn btn-rd" onclick="openPersonModal()">+ Neuer Patient</button>
+        <div class="section-title">5. Anamnese (SAMPLER)</div>
+        <div class="card p-3">
+            <div class="row g-1">
+                <div class="col-6"><label class="form-label">S (Symptome)</label><input type="text" id="s_s" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">A (Allergien)</label><input type="text" id="s_a" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">M (Medikamente)</label><input type="text" id="s_m" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">P (Patientengeschichte)</label><input type="text" id="s_p" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">L (Letzte Mahlzeit)</label><input type="text" id="s_l" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">E (Ereignis)</label><input type="text" id="s_e" class="form-control form-control-sm"></div>
+                <div class="col-12"><label class="form-label">R (Risikofaktoren)</label><input type="text" id="s_r" class="form-control form-control-sm"></div>
+            </div>
         </div>
-        <input type="text" id="dbPersonSearch" class="form-control mb-3" placeholder="Datenbank durchsuchen (Name oder SVNR)..." onkeyup="filterPersonList()">
-        <div id="personLoading" class="text-center my-4 small text-muted">Lade Datenbank...</div>
-        <div id="fullPersonList"></div>
-    </div>
 
-    <div class="legal-section mt-5">
-        <div class="row">
-            <div class="col-md-6">
-                <h6>Impressum & Offenlegung</h6>
-                <p><strong>Zweck der Website:</strong> Dieses System dient ausschließlich fiktiven Rollenspiel-Zwecken. Es handelt sich um <strong>keine</strong> echte behördliche oder medizinische Einrichtung. Alle Eingaben und Handlungen sind fiktiv.</p>
+        <div class="section-title">6. Schmerz (OPQRST)</div>
+        <div class="card p-3">
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">O (Onset)</label><input type="text" id="o_o" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">P (Provokation)</label><input type="text" id="o_p" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Q (Qualität)</label><input type="text" id="o_q" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">R (Region)</label><input type="text" id="o_r" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">S (Stärke 1-10)</label><input type="text" id="o_s" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">T (Time)</label><input type="text" id="o_t" class="form-control form-control-sm"></div>
             </div>
-            <div class="col-md-6">
-                <h6>Datenschutzerklärung</h6>
-                <p><strong>Datenspeicherung (Rollenspiel)</strong><br>
-                Bitte geben Sie in dieses System <strong>keine echten Gesundheits- oder personenbezogenen Daten</strong> ein. Eingegebene Daten werden zur Durchführung des Rollenspiels in einer Cloud-Datenbank gespeichert.</p>
+        </div>
+
+        <div class="section-title">7. Maßnahmen & Übergabe</div>
+        <div class="card p-3">
+            <div class="d-flex flex-wrap mb-2">
+                <span class="quick-btn" onclick="addText('v_text', 'Patient stabil übernommen. O2-Gabe (4l). Monitoring gestartet. Transport ohne Komplikationen.')">Standard-Verlauf</span>
+                <span class="quick-btn" onclick="addText('v_text', 'Übergabe an Schockraum-Team erfolgt.')">Übergabe SR</span>
             </div>
+            <textarea id="v_text" class="form-control mb-2" rows="4" placeholder="Maßnahmen/Verlauf..."></textarea>
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label">Transportziel</label><input type="text" id="t_ziel" class="form-control form-control-sm"></div>
+                <div class="col-6"><label class="form-label">Übergabe an</label><input type="text" id="handover" class="form-control form-control-sm"></div>
+            </div>
+        </div>
+
+        <div class="section-title">8. Unterschrift</div>
+        <div class="card p-3 mb-3 text-center">
+            <canvas id="signature-pad" class="sig-canvas"></canvas>
+            <button type="button" class="btn btn-sm btn-link text-danger" onclick="signaturePad.clear()">Löschen</button>
+        </div>
+
+        <button type="submit" class="btn btn-send shadow">🚨 PROTOKOLL ABSENDEN</button>
+    </form>
+</div>
+
+<div class="container" id="archiveView">
+    <div class="section-title">Einsatz-Archiv</div>
+    <div id="archiveList"></div>
+    <button class="btn btn-archive mt-3" onclick="clearArchive()">Archiv leeren</button>
+</div>
+
+<div class="modal fade" id="markerModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content text-center p-3">
+            <button onclick="place('Schmerz','S','m-pain')" class="btn btn-warning w-100 mb-2">Schmerz (S)</button>
+            <button onclick="place('Fraktur','F','m-bone')" class="btn btn-primary w-100 mb-2">Fraktur (F)</button>
+            <button onclick="place('Wunde','W','m-wound')" class="btn btn-danger w-100">Wunde (W)</button>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="unitModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
-    <div class="modal-header bg-danger text-white"><h5>Rettungsmittel hinzufügen</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body">
-        <div class="mb-2"><label class="small fw-bold">Funkrufname</label><input type="text" id="newUnitName" class="form-control" placeholder="z.B. RTW 1"></div>
-        <div class="mb-2"><label class="small fw-bold">Typ</label><input type="text" id="newUnitType" class="form-control" placeholder="z.B. RTW, KTW, NEF"></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-danger" onclick="saveUnitToCloud()">Hinzufügen</button></div>
-</div></div></div>
-
-<div class="modal fade" id="incidentModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
-    <div class="modal-header bg-danger text-white"><h5>🚨 Notruf aufnehmen</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body">
-        <div class="mb-2"><label class="small fw-bold">Einsatzstichwort</label><input type="text" id="incTitle" class="form-control" placeholder="z.B. Atemnot, Verkehrsunfall"></div>
-        <div class="mb-2"><label class="small fw-bold">Ort / Adresse</label><input type="text" id="incOrt" class="form-control"></div>
-        <div class="mb-2"><label class="small fw-bold">Zusatzinfos / Meldungsbild</label><textarea id="incInfo" class="form-control" rows="3"></textarea></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-danger w-100 fw-bold" onclick="saveIncidentToCloud()">ALARMIEREN</button></div>
-</div></div></div>
-
-<div class="modal fade" id="reportModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
-    <div class="modal-header bg-dark text-white"><h5>Einsatzprotokoll erstellen</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-    <div class="modal-body">
-        <input type="hidden" id="reportType">
-        <div class="row g-3">
-            <div class="col-md-6"><label class="small fw-bold">Protokollnummer</label><input type="text" id="az" class="form-control bg-light" readonly></div>
-            <div class="col-md-3"><label class="small fw-bold">Sanitäter-ID</label><input type="text" id="dienstnummer" class="form-control"></div>
-            <div class="col-md-3"><label class="small fw-bold">Fahrzeug</label><input type="text" id="funkname" class="form-control"></div>
-            <div class="col-12"><label class="small fw-bold">Einsatzort / Transportziel</label><input type="text" id="ort" class="form-control"></div>
-            <div class="col-12">
-                <div class="ekis-box">
-                    <label class="small fw-bold">🔍 Patientenabfrage (Datenbank)</label>
-                    <div class="input-group mb-2"><input type="text" id="personSearch" class="form-control"><button class="btn btn-secondary" onclick="searchPersonInCloud()">Prüfen</button></div>
-                    <div id="personResults"></div>
-                </div>
-            </div>
-            <div class="col-12"><label class="small fw-bold">Maßnahmen & Verlauf</label><textarea id="sachverhalt" class="form-control" rows="6"></textarea></div>
-        </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-rd w-100" onclick="saveReportToCloud()">SPEICHERN</button></div>
-</div></div></div>
-
-<div class="modal fade" id="addPersonModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
-    <div class="modal-header"><h5>Neue Patientenakte anlegen</h5></div>
-    <div class="modal-body">
-        <div class="mb-2"><label class="small fw-bold">Name</label><input type="text" id="newPersonName" class="form-control"></div>
-        <div class="mb-2"><label class="small fw-bold">SVNR</label><input type="text" id="newPersonSVNR" class="form-control"></div>
-        <div class="mb-2"><label class="small fw-bold">Geburtsdatum</label><input type="date" id="newPersonGeb" class="form-control"></div>
-        <div class="mb-2"><label class="small fw-bold">Vorerkrankungen / Status</label>
-            <select id="newPersonStatus" class="form-select">
-                <option>Keine Vorerkrankungen</option>
-                <option>Diabetes / Hypertonie</option>
-                <option>Allergiker</option>
-                <option>Kritischer Patient</option>
-            </select>
-        </div>
-        <div class="form-check mt-3"><input type="checkbox" id="newPersonWarnung" class="form-check-input"><label class="text-danger fw-bold">INFEKTIÖS / WARNUNG</label></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-rd" onclick="savePersonToCloud()">Speichern</button></div>
-</div></div></div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
 <script>
-    const SUPABASE_URL = "https://rnfbggoetkmgxqdvznrm.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZmJnZ29ldGttZ3hxZHZ6bnJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2ODc5OTAsImV4cCI6MjA5MDI2Mzk5MH0.WIkTaULzTAGgmWEdZ1au35ae826joFGVHP--E-2fsSg";
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const ADMIN_PIN = "AppearIron22";
+    const WEBHOOK = 'https://discord.com/api/webhooks/1487187005485093155/BrI0fLWg7rhSLDnRJBzM5oxyhl0vGIoBs7HHGsbrsgFhXmY-RlS8TLKrBAH7MyJpVzQT';
+    let markers = [], curX, curY;
+    const modal = new bootstrap.Modal(document.getElementById('markerModal'));
+    const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
 
-    let reportModal, personModal, incidentModal, unitModal;
+    function toggleView(view) {
+        document.getElementById('protocolView').style.display = view === 'form' ? 'block' : 'none';
+        document.getElementById('archiveView').style.display = view === 'archive' ? 'block' : 'none';
+        if(view === 'archive') loadArchive();
+    }
 
-    window.onload = () => {
-        reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
-        personModal = new bootstrap.Modal(document.getElementById('addPersonModal'));
-        incidentModal = new bootstrap.Modal(document.getElementById('incidentModal'));
-        unitModal = new bootstrap.Modal(document.getElementById('unitModal'));
-        
-        loadUnits();
-        loadIncidents();
-        setInterval(updateClock, 1000);
+    function addText(targetId, text) {
+        const el = document.getElementById(targetId);
+        if(el.value) el.value += " " + text;
+        else el.value = text;
+    }
 
-        _supabase
-            .channel('public:incidents')
-            .on('postgres_changes', { event: 'INSERT', table: 'incidents' }, payload => {
-                playLongBeep();
-                setTimeout(() => { announceIncident(payload.new); }, 2000);
-                loadIncidents();
-            })
-            .subscribe();
+    document.getElementById('bodyImg').onclick = function(e) {
+        const rect = this.getBoundingClientRect();
+        curX = (e.clientX - rect.left) / rect.width * 100;
+        curY = (e.clientY - rect.top) / rect.height * 100;
+        modal.show();
     };
 
-    function updateClock() { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('de-DE'); }
-
-    function switchTab(tab) {
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active-view'));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(tab + 'View').classList.add('active-view');
-        document.getElementById('tab-' + tab).classList.add('active');
-        if(tab === 'reports') loadReports();
-        if(tab === 'persons') loadPersons();
-        if(tab === 'dispatch') { loadUnits(); loadIncidents(); }
+    function place(type, letter, colorClass) {
+        const wrap = document.getElementById('bodyWrapper');
+        const m = document.createElement('div');
+        m.className = `marker ${colorClass}`;
+        m.style.left = curX + '%';
+        m.style.top = curY + '%';
+        m.innerText = letter;
+        wrap.appendChild(m);
+        markers.push({ type: type, x: curX, y: curY });
+        modal.hide();
     }
 
-    function playLongBeep() {
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(800, ctx.currentTime);
-            gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-            osc.connect(gainNode); gainNode.connect(ctx.destination);
-            osc.start(); osc.stop(ctx.currentTime + 1.8);
-        } catch(e) { console.error("Sound blockiert", e); }
+    function clearMarkers() { markers = []; document.querySelectorAll('.marker').forEach(m => m.remove()); }
+
+    function loadArchive() {
+        const archive = JSON.parse(localStorage.getItem('rk_archive') || '[]');
+        const container = document.getElementById('archiveList');
+        container.innerHTML = archive.length ? '' : '<p class="text-center mt-4">Keine Einsätze gespeichert.</p>';
+        archive.reverse().forEach(entry => {
+            container.innerHTML += `
+                <div class="archive-item shadow-sm">
+                    <strong>Nr: ${entry.nr}</strong> | ${entry.date}<br>
+                    <small>${entry.text.substring(0, 100)}...</small>
+                </div>`;
+        });
     }
 
-    function announceIncident(data) {
-        if ('speechSynthesis' in window) {
-            const msg = `Achtung, neuer medizinischer Notfall. Stichwort: ${data.title}. Ort: ${data.ort}.`;
-            const utterance = new SpeechSynthesisUtterance(msg);
-            utterance.lang = 'de-DE';
-            utterance.rate = 0.9;
-            window.speechSynthesis.speak(utterance);
-        }
+    function clearArchive() { if(confirm('Archiv wirklich löschen?')) { localStorage.removeItem('rk_archive'); loadArchive(); } }
+
+    function generateBodygrammImage() {
+        return new Promise((resolve) => {
+            const img = document.getElementById('bodyImg');
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || 320;
+            canvas.height = img.naturalHeight || 500;
+            const ctx = canvas.getContext('2d');
+            
+            if (img.complete && img.naturalWidth > 0) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            markers.forEach(m => {
+                const cx = (m.x / 100) * canvas.width;
+                const cy = (m.y / 100) * canvas.height;
+                
+                ctx.beginPath();
+                ctx.arc(cx, cy, 14, 0, 2 * Math.PI);
+                if(m.type === 'Schmerz') ctx.fillStyle = '#fd7e14';
+                else if(m.type === 'Fraktur') ctx.fillStyle = '#0d6efd';
+                else ctx.fillStyle = '#dc3545';
+                ctx.fill();
+                
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const letter = m.type === 'Schmerz' ? 'S' : (m.type === 'Fraktur' ? 'F' : 'W');
+                ctx.fillText(letter, cx, cy);
+            });
+
+            canvas.toBlob(blob => resolve(blob), 'image/png');
+        });
     }
 
-    async function loadUnits() {
-        const { data } = await _supabase.from('units').select('*').order('name');
-        const list = document.getElementById('unitList');
-        if(data) {
-            list.innerHTML = data.map(u => `
-                <div class="unit-row">
-                    <div><span class="fw-bold text-danger">${u.name}</span><br><small>${u.type}</small></div>
-                    <div class="unit-actions">
-                        <div class="dropdown">
-                            <div class="status-badge status-${u.status}" data-bs-toggle="dropdown">${u.status}</div>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 1)">🟪 1 - Frei auf Funk</a></li>
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 2)">🟩 2 - Wache</a></li>
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 3)">🟧 3 - Übernommen</a></li>
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 4)">🟥 4 - Am Ort</a></li>
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 7)">🟦 7 - Patient aufgen.</a></li>
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 8)">🟦 8 - Zielort (Spital)</a></li>
-                                <li><a class="dropdown-item" onclick="changeStatus(${u.id}, 6)">⬛ 6 - Nicht einsatzbereit</a></li>
-                            </ul>
-                        </div>
-                        <button class="btn-unit-del" onclick="deleteUnit(${u.id})">🗑️</button>
-                    </div>
-                </div>`).join('');
-        }
-    }
-
-    async function changeStatus(id, stat) {
-        await _supabase.from('units').update({ status: stat }).eq('id', id);
-        loadUnits();
-    }
-
-    function openUnitModal() { unitModal.show(); }
-
-    async function saveUnitToCloud() {
-        const nameInput = document.getElementById('newUnitName');
-        const typeInput = document.getElementById('newUnitType');
-        const name = nameInput.value.trim();
-        const type = typeInput.value.trim();
-
-        if (name === "" || type === "") {
-            alert("Bitte geben Sie einen Rufnamen und einen Typ ein.");
-            return;
-        }
-
-        const { error } = await _supabase.from('units').insert([{ name, type, status: 6 }]);
+    document.getElementById('einsatzForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.querySelector('.btn-send');
+        btn.innerText = "Sende...";
         
-        if (error) {
-            alert("Fehler beim Speichern: " + error.message);
-        } else {
-            nameInput.value = "";
-            typeInput.value = "";
-            unitModal.hide(); 
-            loadUnits();
+        const mStr = markers.map(m => `• ${m.type} [Koordinaten: ${Math.round(m.x)}% | ${Math.round(m.y)}%]`).join('\n') || "Keine Auffälligkeiten markiert";
+        
+        const data = {
+            nr: document.getElementById('e_nr').value || "unbekannt",
+            date: new Date().toLocaleString('de-DE'),
+            text: document.getElementById('v_text').value || "Kein Text",
+            team: document.getElementById('team').value || "unbekannt"
+        };
+
+        const formData = new FormData();
+        const embeds = [];
+
+        const mainEmbed = {
+            title: "🚑 EINSATZPROTOKOLL: " + (document.getElementById('e_nr').value || "Keine Nr."),
+            color: 14811162,
+            fields: [
+                { name: "📋 Team & Zeiten", value: `**Team:** ${document.getElementById('team').value || "-"}\n**FZ:** ${document.getElementById('fz').value || "-"}\n**Zeiten:** Alarm: ${document.getElementById('t_alarm').value || "-"} | Ankunft: ${document.getElementById('t_ankunft').value || "-"}` },
+                { name: "👤 Patient", value: `**Name:** ${document.getElementById('p_name').value || "Unbekannt"}\n**SV:** ${document.getElementById('p_sv').value || "-"}` },
+                { name: "🩺 ABCDE", value: `**A:** ${document.getElementById('abc_a').value}\n**B:** ${document.getElementById('abc_b').value || "-"}\n**C:** RR: ${document.getElementById('v_rr').value || "-"}, HF: ${document.getElementById('v_hf').value || "-"}\n**D:** AVPU: ${document.getElementById('v_avpu').value}, BZ: ${document.getElementById('v_bz').value || "-"}, Pupillen: ${document.getElementById('v_pup').value}\n**E:** ${document.getElementById('abc_e').value || "-"}` },
+                { name: "🧍 Bodygramm-Punkte", value: mStr },
+                { name: "📋 SAMPLER", value: `**S:** ${document.getElementById('s_s').value || "-"}\n**A:** ${document.getElementById('s_a').value || "-"}\n**M:** ${document.getElementById('s_m').value || "-"}\n**P:** ${document.getElementById('s_p').value || "-"}\n**L:** ${document.getElementById('s_l').value || "-"}\n**E:** ${document.getElementById('s_e').value || "-"}\n**R:** ${document.getElementById('s_r').value || "-"}` },
+                { name: "📉 OPQRST", value: `**O:** ${document.getElementById('o_o').value || "-"} | **P:** ${document.getElementById('o_p').value || "-"} | **Q:** ${document.getElementById('o_q').value || "-"}\n**R:** ${document.getElementById('o_r').value || "-"} | **S:** ${document.getElementById('o_s').value || "-"} | **T:** ${document.getElementById('o_t').value || "-"}` },
+                { name: "📝 Bericht", value: `${document.getElementById('v_text').value || "Kein Text"}\n**Ziel:** ${document.getElementById('t_ziel').value || "-"}\n**Übergabe:** ${document.getElementById('handover').value || "-"}` }
+            ],
+            image: { url: 'attachment://bodygramm.png' },
+            timestamp: new Date()
+        };
+        embeds.push(mainEmbed);
+
+        const bodyBlob = await generateBodygrammImage();
+        formData.append('file1', bodyBlob, 'bodygramm.png');
+
+        if (!signaturePad.isEmpty()) {
+            const dataURL = signaturePad.toDataURL("image/png");
+            const sigBlob = await (await fetch(dataURL)).blob();
+            formData.append('file2', sigBlob, 'unterschrift.png');
+            
+            embeds.push({
+                color: 14811162,
+                image: { url: 'attachment://unterschrift.png' }
+            });
         }
-    }
 
-    async function deleteUnit(id) {
-        if(confirm("Fahrzeug wirklich löschen?")) { await _supabase.from('units').delete().eq('id', id); loadUnits(); }
-    }
+        const archive = JSON.parse(localStorage.getItem('rk_archive') || '[]');
+        archive.push(data);
+        localStorage.setItem('rk_archive', JSON.stringify(archive));
+        
+        formData.append('payload_json', JSON.stringify({ embeds: embeds }));
 
-    async function loadIncidents() {
-        const { data } = await _supabase.from('incidents').select('*').order('created_at', { ascending: false });
-        document.getElementById('incidentCount').innerText = `Einsätze: ${data ? data.length : 0}`;
-        const list = document.getElementById('incidentList');
-        if(data) {
-            list.innerHTML = data.map(i => `
-                <div class="card incident-card p-3 shadow-sm">
-                    <div class="d-flex justify-content-between"><h6 class="mb-1 fw-bold text-danger">${i.title}</h6><small>${i.id}</small></div>
-                    <div class="small">📍 ${i.ort}</div>
-                    <div class="small mt-1 text-muted fst-italic">${i.info}</div>
-                    <button class="btn btn-sm btn-outline-dark mt-2" onclick="deleteIncident('${i.id}')">Einsatz abschließen</button>
-                </div>`).join('');
+        try {
+            const res = await fetch(WEBHOOK, { method: 'POST', body: formData });
+            if(res.ok) {
+                alert("✅ Protokoll inklusive Bodygramm gesendet!");
+                this.reset();
+                clearMarkers();
+                signaturePad.clear();
+            } else {
+                alert("❌ Fehler beim Senden! (Code: " + res.status + ")");
+            }
+        } catch(err) {
+            alert("Netzwerkfehler: " + err);
+        } finally {
+            btn.innerText = "🚨 PROTOKOLL ABSENDEN";
         }
-    }
-
-    function openIncidentModal() { incidentModal.show(); }
-
-    async function saveIncidentToCloud() {
-        const payload = {
-            id: "RD-" + Math.floor(1000 + Math.random() * 9000),
-            title: document.getElementById('incTitle').value,
-            ort: document.getElementById('incOrt').value,
-            info: document.getElementById('incInfo').value
-        };
-        await _supabase.from('incidents').insert([payload]);
-        incidentModal.hide();
-    }
-
-    async function deleteIncident(id) {
-        if(confirm("Einsatz wirklich abschließen?")) { await _supabase.from('incidents').delete().eq('id', id); loadIncidents(); }
-    }
-
-    function generatePAD() { return `PROT/${new Date().getFullYear().toString().slice(-2)}/${Math.floor(100000 + Math.random() * 900000)}`; }
-    
-    function openReportModal(type) {
-        document.getElementById('reportType').value = type;
-        document.getElementById('az').value = generatePAD();
-        reportModal.show();
-    }
-
-    async function saveReportToCloud() {
-        const payload = {
-            az: document.getElementById('az').value,
-            typ: document.getElementById('reportType').value,
-            ort: document.getElementById('ort').value,
-            inhalt: `SAN: ${document.getElementById('dienstnummer').value} | FAHRZEUG: ${document.getElementById('funkname').value}\n\n${document.getElementById('sachverhalt').value}`
-        };
-        await _supabase.from('berichte').insert([payload]);
-        reportModal.hide(); loadReports();
-    }
-
-    async function loadReports() {
-        const { data } = await _supabase.from('berichte').select('*').order('created_at', { ascending: false });
-        document.getElementById('reportLoading').style.display = 'none';
-        document.getElementById('reportList').innerHTML = data ? data.map(r => `
-            <div class="card report-card p-3 shadow-sm mb-2">
-                <button class="delete-btn" onclick="deleteReport(event, '${r.id}')">Löschen</button>
-                <div onclick="alert('${r.inhalt.replace(/\n/g, '\\n')}')">
-                    <span class="badge bg-dark mb-1">${r.typ}</span>
-                    <h5 class="mb-0 text-danger">${r.az}</h5><small>${r.ort}</small>
-                </div>
-            </div>`).join('') : '';
-    }
-
-    async function deleteReport(e, id) {
-        e.stopPropagation(); if(prompt("PIN:") === ADMIN_PIN) { await _supabase.from('berichte').delete().eq('id', id); loadReports(); }
-    }
-
-    async function loadPersons() {
-        const { data } = await _supabase.from('personen').select('*').order('name');
-        document.getElementById('personLoading').style.display = 'none';
-        document.getElementById('fullPersonList').innerHTML = data ? data.map(p => `
-            <div class="card person-card p-3 mb-2 shadow-sm ${p.warnung ? 'warn-border' : ''}">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div><h6 class="mb-0">${p.name} ${p.warnung ? '⚠️ INFEKTIÖS' : ''}</h6><small>SVNR: ${p.svnr}</small></div>
-                    <span class="badge ${p.warnung ? 'bg-danger' : 'bg-secondary'}">${p.status}</span>
-                </div>
-            </div>`).join('') : '';
-    }
-
-    async function searchPersonInCloud() {
-        const q = document.getElementById('personSearch').value;
-        const { data } = await _supabase.from('personen').select('*').or(`name.ilike.%${q}%,svnr.ilike.%${q}%`);
-        document.getElementById('personResults').innerHTML = data && data.length > 0 ? data.map(r => `
-            <div class="alert alert-info p-2 mb-1 d-flex justify-content-between">
-                <small>${r.name}</small><button class="btn btn-sm btn-dark" onclick="addPersonToReport('${r.name}')">OK</button>
-            </div>`).join('') : '<button class="btn btn-sm btn-danger w-100" onclick="openPersonModal()">Neu anlegen</button>';
-    }
-
-    function addPersonToReport(name) { document.getElementById('sachverhalt').value += `[Patient: ${name}] `; }
-
-    async function savePersonToCloud() {
-        const p = { 
-            name: document.getElementById('newPersonName').value, 
-            svnr: document.getElementById('newPersonSVNR').value, 
-            geb: document.getElementById('newPersonGeb').value, 
-            status: document.getElementById('newPersonStatus').value, 
-            warnung: document.getElementById('newPersonWarnung').checked 
-        };
-        await _supabase.from('personen').insert([p]); personModal.hide(); loadPersons();
-    }
-
-    function openPersonModal() { personModal.show(); }
-    function filterPersonList() {
-        const q = document.getElementById('dbPersonSearch').value.toLowerCase();
-        document.querySelectorAll('.person-card').forEach(c => { c.style.display = c.innerText.toLowerCase().includes(q) ? 'block' : 'none'; });
-    }
+    };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
